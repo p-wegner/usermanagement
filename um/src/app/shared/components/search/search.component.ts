@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 export interface SearchFilter {
   field: string;
@@ -17,7 +18,7 @@ export interface SearchFilter {
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
@@ -29,10 +30,9 @@ export interface SearchFilter {
       <mat-form-field appearance="outline">
         <mat-label>Search</mat-label>
         <input matInput
-               [(ngModel)]="searchTerm"
-               (ngModelChange)="onSearchChange()"
+               [formControl]="searchControl"
                [placeholder]="placeholder">
-        <button *ngIf="searchTerm"
+        <button *ngIf="searchControl.value"
                 matSuffix
                 mat-icon-button
                 aria-label="Clear"
@@ -43,7 +43,7 @@ export interface SearchFilter {
 
       <mat-form-field *ngIf="filters?.length" appearance="outline">
         <mat-label>Filter by</mat-label>
-        <mat-select [(ngModel)]="selectedFilter" (selectionChange)="onFilterChange()">
+        <mat-select [formControl]="filterControl">
           <mat-option [value]="''">All</mat-option>
           <mat-option *ngFor="let filter of filters" [value]="filter.field">
             {{filter.label}}
@@ -70,26 +70,28 @@ export class SearchComponent {
   
   @Output() search = new EventEmitter<{term: string, filter?: string}>();
 
-  searchTerm = '';
-  selectedFilter = '';
+  searchControl = new FormControl('');
+  filterControl = new FormControl('');
 
-  onSearchChange(): void {
-    this.emitSearch();
-  }
+  constructor() {
+    // Debounce search input
+    this.searchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(() => this.emitSearch());
 
-  onFilterChange(): void {
-    this.emitSearch();
+    // Immediate filter changes
+    this.filterControl.valueChanges.subscribe(() => this.emitSearch());
   }
 
   clearSearch(): void {
-    this.searchTerm = '';
-    this.emitSearch();
+    this.searchControl.setValue('');
   }
 
   private emitSearch(): void {
     this.search.emit({
-      term: this.searchTerm,
-      filter: this.selectedFilter || undefined
+      term: this.searchControl.value || '',
+      filter: this.filterControl.value || undefined
     });
   }
 }
