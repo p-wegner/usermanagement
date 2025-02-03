@@ -20,5 +20,3 @@
 - [x] Create shared services
   - [x] Error handling
   - [x] Loading state
-- [ ] Add unit tests
-- [ ] Add documentation
