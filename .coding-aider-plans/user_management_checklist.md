@@ -8,8 +8,8 @@
   - [x] Create users list component
   - [x] Create user detail component
   - [x] Implement user service
-  - [ ] Complete user forms
-  - [ ] Add validation
+  - [x] Complete user forms
+  - [x] Add validation
 - [ ] Complete groups management implementation
 - [ ] Complete permissions management implementation
 - [ ] Add global error handling

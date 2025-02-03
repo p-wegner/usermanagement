@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  padding: 20px;
+}
+
+.form-row {
+  margin-bottom: 16px;
+}
+
+mat-form-field {
+  width: 100%;
+  max-width: 500px;
+}
+
+mat-card-content {
+  padding: 20px;
+}
+
+mat-card-actions {
+  padding: 16px;
+  gap: 8px;
+}
