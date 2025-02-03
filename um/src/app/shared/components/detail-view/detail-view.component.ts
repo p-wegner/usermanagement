@@ -26,9 +26,12 @@ export class DetailViewComponent {
   @Input() loading = false;
   @Input() submitLabel = 'Save';
   @Input() cancelLabel = 'Cancel';
+  @Input() showDelete = false;
+  @Input() deleteLabel = 'Delete';
 
   @Output() formSubmit = new EventEmitter<void>();
   @Output() formCancel = new EventEmitter<void>();
+  @Output() formDelete = new EventEmitter<void>();
 
   onSubmit(): void {
     if (this.form.valid) {
@@ -38,5 +41,9 @@ export class DetailViewComponent {
 
   onCancel(): void {
     this.formCancel.emit();
+  }
+
+  onDelete(): void {
+    this.formDelete.emit();
   }
 }

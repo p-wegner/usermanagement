@@ -14,6 +14,15 @@
                 (click)="onCancel()">
           {{cancelLabel}}
         </button>
+
+        <button mat-button
+                *ngIf="showDelete"
+                type="button"
+                color="warn"
+                [disabled]="loading"
+                (click)="onDelete()">
+          {{deleteLabel}}
+        </button>
         
         <button mat-raised-button 
                 color="primary"
