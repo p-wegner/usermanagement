@@ -9,6 +9,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-detail-view',
@@ -29,6 +30,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrl: './detail-view.component.css'
 })
 export class DetailViewComponent {
+  private readonly errorDuration = 5000; // 5 seconds
   @Input() title = '';
   @Input() form!: FormGroup;
   @Input() submitLabel = 'Save';
@@ -47,7 +49,15 @@ export class DetailViewComponent {
   @Output() delete = new EventEmitter<void>();
 
   onSubmit() {
-    if (this.form.valid && !this.loading && !this.submitDisabled) {
+    if (!this.form.valid) {
+      this.snackBar.open('Please fix the form errors before submitting', 'Close', {
+        duration: this.errorDuration,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+    
+    if (!this.loading && !this.submitDisabled) {
       this.save.emit();
     }
   }
