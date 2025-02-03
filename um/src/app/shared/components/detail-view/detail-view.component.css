@@ -15,6 +15,12 @@ form {
   padding: 16px 0;
 }
 
+.error-message {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
 mat-card-actions {
   padding: 16px;
   gap: 8px;

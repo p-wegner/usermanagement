@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
@@ -14,6 +16,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatDividerModule,
     MatProgressBarModule
   ],
@@ -26,6 +30,7 @@ export class DetailViewComponent {
   @Input() submitLabel = 'Save';
   @Input() showDelete = false;
   @Input() loading = false;
+  @Input() error: string | null = null;
   
   @Output() save = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
