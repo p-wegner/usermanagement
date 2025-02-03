@@ -8,11 +8,14 @@ mat-card {
   margin: 0 auto;
 }
 
+mat-card-content {
+  padding: 16px;
+}
+
 form {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px 0;
 }
 
 mat-card-actions {
