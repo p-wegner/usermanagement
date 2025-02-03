@@ -6,6 +6,6 @@
 - [x] Create permissions list component
 - [x] Create permission detail component
 - [x] Add permission checks to routes
-- [ ] Add permission checks to actions
+- [x] Add permission checks to actions
 - [ ] Integrate with groups functionality
 - [ ] Add permission inheritance logic

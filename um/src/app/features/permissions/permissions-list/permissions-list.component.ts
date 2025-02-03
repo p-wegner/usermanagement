@@ -49,14 +49,31 @@ export class PermissionsListComponent implements OnInit {
   }
 
   onAdd(): void {
-    this.router.navigate(['/permissions/new']);
+    this.permissionsService.hasPermission('permissions.create').subscribe(hasPermission => {
+      if (hasPermission) {
+        this.router.navigate(['/permissions/new']);
+      } else {
+        this.errorHandling.handleError(new Error('You do not have permission to create permissions'));
+      }
+    });
   }
 
   onEdit(permission: Permission): void {
-    this.router.navigate(['/permissions', permission.id]);
+    this.permissionsService.hasPermission('permissions.edit').subscribe(hasPermission => {
+      if (hasPermission) {
+        this.router.navigate(['/permissions', permission.id]);
+      } else {
+        this.errorHandling.handleError(new Error('You do not have permission to edit permissions'));
+      }
+    });
   }
 
   onDelete(permission: Permission): void {
+    this.permissionsService.hasPermission('permissions.delete').subscribe(hasPermission => {
+      if (!hasPermission) {
+        this.errorHandling.handleError(new Error('You do not have permission to delete permissions'));
+        return;
+      }
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: 'Delete Permission',
