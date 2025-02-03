@@ -1,11 +1,8 @@
 :host {
   display: block;
-  padding: 24px;
-}
-
-.detail-view {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 24px auto;
+  padding: 0 16px;
 }
 
 mat-card-content {
