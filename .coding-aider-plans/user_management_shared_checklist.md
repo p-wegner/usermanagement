@@ -6,17 +6,22 @@
   - [x] Filtering
   - [x] Pagination
   - [x] Selection
+  - [x] Sorting
+  - [x] Actions
 - [x] Implement search component
   - [x] Search input
   - [x] Filter options
   - [x] Clear button
+  - [x] Debounced search
 - [x] Implement detail view component
   - [x] Form layout
   - [x] Validation
   - [x] Actions
+  - [x] Loading state
 - [x] Implement confirmation dialog
   - [x] Dialog layout
+  - [x] Configurable messages
   - [x] Actions
 - [x] Create shared services
-  - [x] Error handling
-  - [x] Loading state
+  - [x] Error handling with snackbar
+  - [x] Loading state management
