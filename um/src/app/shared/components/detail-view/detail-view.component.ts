@@ -29,13 +29,18 @@ export class DetailViewComponent {
   @Input() form!: FormGroup;
   @Input() showDelete = false;
   @Input() loading = false;
-  @Input() submitLabel = 'Confirm';
+  @Input() submitLabel = 'Save';
   @Input() cancelLabel = 'Cancel';
   @Input() showTabs = true;
+  @Input() submitDisabled = false;
 
   @Output() save = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
+
+  get isFormValid(): boolean {
+    return this.form.valid && !this.loading && !this.submitDisabled;
+  }
 
   @ContentChild('basicData') basicDataTemplate?: TemplateRef<any>;
   @ContentChild('permissions') permissionsTemplate?: TemplateRef<any>;
