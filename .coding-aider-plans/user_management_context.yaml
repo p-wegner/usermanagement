@@ -26,3 +26,9 @@ files:
   readOnly: false
 - path: um/src/app/features/users/users.service.ts
   readOnly: false
+- path: um/src/app/features/groups/groups.module.ts
+  readOnly: false
+- path: um/src/app/features/groups/groups-routing.module.ts
+  readOnly: false
+- path: um/src/app/features/groups/groups.service.ts
+  readOnly: false
