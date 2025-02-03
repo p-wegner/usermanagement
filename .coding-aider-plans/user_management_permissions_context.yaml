@@ -1,0 +1,20 @@
+---
+files:
+- path: um/src/app/features/permissions/permissions.module.ts
+  readOnly: false
+- path: um/src/app/features/permissions/permissions-routing.module.ts
+  readOnly: false
+- path: um/src/app/features/permissions/permissions.service.ts
+  readOnly: false
+- path: um/src/app/features/permissions/permissions-list/permissions-list.component.ts
+  readOnly: false
+- path: um/src/app/features/permissions/permissions-list/permissions-list.component.html
+  readOnly: false
+- path: um/src/app/features/permissions/permissions-list/permissions-list.component.css
+  readOnly: false
+- path: um/src/app/features/permissions/permission-detail/permission-detail.component.ts
+  readOnly: false
+- path: um/src/app/features/permissions/permission-detail/permission-detail.component.html
+  readOnly: false
+- path: um/src/app/features/permissions/permission-detail/permission-detail.component.css
+  readOnly: false

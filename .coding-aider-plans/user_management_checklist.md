@@ -19,6 +19,7 @@
   - [x] Add validation
   - [x] Add permissions management to groups
 - [ ] Complete permissions management implementation
+  - [Subplan: Permissions Management](user_management_permissions.md)
 - [x] Add global error handling
 - [x] Add loading states
 - [ ] Test responsive design
