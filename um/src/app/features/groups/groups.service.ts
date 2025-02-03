@@ -30,6 +30,18 @@ export class GroupsService {
     return of(this.groups);
   }
 
+  getAvailablePermissions(): Observable<Permission[]> {
+    // TODO: Replace with actual API call
+    return of([
+      { id: '1', name: 'user.create', description: 'Create new users' },
+      { id: '2', name: 'user.edit', description: 'Edit existing users' },
+      { id: '3', name: 'user.delete', description: 'Delete users' },
+      { id: '4', name: 'group.create', description: 'Create new groups' },
+      { id: '5', name: 'group.edit', description: 'Edit existing groups' },
+      { id: '6', name: 'group.delete', description: 'Delete groups' }
+    ]);
+  }
+
   getGroup(id: string): Observable<PermissionGroup | undefined> {
     // TODO: Replace with actual API call
     return of(this.groups.find(group => group.id === id));

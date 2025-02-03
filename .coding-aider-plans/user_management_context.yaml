@@ -42,3 +42,5 @@ files:
   readOnly: false
 - path: um/src/app/features/groups/group-detail/group-detail.component.css
   readOnly: false
+- path: um/src/app/features/groups/group-detail/group-detail.component.ts
+  readOnly: false

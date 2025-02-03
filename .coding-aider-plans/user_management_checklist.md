@@ -17,7 +17,7 @@
   - [x] Implement groups service
   - [x] Complete group forms
   - [x] Add validation
-  - [ ] Add permissions management to groups
+  - [x] Add permissions management to groups
 - [ ] Complete permissions management implementation
 - [x] Add global error handling
 - [x] Add loading states
