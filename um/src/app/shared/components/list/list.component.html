@@ -4,20 +4,13 @@
       <mat-spinner></mat-spinner>
     </div>
   }
-  <mat-form-field class="filter-field">
-    <mat-label>Filter</mat-label>
-    <input matInput 
-           [value]="filterValue"
-           (input)="onFilterChange($event)"
-           placeholder="Type to filter...">
-    <button *ngIf="filterValue" 
-            matSuffix 
-            mat-icon-button 
-            aria-label="Clear" 
-            (click)="clearFilter()">
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
+  
+  <app-search
+    [placeholder]="'Search...'"
+    [filterOptions]="searchFilters"
+    (search)="onSearchChange($event)"
+    (filtersChange)="onFiltersChange($event)">
+  </app-search>
 
   <table mat-table [dataSource]="items" matSort (matSortChange)="onSortChange($event)" class="mat-elevation-z2">
     <!-- Checkbox Column -->

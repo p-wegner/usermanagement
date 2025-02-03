@@ -31,7 +31,8 @@ export interface Column {
     MatButtonModule,
     MatCheckboxModule,
     MatSortModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    SearchComponent
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.css'
