@@ -41,13 +41,13 @@ export class PermissionDetailComponent implements OnInit {
   }
 
   private loadPermission(id: string): void {
-    this.loadingService.show();
+    this.loadingService.startLoading();
     this.permissionsService.getPermission(id).subscribe({
       next: (permission) => {
         if (permission) {
           this.permissionForm.patchValue(permission);
         }
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       },
       error: (error) => {
         this.errorHandling.handleError(error);

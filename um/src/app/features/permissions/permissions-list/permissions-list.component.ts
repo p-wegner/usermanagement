@@ -35,11 +35,11 @@ export class PermissionsListComponent implements OnInit {
   }
 
   private loadPermissions(): void {
-    this.loadingService.show();
+    this.loadingService.startLoading();
     this.permissionsService.getPermissions().subscribe({
       next: (permissions) => {
         this.permissions = permissions;
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       },
       error: (error) => {
         this.errorHandling.handleError(error);
