@@ -28,7 +28,7 @@
       Delete
     </button>
     <button mat-raised-button color="primary" type="submit"
-            [disabled]="!form.valid || loading"
+            [disabled]="!form.valid || loading || submitDisabled"
             (click)="onSubmit()">
       {{submitLabel}}
     </button>
