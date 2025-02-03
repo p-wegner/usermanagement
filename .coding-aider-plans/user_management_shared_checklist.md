@@ -10,10 +10,10 @@
   - [x] Search input
   - [x] Filter options
   - [x] Clear button
-- [ ] Implement detail view component
-  - [ ] Form layout
-  - [ ] Validation
-  - [ ] Actions
+- [x] Implement detail view component
+  - [x] Form layout
+  - [x] Validation
+  - [x] Actions
 - [ ] Implement confirmation dialog
   - [ ] Dialog layout
   - [ ] Actions
