@@ -34,6 +34,7 @@ export class DetailViewComponent {
   @Input() loading = false;
   @Input() error: string | null = null;
   @Input() submitDisabled = false;
+  @Input() deleteDisabled = false;
   
   @Output() save = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
@@ -52,7 +53,7 @@ export class DetailViewComponent {
   }
 
   onDelete() {
-    if (!this.loading && !this.submitDisabled) {
+    if (!this.loading && !this.submitDisabled && !this.deleteDisabled) {
       this.delete.emit();
     }
   }
