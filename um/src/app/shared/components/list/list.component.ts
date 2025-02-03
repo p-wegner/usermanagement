@@ -7,10 +7,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { SelectionModel } from '@angular/cdk/collections';
 
 export interface Column {
   key: string;
   label: string;
+  sortable?: boolean;
 }
 
 @Component({
@@ -24,7 +27,8 @@ export interface Column {
     MatInputModule,
     MatIconModule,
     MatButtonModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatSortModule
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.css'
@@ -43,9 +47,10 @@ export class ListComponent<T> implements OnInit {
   @Output() rowClick = new EventEmitter<T>();
   @Output() edit = new EventEmitter<T>();
   @Output() delete = new EventEmitter<T>();
+  @Output() sortChange = new EventEmitter<Sort>();
 
   displayedColumns: string[] = [];
-  selectedItems: T[] = [];
+  selection = new SelectionModel<T>(true, []);
   filterValue = '';
 
   ngOnInit() {
@@ -71,18 +76,32 @@ export class ListComponent<T> implements OnInit {
     this.rowClick.emit(item);
   }
 
-  toggleSelection(item: T) {
-    const index = this.selectedItems.indexOf(item);
-    if (index === -1) {
-      this.selectedItems.push(item);
+  onSortChange(sort: Sort) {
+    this.sortChange.emit(sort);
+  }
+
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.items.length;
+    return numSelected === numRows && numRows > 0;
+  }
+
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
     } else {
-      this.selectedItems.splice(index, 1);
+      this.selection.select(...this.items);
     }
-    this.selectionChange.emit(this.selectedItems);
+    this.selectionChange.emit(this.selection.selected);
+  }
+
+  toggleSelection(item: T) {
+    this.selection.toggle(item);
+    this.selectionChange.emit(this.selection.selected);
   }
 
   isSelected(item: T): boolean {
-    return this.selectedItems.includes(item);
+    return this.selection.isSelected(item);
   }
 
   clearFilter() {
