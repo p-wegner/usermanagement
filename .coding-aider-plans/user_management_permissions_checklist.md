@@ -7,5 +7,7 @@
 - [x] Create permission detail component
 - [x] Add permission checks to routes
 - [x] Add permission checks to actions
-- [ ] Integrate with groups functionality
-- [ ] Add permission inheritance logic
+- [x] Integrate with groups functionality
+- [x] Add permission inheritance logic
+- [ ] Add permission inheritance visualization
+- [ ] Implement permission conflict resolution

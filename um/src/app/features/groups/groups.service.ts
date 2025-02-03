@@ -33,13 +33,38 @@ export class GroupsService {
   getAvailablePermissions(): Observable<Permission[]> {
     // TODO: Replace with actual API call
     return of([
-      { id: '1', name: 'user.create', description: 'Create new users' },
-      { id: '2', name: 'user.edit', description: 'Edit existing users' },
-      { id: '3', name: 'user.delete', description: 'Delete users' },
-      { id: '4', name: 'group.create', description: 'Create new groups' },
-      { id: '5', name: 'group.edit', description: 'Edit existing groups' },
-      { id: '6', name: 'group.delete', description: 'Delete groups' }
+      { id: '1', name: 'user.create', description: 'Create new users', groups: [], inherited: false },
+      { id: '2', name: 'user.edit', description: 'Edit existing users', groups: [], inherited: false },
+      { id: '3', name: 'user.delete', description: 'Delete users', groups: [], inherited: false },
+      { id: '4', name: 'group.create', description: 'Create new groups', groups: [], inherited: false },
+      { id: '5', name: 'group.edit', description: 'Edit existing groups', groups: [], inherited: false },
+      { id: '6', name: 'group.delete', description: 'Delete groups', groups: [], inherited: false }
     ]);
+  }
+
+  assignPermissionsToGroup(groupId: string, permissions: Permission[]): Observable<void> {
+    // TODO: Replace with actual API call
+    const groupIndex = this.groups.findIndex(g => g.id === groupId);
+    if (groupIndex >= 0) {
+      this.groups[groupIndex].permissions = permissions;
+      return of(void 0);
+    }
+    throw new Error('Group not found');
+  }
+
+  getInheritedPermissions(groupId: string): Observable<Permission[]> {
+    // TODO: Replace with actual API call
+    const group = this.groups.find(g => g.id === groupId);
+    if (!group || !group.parentGroupId) {
+      return of([]);
+    }
+    
+    const parentGroup = this.groups.find(g => g.id === group.parentGroupId);
+    if (!parentGroup) {
+      return of([]);
+    }
+
+    return of(parentGroup.permissions.map(p => ({ ...p, inherited: true })));
   }
 
   getGroup(id: string): Observable<PermissionGroup | undefined> {

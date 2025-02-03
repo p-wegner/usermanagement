@@ -40,7 +40,25 @@ export class GroupDetailComponent implements OnInit {
     if (this.groupId) {
       this.isNewGroup = false;
       this.loadGroup(this.groupId);
+      this.loadInheritedPermissions(this.groupId);
     }
+  }
+
+  private loadInheritedPermissions(groupId: string): void {
+    this.loadingService.show();
+    this.groupsService.getInheritedPermissions(groupId).subscribe({
+      next: (permissions) => {
+        this.availablePermissions = this.availablePermissions.map(p => {
+          const inherited = permissions.find(ip => ip.id === p.id);
+          return inherited ? { ...p, inherited: true } : p;
+        });
+        this.loadingService.hide();
+      },
+      error: (error) => {
+        this.errorHandling.handleError(error);
+        this.loadingService.hide();
+      }
+    });
   }
 
   private loadAvailablePermissions(): void {
