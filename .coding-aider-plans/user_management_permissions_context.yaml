@@ -18,3 +18,5 @@ files:
   readOnly: false
 - path: um/src/app/features/permissions/permission-detail/permission-detail.component.css
   readOnly: false
+- path: um/src/app/shared/guards/permission.guard.ts
+  readOnly: false

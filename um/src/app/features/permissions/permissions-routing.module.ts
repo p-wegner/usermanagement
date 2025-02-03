@@ -6,15 +6,21 @@ import { PermissionDetailComponent } from './permission-detail/permission-detail
 const routes: Routes = [
   {
     path: '',
-    component: PermissionsListComponent
+    component: PermissionsListComponent,
+    canActivate: [PermissionGuard],
+    data: { requiredPermission: 'permissions.view' }
   },
   {
     path: 'new',
-    component: PermissionDetailComponent
+    component: PermissionDetailComponent,
+    canActivate: [PermissionGuard],
+    data: { requiredPermission: 'permissions.create' }
   },
   {
     path: ':id',
-    component: PermissionDetailComponent
+    component: PermissionDetailComponent,
+    canActivate: [PermissionGuard],
+    data: { requiredPermission: 'permissions.edit' }
   }
 ];
 

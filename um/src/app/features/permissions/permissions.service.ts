@@ -55,4 +55,10 @@ export class PermissionsService {
     }
     throw new Error('Permission not found');
   }
+
+  hasPermission(permissionName: string): Observable<boolean> {
+    // TODO: Replace with actual API call that checks user's permissions
+    // For now, return true to allow access
+    return of(true);
+  }
 }
