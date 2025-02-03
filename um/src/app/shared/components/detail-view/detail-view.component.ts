@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-detail-view',
@@ -21,7 +22,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatDividerModule,
     MatProgressBarModule,
-    MatIconModule
+    MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './detail-view.component.html',
   styleUrl: './detail-view.component.css'
@@ -35,6 +37,10 @@ export class DetailViewComponent {
   @Input() error: string | null = null;
   @Input() submitDisabled = false;
   @Input() deleteDisabled = false;
+  @Input() cancelDisabled = false;
+  @Input() submitTooltip = '';
+  @Input() deleteTooltip = '';
+  @Input() cancelTooltip = '';
   
   @Output() save = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
@@ -47,13 +53,13 @@ export class DetailViewComponent {
   }
 
   onCancel() {
-    if (!this.loading) {
+    if (!this.loading && !this.cancelDisabled) {
       this.cancel.emit();
     }
   }
 
   onDelete() {
-    if (!this.loading && !this.submitDisabled && !this.deleteDisabled) {
+    if (!this.loading && !this.deleteDisabled) {
       this.delete.emit();
     }
   }

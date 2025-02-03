@@ -18,7 +18,8 @@
   
   <mat-card-actions align="end">
     <button mat-button type="button" 
-            [disabled]="loading || submitDisabled"
+            [disabled]="loading || cancelDisabled"
+            [matTooltip]="cancelTooltip"
             (click)="onCancel()">
       <mat-icon>close</mat-icon>
       Cancel
@@ -26,12 +27,14 @@
     <button mat-button color="warn" type="button" 
             *ngIf="showDelete"
             [disabled]="loading || deleteDisabled"
+            [matTooltip]="deleteTooltip"
             (click)="onDelete()">
       <mat-icon>delete</mat-icon>
       Delete
     </button>
     <button mat-raised-button color="primary" type="submit"
             [disabled]="!form.valid || loading || submitDisabled"
+            [matTooltip]="submitTooltip"
             (click)="onSubmit()">
       <mat-icon>save</mat-icon>
       {{submitLabel}}
