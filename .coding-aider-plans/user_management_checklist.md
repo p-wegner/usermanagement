@@ -7,7 +7,7 @@
   - [x] Create users module and routing
   - [x] Create users list component
   - [x] Create user detail component
-  - [ ] Implement user service
+  - [x] Implement user service
   - [ ] Complete user forms
   - [ ] Add validation
 - [ ] Complete groups management implementation
