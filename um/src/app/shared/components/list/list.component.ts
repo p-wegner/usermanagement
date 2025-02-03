@@ -1,10 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 export interface Column {
   key: string;
@@ -18,59 +20,73 @@ export interface Column {
     CommonModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCheckboxModule
   ],
-  template: `
-    <table mat-table [dataSource]="data">
-      <!-- Dynamic columns -->
-      <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
-        <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
-        <td mat-cell *matCellDef="let element">{{ element[column.key] }}</td>
-      </ng-container>
-
-      <!-- Actions column -->
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-icon-button (click)="edit.emit(element)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button (click)="delete.emit(element)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <mat-paginator
-      [length]="totalItems"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 25, 100]"
-      (page)="pageChange.emit($event)">
-    </mat-paginator>
-  `,
-  styles: [`
-    table {
-      width: 100%;
-    }
-  `]
+  templateUrl: './list.component.html',
+  styleUrl: './list.component.css'
 })
-export class ListComponent {
+export class ListComponent<T> implements OnInit {
+  @Input() items: T[] = [];
   @Input() columns: Column[] = [];
-  @Input() data: any[] = [];
   @Input() totalItems = 0;
   @Input() pageSize = 10;
+  @Input() pageSizeOptions = [5, 10, 25, 50];
+  @Input() selectable = false;
 
-  @Output() edit = new EventEmitter<any>();
-  @Output() delete = new EventEmitter<any>();
-  @Output() pageChange = new EventEmitter<any>();
+  @Output() pageChange = new EventEmitter<PageEvent>();
+  @Output() filterChange = new EventEmitter<string>();
+  @Output() selectionChange = new EventEmitter<T[]>();
+  @Output() rowClick = new EventEmitter<T>();
+  @Output() edit = new EventEmitter<T>();
+  @Output() delete = new EventEmitter<T>();
 
-  get displayedColumns(): string[] {
-    return [...this.columns.map(col => col.key), 'actions'];
+  displayedColumns: string[] = [];
+  selectedItems: T[] = [];
+  filterValue = '';
+
+  ngOnInit() {
+    const columnKeys = this.columns.map(col => col.key);
+    if (this.selectable) {
+      columnKeys.unshift('select');
+    }
+    columnKeys.push('actions');
+    this.displayedColumns = columnKeys;
+  }
+
+  onFilterChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.filterValue = input.value;
+    this.filterChange.emit(this.filterValue);
+  }
+
+  onPageChange(event: PageEvent) {
+    this.pageChange.emit(event);
+  }
+
+  onRowClick(item: T) {
+    this.rowClick.emit(item);
+  }
+
+  toggleSelection(item: T) {
+    const index = this.selectedItems.indexOf(item);
+    if (index === -1) {
+      this.selectedItems.push(item);
+    } else {
+      this.selectedItems.splice(index, 1);
+    }
+    this.selectionChange.emit(this.selectedItems);
+  }
+
+  isSelected(item: T): boolean {
+    return this.selectedItems.includes(item);
+  }
+
+  clearFilter() {
+    this.filterValue = '';
+    this.filterChange.emit('');
   }
 }
