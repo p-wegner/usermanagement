@@ -19,3 +19,22 @@ mat-card-actions {
   padding: 1rem;
   gap: 1rem;
 }
+
+.permissions-section {
+  margin-top: 2rem;
+}
+
+.permissions-section h3 {
+  margin-bottom: 1rem;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.permission-description {
+  color: rgba(0, 0, 0, 0.54);
+  margin-left: 0.5rem;
+}
+
+mat-selection-list {
+  max-height: 400px;
+  overflow-y: auto;
+}

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Group } from '../../../shared/interfaces/group.interface';
+import { Permission, PermissionGroup } from '../../../shared/interfaces/permission.interface';
 import { GroupsService } from '../groups.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
@@ -15,6 +15,7 @@ import { ErrorHandlingService } from '../../../shared/services/error-handling.se
 export class GroupDetailComponent implements OnInit {
   groupForm: FormGroup;
   isNewGroup = true;
+  availablePermissions: Permission[] = [];
   private groupId: string | null = null;
 
   constructor(
@@ -28,16 +29,32 @@ export class GroupDetailComponent implements OnInit {
   ) {
     this.groupForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['']
+      description: [''],
+      permissions: [[]]
     });
   }
 
   ngOnInit(): void {
+    this.loadAvailablePermissions();
     this.groupId = this.route.snapshot.paramMap.get('id');
     if (this.groupId) {
       this.isNewGroup = false;
       this.loadGroup(this.groupId);
     }
+  }
+
+  private loadAvailablePermissions(): void {
+    this.loadingService.show();
+    this.groupsService.getAvailablePermissions().subscribe({
+      next: (permissions) => {
+        this.availablePermissions = permissions;
+        this.loadingService.hide();
+      },
+      error: (error) => {
+        this.errorHandling.handleError(error);
+        this.loadingService.hide();
+      }
+    });
   }
 
   private loadGroup(id: string): void {
