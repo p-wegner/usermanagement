@@ -6,10 +6,10 @@
   - [x] Filtering
   - [x] Pagination
   - [x] Selection
-- [ ] Implement search component
-  - [ ] Search input
-  - [ ] Filter options
-  - [ ] Clear button
+- [x] Implement search component
+  - [x] Search input
+  - [x] Filter options
+  - [x] Clear button
 - [ ] Implement detail view component
   - [ ] Form layout
   - [ ] Validation
