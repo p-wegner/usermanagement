@@ -1,11 +1,11 @@
 [Coding Aider Plan - Checklist]
 
-- [ ] Create shared module
+- [x] Create shared module
 - [ ] Implement list component
-  - [ ] Basic list layout
-  - [ ] Filtering
-  - [ ] Pagination
-  - [ ] Selection
+  - [x] Basic list layout
+  - [x] Filtering
+  - [x] Pagination
+  - [x] Selection
 - [ ] Implement search component
   - [ ] Search input
   - [ ] Filter options
