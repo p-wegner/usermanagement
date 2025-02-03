@@ -1,9 +1,15 @@
 [Coding Aider Plan - Checklist]
 
-- [ ] Set up routing structure
+- [x] Set up routing structure
 - [ ] Configure Angular Material
 - [x] Complete shared components implementation
 - [ ] Complete users management implementation
+  - [x] Create users module and routing
+  - [x] Create users list component
+  - [x] Create user detail component
+  - [ ] Implement user service
+  - [ ] Complete user forms
+  - [ ] Add validation
 - [ ] Complete groups management implementation
 - [ ] Complete permissions management implementation
 - [ ] Add global error handling
