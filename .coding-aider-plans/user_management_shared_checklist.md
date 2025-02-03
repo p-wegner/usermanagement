@@ -1,0 +1,24 @@
+[Coding Aider Plan - Checklist]
+
+- [ ] Create shared module
+- [ ] Implement list component
+  - [ ] Basic list layout
+  - [ ] Filtering
+  - [ ] Pagination
+  - [ ] Selection
+- [ ] Implement search component
+  - [ ] Search input
+  - [ ] Filter options
+  - [ ] Clear button
+- [ ] Implement detail view component
+  - [ ] Form layout
+  - [ ] Validation
+  - [ ] Actions
+- [ ] Implement confirmation dialog
+  - [ ] Dialog layout
+  - [ ] Actions
+- [ ] Create shared services
+  - [ ] Error handling
+  - [ ] Loading state
+- [ ] Add unit tests
+- [ ] Add documentation

@@ -1,0 +1,14 @@
+---
+files:
+- path: um/src/app/app.routes.ts
+  readOnly: false
+- path: um/src/app/app.component.ts
+  readOnly: false
+- path: um/src/app/app.component.html
+  readOnly: false
+- path: um/src/app/app.component.css
+  readOnly: false
+- path: um/src/app/app.config.ts
+  readOnly: false
+- path: um/package.json
+  readOnly: false

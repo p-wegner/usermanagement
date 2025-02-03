@@ -1,0 +1,14 @@
+---
+files:
+- path: um/src/app/shared/components/list/list.component.ts
+  readOnly: false
+- path: um/src/app/shared/components/search/search.component.ts
+  readOnly: false
+- path: um/src/app/shared/components/detail-view/detail-view.component.ts
+  readOnly: false
+- path: um/src/app/shared/components/confirmation-dialog/confirmation-dialog.component.ts
+  readOnly: false
+- path: um/src/app/shared/services/error-handling.service.ts
+  readOnly: false
+- path: um/src/app/shared/services/loading.service.ts
+  readOnly: false
