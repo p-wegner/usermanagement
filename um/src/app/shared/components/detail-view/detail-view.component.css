@@ -1,35 +1,32 @@
-.detail-view {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+:host {
+  display: block;
   padding: 24px;
+}
+
+.detail-view {
   max-width: 800px;
   margin: 0 auto;
 }
 
-header {
-  margin-bottom: 24px;
-}
-
-h2 {
-  margin: 0;
-  font-weight: 500;
+mat-card-content {
+  padding: 24px 16px;
 }
 
 .tab-content {
   padding: 24px 0;
 }
 
-footer {
-  margin-top: auto;
-  padding-top: 24px;
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
 form {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  gap: 16px;
+}
+
+footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
