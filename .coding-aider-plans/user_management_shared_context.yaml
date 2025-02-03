@@ -6,6 +6,10 @@ files:
   readOnly: false
 - path: um/src/app/shared/components/detail-view/detail-view.component.ts
   readOnly: false
+- path: um/src/app/shared/components/detail-view/detail-view.component.html
+  readOnly: false
+- path: um/src/app/shared/components/detail-view/detail-view.component.css
+  readOnly: false
 - path: um/src/app/shared/components/confirmation-dialog/confirmation-dialog.component.ts
   readOnly: false
 - path: um/src/app/shared/services/error-handling.service.ts

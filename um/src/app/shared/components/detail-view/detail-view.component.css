@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  max-width: 800px;
+  margin: 16px auto;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+mat-form-field {
+  width: 100%;
+}
