@@ -1,7 +1,7 @@
 [Coding Aider Plan - Checklist]
 
 - [x] Set up routing structure
-- [ ] Configure Angular Material
+- [x] Configure Angular Material
 - [x] Complete shared components implementation
 - [ ] Complete users management implementation
   - [x] Create users module and routing
