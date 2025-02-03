@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ContentChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -29,12 +29,17 @@ export class DetailViewComponent {
   @Input() form!: FormGroup;
   @Input() showDelete = false;
   @Input() loading = false;
-  @Input() submitLabel = 'Save';
+  @Input() submitLabel = 'Confirm';
   @Input() cancelLabel = 'Cancel';
+  @Input() showTabs = true;
 
   @Output() save = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
+
+  @ContentChild('basicData') basicDataTemplate?: TemplateRef<any>;
+  @ContentChild('permissions') permissionsTemplate?: TemplateRef<any>;
+  @ContentChild('includedIn') includedInTemplate?: TemplateRef<any>;
 
   onSubmit(): void {
     if (this.form.valid && !this.loading) {
