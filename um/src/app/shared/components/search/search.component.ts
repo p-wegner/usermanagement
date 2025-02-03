@@ -29,7 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
               matSuffix
               mat-icon-button
               aria-label="Clear"
-              (click)="clear()">
+              (click)="clearSearch()">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
@@ -47,11 +47,11 @@ export class SearchComponent {
 
   searchTerm = '';
 
-  onSearchChange(term: string) {
+  onSearchChange(term: string): void {
     this.search.emit(term);
   }
 
-  clear() {
+  clearSearch(): void {
     this.searchTerm = '';
     this.search.emit('');
   }
