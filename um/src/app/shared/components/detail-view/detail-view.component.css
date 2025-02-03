@@ -10,13 +10,11 @@ form {
   padding: 16px 0;
 }
 
-.actions {
-  display: flex;
-  justify-content: flex-end;
+mat-card-actions {
+  padding: 16px;
   gap: 8px;
-  margin-top: 16px;
 }
 
-mat-card-content {
-  padding: 16px;
+mat-card-footer {
+  overflow: hidden;
 }
