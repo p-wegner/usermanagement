@@ -9,5 +9,5 @@
 - [x] Add permission checks to actions
 - [x] Integrate with groups functionality
 - [x] Add permission inheritance logic
-- [ ] Add permission inheritance visualization
+- [x] Add permission inheritance visualization
 - [ ] Implement permission conflict resolution

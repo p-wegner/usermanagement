@@ -1,0 +1,19 @@
+<mat-card *ngIf="inheritanceTree">
+  <mat-card-header>
+    <mat-card-title>Permission Inheritance</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="inheritance-tree">
+      <div class="node permission-node">
+        <mat-icon>security</mat-icon>
+        {{ inheritanceTree.name }}
+      </div>
+      <div class="children" *ngIf="inheritanceTree.children.length">
+        <div class="node group-node" *ngFor="let group of inheritanceTree.children">
+          <mat-icon>group_work</mat-icon>
+          {{ group.name }}
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

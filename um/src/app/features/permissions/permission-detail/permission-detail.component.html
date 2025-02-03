@@ -34,3 +34,8 @@
     </mat-card-actions>
   </form>
 </mat-card>
+
+<app-permission-inheritance 
+  *ngIf="!isNewPermission && permissionForm.value" 
+  [permission]="permissionForm.value">
+</app-permission-inheritance>

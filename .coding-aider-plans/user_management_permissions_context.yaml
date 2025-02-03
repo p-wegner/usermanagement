@@ -20,3 +20,9 @@ files:
   readOnly: false
 - path: um/src/app/shared/guards/permission.guard.ts
   readOnly: false
+- path: um/src/app/features/permissions/permission-inheritance/permission-inheritance.component.ts
+  readOnly: false
+- path: um/src/app/features/permissions/permission-inheritance/permission-inheritance.component.html
+  readOnly: false
+- path: um/src/app/features/permissions/permission-inheritance/permission-inheritance.component.css
+  readOnly: false

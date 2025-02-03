@@ -14,12 +14,14 @@ import { MatListModule } from '@angular/material/list';
 import { PermissionsRoutingModule } from './permissions-routing.module';
 import { PermissionsListComponent } from './permissions-list/permissions-list.component';
 import { PermissionDetailComponent } from './permission-detail/permission-detail.component';
+import { PermissionInheritanceComponent } from './permission-inheritance/permission-inheritance.component';
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
     PermissionsListComponent,
-    PermissionDetailComponent
+    PermissionDetailComponent,
+    PermissionInheritanceComponent
   ],
   imports: [
     CommonModule,
