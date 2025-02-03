@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface Column {
   key: string;
@@ -28,13 +29,15 @@ export interface Column {
     MatIconModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatSortModule
+    MatSortModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './list.component.html',
   styleUrl: './list.component.css'
 })
 export class ListComponent<T> implements OnInit {
   @Input() items: T[] = [];
+  @Input() loading = false;
   @Input() columns: Column[] = [];
   @Input() totalItems = 0;
   @Input() pageSize = 10;
