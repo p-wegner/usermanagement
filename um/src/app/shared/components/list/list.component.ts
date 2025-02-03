@@ -10,6 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SearchComponent } from '../search/search.component';
 
 export interface Column {
   key: string;
