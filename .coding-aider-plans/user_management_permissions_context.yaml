@@ -1,5 +1,7 @@
 ---
 files:
+- path: um/src/app/shared/services/permission-conflict.service.ts
+  readOnly: false
 - path: um/src/app/features/permissions/permissions.module.ts
   readOnly: false
 - path: um/src/app/features/permissions/permissions-routing.module.ts

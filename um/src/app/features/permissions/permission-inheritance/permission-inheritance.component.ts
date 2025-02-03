@@ -2,11 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Permission } from '../../../shared/interfaces/permission.interface';
 import { PermissionGroup } from '../../../shared/interfaces/permission.interface';
 import { GroupsService } from '../../groups/groups.service';
+import { PermissionConflictService } from '../../../shared/services/permission-conflict.service';
 
 interface InheritanceNode {
   name: string;
   type: 'permission' | 'group';
   children: InheritanceNode[];
+  hasConflicts?: boolean;
 }
 
 @Component({
@@ -18,7 +20,10 @@ export class PermissionInheritanceComponent implements OnInit {
   @Input() permission!: Permission;
   inheritanceTree: InheritanceNode | null = null;
 
-  constructor(private groupsService: GroupsService) {}
+  constructor(
+    private groupsService: GroupsService,
+    private conflictService: PermissionConflictService
+  ) {}
 
   ngOnInit(): void {
     this.buildInheritanceTree();
@@ -30,13 +35,18 @@ export class PermissionInheritanceComponent implements OnInit {
         group.permissions.some(p => p.id === this.permission.id)
       );
 
+      // Check for conflicts in inherited permissions
+      const allPermissions = relatedGroups.flatMap(g => g.permissions);
+      const conflicts = this.conflictService.detectConflicts(allPermissions);
+      
       this.inheritanceTree = {
         name: this.permission.name,
         type: 'permission',
         children: relatedGroups.map(group => ({
           name: group.name,
           type: 'group',
-          children: []
+          children: [],
+          hasConflicts: conflicts.has(this.permission.name)
         }))
       };
     });

@@ -10,4 +10,4 @@
 - [x] Integrate with groups functionality
 - [x] Add permission inheritance logic
 - [x] Add permission inheritance visualization
-- [ ] Implement permission conflict resolution
+- [x] Implement permission conflict resolution

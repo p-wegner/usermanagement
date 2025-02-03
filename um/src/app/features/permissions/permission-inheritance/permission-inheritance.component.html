@@ -9,9 +9,14 @@
         {{ inheritanceTree.name }}
       </div>
       <div class="children" *ngIf="inheritanceTree.children.length">
-        <div class="node group-node" *ngFor="let group of inheritanceTree.children">
+        <div class="node group-node" *ngFor="let group of inheritanceTree.children"
+             [class.has-conflicts]="group.hasConflicts">
           <mat-icon>group_work</mat-icon>
           {{ group.name }}
+          <mat-icon *ngIf="group.hasConflicts" 
+                    class="conflict-icon" 
+                    matTooltip="This permission has conflicts with other groups"
+                    color="warn">warning</mat-icon>
         </div>
       </div>
     </div>
