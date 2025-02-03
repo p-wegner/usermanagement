@@ -32,3 +32,13 @@ files:
   readOnly: false
 - path: um/src/app/features/groups/groups.service.ts
   readOnly: false
+- path: um/src/app/features/groups/groups-list/groups-list.component.ts
+  readOnly: false
+- path: um/src/app/features/groups/groups-list/groups-list.component.html
+  readOnly: false
+- path: um/src/app/features/groups/group-detail/group-detail.component.ts
+  readOnly: false
+- path: um/src/app/features/groups/group-detail/group-detail.component.html
+  readOnly: false
+- path: um/src/app/features/groups/group-detail/group-detail.component.css
+  readOnly: false
