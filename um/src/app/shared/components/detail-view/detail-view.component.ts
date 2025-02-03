@@ -31,6 +31,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class DetailViewComponent {
   private readonly errorDuration = 5000; // 5 seconds
+
+  constructor(private snackBar: MatSnackBar) {}
   @Input() title = '';
   @Input() form!: FormGroup;
   @Input() submitLabel = 'Save';
