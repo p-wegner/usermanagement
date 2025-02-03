@@ -14,9 +14,9 @@
   - [x] Form layout
   - [x] Validation
   - [x] Actions
-- [ ] Implement confirmation dialog
-  - [ ] Dialog layout
-  - [ ] Actions
+- [x] Implement confirmation dialog
+  - [x] Dialog layout
+  - [x] Actions
 - [ ] Create shared services
   - [ ] Error handling
   - [ ] Loading state
