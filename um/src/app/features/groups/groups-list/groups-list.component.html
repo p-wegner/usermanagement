@@ -1,0 +1,9 @@
+<app-list
+  [title]="'Groups'"
+  [items]="groups"
+  [columns]="columns"
+  [loading]="loading"
+  (add)="onAddGroup()"
+  (edit)="onEditGroup($event)"
+  (delete)="onDeleteGroup($event)">
+</app-list>
