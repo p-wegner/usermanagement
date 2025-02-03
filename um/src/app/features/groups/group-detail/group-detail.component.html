@@ -28,13 +28,13 @@
       <div class="permissions-section">
         <h3>Permissions</h3>
         <mat-selection-list formControlName="permissions">
-          <mat-list-option *ngFor="let permission of availablePermissions" 
+          <mat-list-option @for="let permission of availablePermissions" 
                           [value]="permission"
                           [disabled]="permission.inherited">
             <div class="permission-item">
               {{ permission.name }}
               <small class="permission-description">{{ permission.description }}</small>
-              <mat-icon *ngIf="permission.inherited" 
+              <mat-icon @if="permission.inherited" 
                        matTooltip="Inherited from parent group"
                        class="inherited-icon">
                 subdirectory_arrow_right

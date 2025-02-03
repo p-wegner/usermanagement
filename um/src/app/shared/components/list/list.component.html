@@ -30,7 +30,7 @@
     </ng-container>
 
     <!-- Dynamic Columns -->
-    <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
+    <ng-container @for="let column of columns" [matColumnDef]="column.key">
       <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.key : ''">
         {{column.label}}
       </th>

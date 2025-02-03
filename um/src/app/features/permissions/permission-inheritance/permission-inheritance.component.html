@@ -1,4 +1,4 @@
-<mat-card *ngIf="inheritanceTree">
+<mat-card @if="inheritanceTree">
   <mat-card-header>
     <mat-card-title>Permission Inheritance</mat-card-title>
   </mat-card-header>
@@ -8,12 +8,12 @@
         <mat-icon>security</mat-icon>
         {{ inheritanceTree.name }}
       </div>
-      <div class="children" *ngIf="inheritanceTree.children.length">
-        <div class="node group-node" *ngFor="let group of inheritanceTree.children"
+      <div class="children" @if="inheritanceTree.children.length">
+        <div class="node group-node" @for="let group of inheritanceTree.children"
              [class.has-conflicts]="group.hasConflicts">
           <mat-icon>group_work</mat-icon>
           {{ group.name }}
-          <mat-icon *ngIf="group.hasConflicts" 
+          <mat-icon @if="group.hasConflicts" 
                     class="conflict-icon" 
                     matTooltip="This permission has conflicts with other groups"
                     color="warn">warning</mat-icon>
