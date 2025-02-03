@@ -2,7 +2,7 @@
 
 - [ ] Set up routing structure
 - [ ] Configure Angular Material
-- [ ] Complete shared components implementation
+- [x] Complete shared components implementation
 - [ ] Complete users management implementation
 - [ ] Complete groups management implementation
 - [ ] Complete permissions management implementation
