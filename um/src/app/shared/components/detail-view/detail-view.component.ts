@@ -1,59 +1,44 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTabsModule } from '@angular/material/tabs';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-detail-view',
   standalone: true,
   imports: [
     CommonModule,
-    MatFormFieldModule,
-    MatInputModule,
+    ReactiveFormsModule,
+    MatCardModule,
     MatButtonModule,
-    MatTabsModule,
-    ReactiveFormsModule
+    MatDividerModule
   ],
   templateUrl: './detail-view.component.html',
   styleUrl: './detail-view.component.css'
 })
 export class DetailViewComponent {
   @Input() title = '';
-  @Input() set data(value: any) {
-    if (value) {
-      this.form.patchValue(value);
-    }
-  }
-
-  @Output() save = new EventEmitter<any>();
+  @Input() form!: FormGroup;
+  @Input() submitLabel = 'Save';
+  @Input() showDelete = false;
+  
+  @Output() save = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
 
-  form: FormGroup;
-
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      name: ['', Validators.required],
-      description: [''],
-      email: ['', [Validators.email]],
-      language: ['']
-    });
-  }
-
-  onSave(): void {
+  onSubmit() {
     if (this.form.valid) {
-      this.save.emit(this.form.value);
+      this.save.emit();
     }
   }
 
-  onCancel(): void {
+  onCancel() {
     this.cancel.emit();
   }
 
-  onDelete(): void {
+  onDelete() {
     this.delete.emit();
   }
 }
