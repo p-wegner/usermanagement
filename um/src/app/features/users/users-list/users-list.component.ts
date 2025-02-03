@@ -4,6 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../shared/interfaces/user.interface';
 import { UsersService } from '../users.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { LoadingService } from '../../../shared/services/loading.service';
+import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
+import { ListColumn } from '../../../shared/components/list/list.component';
 
 @Component({
   selector: 'app-users-list',
@@ -12,11 +15,20 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
 })
 export class UsersListComponent implements OnInit {
   users: User[] = [];
+  loading = false;
+  
+  columns: ListColumn[] = [
+    { key: 'username', label: 'Username' },
+    { key: 'fullName', label: 'Full Name' },
+    { key: 'email', label: 'Email' }
+  ];
 
   constructor(
     private router: Router,
     private usersService: UsersService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private loadingService: LoadingService,
+    private errorHandling: ErrorHandlingService
   ) {}
 
   ngOnInit(): void {
@@ -24,8 +36,16 @@ export class UsersListComponent implements OnInit {
   }
 
   private loadUsers(): void {
-    this.usersService.getUsers().subscribe(users => {
-      this.users = users;
+    this.loading = true;
+    this.usersService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.errorHandling.handleError(error);
+        this.loading = false;
+      }
     });
   }
 
@@ -49,8 +69,15 @@ export class UsersListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.usersService.deleteUser(id).subscribe(() => {
-          this.loadUsers();
+        this.loading = true;
+        this.usersService.deleteUser(id).subscribe({
+          next: () => {
+            this.loadUsers();
+          },
+          error: (error) => {
+            this.errorHandling.handleError(error);
+            this.loading = false;
+          }
         });
       }
     });
