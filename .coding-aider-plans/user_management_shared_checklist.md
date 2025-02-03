@@ -17,8 +17,8 @@
 - [x] Implement confirmation dialog
   - [x] Dialog layout
   - [x] Actions
-- [ ] Create shared services
-  - [ ] Error handling
-  - [ ] Loading state
+- [x] Create shared services
+  - [x] Error handling
+  - [x] Loading state
 - [ ] Add unit tests
 - [ ] Add documentation
