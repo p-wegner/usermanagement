@@ -1,0 +1,56 @@
+.list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.list-header mat-form-field {
+  flex: 1;
+  max-width: 400px;
+  margin-right: 16px;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.item-name {
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.item-description {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+  flex: 1;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+mat-list-option:hover .item-actions {
+  opacity: 1;
+}
+
+mat-selection-list {
+  flex: 1;
+  overflow: auto;
+}
+
+mat-paginator {
+  margin-top: 16px;
+}
