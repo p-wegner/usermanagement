@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Permission, PermissionGroup } from '../../../shared/interfaces/permission.interface';
+import { Group } from '../../../shared/interfaces/group.interface';
 import { GroupsService } from '../groups.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
@@ -60,55 +61,55 @@ export class GroupDetailComponent implements OnInit {
   }
 
   private loadInheritedPermissions(groupId: string): void {
-    this.loadingService.show();
+    this.loadingService.startLoading();
     this.groupsService.getInheritedPermissions(groupId).subscribe({
       next: (permissions) => {
         this.availablePermissions = this.availablePermissions.map(p => {
           const inherited = permissions.find(ip => ip.id === p.id);
           return inherited ? { ...p, inherited: true } : p;
         });
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       },
       error: (error) => {
         this.errorHandling.handleError(error);
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       }
     });
   }
 
   private loadAvailablePermissions(): void {
-    this.loadingService.show();
+    this.loadingService.startLoading();
     this.groupsService.getAvailablePermissions().subscribe({
       next: (permissions) => {
         this.availablePermissions = permissions;
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       },
       error: (error) => {
         this.errorHandling.handleError(error);
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       }
     });
   }
 
   private loadGroup(id: string): void {
-    this.loadingService.show();
+    this.loadingService.startLoading();
     this.groupsService.getGroup(id).subscribe({
       next: (group) => {
         if (group) {
           this.groupForm.patchValue(group);
         }
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       },
       error: (error) => {
         this.errorHandling.handleError(error);
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       }
     });
   }
 
   onSubmit(): void {
     if (this.groupForm.valid) {
-      this.loadingService.show();
+      this.loadingService.startLoading();
       const groupData: Group = this.groupForm.value;
 
       const request = this.isNewGroup ?
@@ -123,11 +124,11 @@ export class GroupDetailComponent implements OnInit {
             { duration: 3000 }
           );
           this.router.navigate(['/groups']);
-          this.loadingService.hide();
+          this.loadingService.stopLoading();
         },
         error: (error) => {
           this.errorHandling.handleError(error);
-          this.loadingService.hide();
+          this.loadingService.stopLoading();
         }
       });
     }
