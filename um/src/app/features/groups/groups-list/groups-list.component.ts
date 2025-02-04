@@ -17,7 +17,7 @@ export class GroupsListComponent implements OnInit {
   groups: Group[] = [];
   loading = false;
   
-  columns: ListColumn[] = [
+  columns: Column[] = [
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' }
   ];
