@@ -5,6 +5,8 @@ import { GroupsService } from '../groups.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
+import { Group } from '../../../shared/interfaces/group.interface';
+import { ListColumn } from '../../../shared/components/list/list.component';
 
 @Component({
   selector: 'app-groups-list',
