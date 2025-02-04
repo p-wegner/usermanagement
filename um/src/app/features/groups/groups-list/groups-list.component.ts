@@ -1,12 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { Group } from '../../../shared/interfaces/group.interface';
 import { GroupsService } from '../groups.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
-import { Column } from '../../../shared/components/list/list.component';
 
 @Component({
   selector: 'app-groups-list',
@@ -16,8 +14,8 @@ import { Column } from '../../../shared/components/list/list.component';
 export class GroupsListComponent implements OnInit {
   groups: Group[] = [];
   loading = false;
-  
-  columns: Column[] = [
+
+  columns: ListColumn[] = [
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' }
   ];
