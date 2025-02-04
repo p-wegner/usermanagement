@@ -6,7 +6,7 @@ import { ConfirmationDialogComponent } from '../../../shared/components/confirma
 import { LoadingService } from '../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
 import { Group } from '../../../shared/interfaces/group.interface';
-import { ListColumn } from '../../../shared/components/list/list.component';
+import { Column } from '../../../shared/components/list/list.component';
 
 @Component({
   selector: 'app-groups-list',
@@ -17,7 +17,7 @@ export class GroupsListComponent implements OnInit {
   groups: Group[] = [];
   loading = false;
 
-  columns: ListColumn[] = [
+  columns: Column[] = [
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' }
   ];
