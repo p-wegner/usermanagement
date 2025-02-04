@@ -1,15 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Permission, PermissionGroup } from '../../../shared/interfaces/permission.interface';
 import { GroupsService } from '../groups.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
+import {MatCard, MatCardActions, MatCardContent, MatCardHeader} from '@angular/material/card';
+import {MatFormField} from '@angular/material/form-field';
+import {MatListOption, MatSelectionList} from '@angular/material/list';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-group-detail',
   templateUrl: './group-detail.component.html',
+  imports: [
+    MatCardHeader,
+    MatCardContent,
+    MatFormField,
+    MatCard,
+    ReactiveFormsModule,
+    MatSelectionList,
+    MatListOption,
+    MatCardActions,
+    MatIcon
+  ],
   styleUrls: ['./group-detail.component.css']
 })
 export class GroupDetailComponent implements OnInit {
@@ -95,8 +110,8 @@ export class GroupDetailComponent implements OnInit {
     if (this.groupForm.valid) {
       this.loadingService.show();
       const groupData: Group = this.groupForm.value;
-      
-      const request = this.isNewGroup ? 
+
+      const request = this.isNewGroup ?
         this.groupsService.createGroup(groupData) :
         this.groupsService.updateGroup(this.groupId!, groupData);
 
