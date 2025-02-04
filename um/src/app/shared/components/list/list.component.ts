@@ -115,5 +115,7 @@ export class ListComponent<T> implements OnInit {
     this.filterChange.emit('');
   }
 
-  protected readonly of = of;
+  onSearchChange(event: {term: string, filter?: string}) {
+    this.filterChange.emit(event.term);
+  }
 }
