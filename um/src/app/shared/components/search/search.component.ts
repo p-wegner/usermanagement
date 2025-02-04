@@ -32,7 +32,7 @@ export interface SearchFilter {
         <input matInput
                [formControl]="searchControl"
                [placeholder]="placeholder">
-        <button @if="searchControl.value"
+        <button *ngIf="searchControl.value"
                 matSuffix
                 mat-icon-button
                 aria-label="Clear"
@@ -41,11 +41,11 @@ export interface SearchFilter {
         </button>
       </mat-form-field>
 
-      <mat-form-field @if="filters?.length" appearance="outline">
+      <mat-form-field *ngIf="filters?.length" appearance="outline">
         <mat-label>Filter by</mat-label>
         <mat-select [formControl]="filterControl">
           <mat-option [value]="''">All</mat-option>
-          <mat-option @for="let filter of filters" [value]="filter.field">
+          <mat-option *ngFor="let filter of filters" [value]="filter.field">
             {{filter.label}}
           </mat-option>
         </mat-select>
