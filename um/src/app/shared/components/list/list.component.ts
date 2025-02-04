@@ -11,6 +11,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SearchComponent } from '../search/search.component';
+import {of} from 'rxjs';
 
 export interface Column {
   key: string;
@@ -113,4 +114,6 @@ export class ListComponent<T> implements OnInit {
     this.filterValue = '';
     this.filterChange.emit('');
   }
+
+  protected readonly of = of;
 }
