@@ -1,14 +1,12 @@
 <div class="list-container">
-  @if (loading) {
-    <div class="loading-overlay">
-      <mat-spinner></mat-spinner>
-    </div>
-  }
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+  </div>
   
   <app-search
     [placeholder]="'Search...'"
     [filterOptions]="searchFilters"
-    (search)="onSearchChange($event)"
+    (searchChange)="onSearchChange($event)"
     (filtersChange)="onFiltersChange($event)">
   </app-search>
 
@@ -30,7 +28,7 @@
     </ng-container>
 
     <!-- Dynamic Columns -->
-    <ng-container @for="let column of columns" [matColumnDef]="column.key">
+    <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
       <th mat-header-cell *matHeaderCellDef [mat-sort-header]="column.sortable ? column.key : ''">
         {{column.label}}
       </th>
