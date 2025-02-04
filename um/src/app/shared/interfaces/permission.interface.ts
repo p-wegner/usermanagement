@@ -9,4 +9,5 @@ export interface PermissionGroup {
   name: string;
   description?: string;
   permissions: Permission[];
+  parentGroupId?: string;
 }
