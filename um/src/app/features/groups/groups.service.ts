@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { PermissionGroup } from '../../shared/interfaces/permission.interface';
+import {Permission, PermissionGroup} from '../../shared/interfaces/permission.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -9,15 +9,15 @@ import { PermissionGroup } from '../../shared/interfaces/permission.interface';
 export class GroupsService {
   private groups: PermissionGroup[] = [
     // Temporary mock data
-    { 
-      id: '1', 
-      name: 'Administrators', 
+    {
+      id: '1',
+      name: 'Administrators',
       description: 'Full system access',
       permissions: []
     },
-    { 
-      id: '2', 
-      name: 'Users', 
+    {
+      id: '2',
+      name: 'Users',
       description: 'Basic user permissions',
       permissions: []
     }
@@ -58,7 +58,7 @@ export class GroupsService {
     if (!group || !group.parentGroupId) {
       return of([]);
     }
-    
+
     const parentGroup = this.groups.find(g => g.id === group.parentGroupId);
     if (!parentGroup) {
       return of([]);
