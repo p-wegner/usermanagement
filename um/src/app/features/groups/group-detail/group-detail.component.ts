@@ -2,8 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {Permission} from '../../../shared/interfaces/permission.interface';
-import {Group} from '../../../shared/interfaces/group.interface';
+import {Permission, PermissionGroup} from '../../../shared/interfaces/permission.interface';
 import {GroupsService} from '../groups.service';
 import {LoadingService} from '../../../shared/services/loading.service';
 import {ErrorHandlingService} from '../../../shared/services/error-handling.service';
@@ -127,7 +126,10 @@ export class GroupDetailComponent implements OnInit {
   onSubmit(): void {
     if (this.groupForm.valid) {
       this.loadingService.startLoading();
-      const groupData: Group = this.groupForm.value;
+      const groupData: Omit<PermissionGroup, 'id'> = {
+        ...this.groupForm.value,
+        permissions: this.groupForm.value.permissions || []
+      };
 
       const request = this.isNewGroup ?
         this.groupsService.createGroup(groupData) :
