@@ -9,7 +9,7 @@
         <mat-form-field>
           <mat-label>Username</mat-label>
           <input matInput formControlName="username" required>
-          <mat-error @if="userForm.get('username')?.errors?.['required']">
+          <mat-error *ngIf="userForm.get('username')?.errors?.['required']">
             Username is required
           </mat-error>
         </mat-form-field>
@@ -19,7 +19,7 @@
         <mat-form-field>
           <mat-label>Full Name</mat-label>
           <input matInput formControlName="fullName" required>
-          <mat-error @if="userForm.get('fullName')?.errors?.['required']">
+          <mat-error *ngIf="userForm.get('fullName')?.errors?.['required']">
             Full name is required
           </mat-error>
         </mat-form-field>
@@ -29,10 +29,10 @@
         <mat-form-field>
           <mat-label>Email</mat-label>
           <input matInput formControlName="email" required type="email">
-          <mat-error @if="userForm.get('email')?.errors?.['required']">
+          <mat-error *ngIf="userForm.get('email')?.errors?.['required']">
             Email is required
           </mat-error>
-          <mat-error @if="userForm.get('email')?.errors?.['email']">
+          <mat-error *ngIf="userForm.get('email')?.errors?.['email']">
             Please enter a valid email address
           </mat-error>
         </mat-form-field>
