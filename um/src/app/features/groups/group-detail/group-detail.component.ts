@@ -7,12 +7,10 @@ import {GroupsService} from '../groups.service';
 import {LoadingService} from '../../../shared/services/loading.service';
 import {ErrorHandlingService} from '../../../shared/services/error-handling.service';
 import {
-  MatCard,
   MatCardActions,
   MatCardContent,
   MatCardHeader,
   MatCardModule,
-  MatCardTitle
 } from '@angular/material/card';
 import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatListOption, MatSelectionList} from '@angular/material/list';

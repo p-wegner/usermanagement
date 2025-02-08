@@ -5,7 +5,6 @@ import {GroupsService} from '../groups.service';
 import {
   ConfirmationDialogComponent
 } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import {LoadingService} from '../../../shared/services/loading.service';
 import {ErrorHandlingService} from '../../../shared/services/error-handling.service';
 import {Group} from '../../../shared/interfaces/group.interface';
 import {ListColumn, ListComponent} from '../../../shared/components/list/list.component';
@@ -29,7 +28,6 @@ export class GroupsListComponent implements OnInit {
     private router: Router,
     private groupsService: GroupsService,
     private dialog: MatDialog,
-    private loadingService: LoadingService,
     private errorHandling: ErrorHandlingService
   ) {
   }

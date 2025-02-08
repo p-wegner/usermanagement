@@ -1,4 +1,4 @@
-@if ("inheritanceTree") {
+@if (inheritanceTree) {
   <mat-card>
     <mat-card-header>
       <mat-card-title>Permission Inheritance</mat-card-title>
@@ -16,7 +16,7 @@
                    [class.has-conflicts]="group.hasConflicts">
                 <mat-icon>group_work</mat-icon>
                 {{ group.name }}
-                @if ("group.hasConflicts") {
+                @if (group.hasConflicts) {
                   <mat-icon
                     class="conflict-icon"
                     matTooltip="This permission has conflicts with other groups"
