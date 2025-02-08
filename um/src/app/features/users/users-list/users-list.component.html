@@ -5,5 +5,7 @@
   [loading]="loading"
   (edit)="onEditUser($event.id)"
   (delete)="onDeleteUser($event.id)">
+  <button mat-fab color="primary" class="add-button" (click)="onAddUser()">
+    <mat-icon>add</mat-icon>
+  </button>
 </app-list>
-<!--  (add)="onAddUser()"-->

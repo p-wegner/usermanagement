@@ -3,8 +3,9 @@
   [items]="groups"
   [columns]="columns"
   [loading]="loading"
-
   (edit)="onEditGroup($event.id)"
   (delete)="onDeleteGroup($event.id)">
+  <button mat-fab color="primary" class="add-button" (click)="onAddGroup()">
+    <mat-icon>add</mat-icon>
+  </button>
 </app-list>
-<!--  (add)="onAddGroup()"  -->

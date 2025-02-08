@@ -1,8 +1,10 @@
 <app-list
-  title="Permissions"
+  [title]="'Permissions'"
   [items]="permissions"
   [columns]="columns"
   (edit)="onEdit($event)"
   (delete)="onDelete($event)">
+  <button mat-fab color="primary" class="add-button" (click)="onAdd()">
+    <mat-icon>add</mat-icon>
+  </button>
 </app-list>
-<!--  (rowClick)="onAdd()"-->
