@@ -20,9 +20,9 @@ export class UsersService {
     return of(this.users);
   }
 
-  getUser(id: string): Observable<User | undefined> {
+  getUser(id: string): Observable<User> {
     // TODO: Replace with actual API call
-    return of(this.users.find(user => user.id === id));
+    return of(this.users.find(user => user.id === id)!);
   }
 
   createUser(user: Omit<User, 'id'>): Observable<User> {

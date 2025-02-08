@@ -10,7 +10,8 @@ import { ErrorHandlingService } from '../../../shared/services/error-handling.se
 @Component({
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',
-  styleUrls: ['./user-detail.component.css']
+  styleUrls: ['./user-detail.component.css'],
+  standalone: false
 })
 export class UserDetailComponent implements OnInit {
   userForm: FormGroup;
@@ -42,25 +43,25 @@ export class UserDetailComponent implements OnInit {
   }
 
   private loadUser(id: string): void {
-    this.loadingService.show();
+    this.loadingService.startLoading();;
     this.usersService.getUser(id).subscribe({
       next: (user) => {
         this.userForm.patchValue(user);
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       },
       error: (error) => {
         this.errorHandling.handleError(error);
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       }
     });
   }
 
   onSubmit(): void {
     if (this.userForm.valid) {
-      this.loadingService.show();
+      this.loadingService.startLoading();;
       const userData: User = this.userForm.value;
-      
-      const request = this.isNewUser ? 
+
+      const request = this.isNewUser ?
         this.usersService.createUser(userData) :
         this.usersService.updateUser(this.userId!, userData);
 
@@ -72,11 +73,11 @@ export class UserDetailComponent implements OnInit {
             { duration: 3000 }
           );
           this.router.navigate(['/users']);
-          this.loadingService.hide();
+          this.loadingService.stopLoading();
         },
         error: (error) => {
           this.errorHandling.handleError(error);
-          this.loadingService.hide();
+          this.loadingService.stopLoading();
         }
       });
     }

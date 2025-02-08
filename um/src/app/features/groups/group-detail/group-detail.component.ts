@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Permission, PermissionGroup } from '../../../shared/interfaces/permission.interface';
+import { Permission } from '../../../shared/interfaces/permission.interface';
 import { Group } from '../../../shared/interfaces/group.interface';
 import { GroupsService } from '../groups.service';
 import { LoadingService } from '../../../shared/services/loading.service';

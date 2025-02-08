@@ -1,24 +1,33 @@
-<mat-card @if="inheritanceTree">
-  <mat-card-header>
-    <mat-card-title>Permission Inheritance</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <div class="inheritance-tree">
-      <div class="node permission-node">
-        <mat-icon>security</mat-icon>
-        {{ inheritanceTree.name }}
-      </div>
-      <div class="children" @if="inheritanceTree.children.length">
-        <div class="node group-node" @for="let group of inheritanceTree.children"
-             [class.has-conflicts]="group.hasConflicts">
-          <mat-icon>group_work</mat-icon>
-          {{ group.name }}
-          <mat-icon @if="group.hasConflicts" 
-                    class="conflict-icon" 
-                    matTooltip="This permission has conflicts with other groups"
-                    color="warn">warning</mat-icon>
+@if ("inheritanceTree") {
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Permission Inheritance</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="inheritance-tree">
+        <div class="node permission-node">
+          <mat-icon>security</mat-icon>
+          {{ inheritanceTree.name }}
         </div>
+        @if (inheritanceTree.children.length) {
+          <div class="children">
+            @for (group of inheritanceTree.children; track group) {
+              <div class="node group-node"
+                   [class.has-conflicts]="group.hasConflicts">
+                <mat-icon>group_work</mat-icon>
+                {{ group.name }}
+                @if ("group.hasConflicts") {
+                  <mat-icon
+                    class="conflict-icon"
+                    matTooltip="This permission has conflicts with other groups"
+                    color="warn">warning
+                  </mat-icon>
+                }
+              </div>
+            }
+          </div>
+        }
       </div>
-    </div>
-  </mat-card-content>
-</mat-card>
+    </mat-card-content>
+  </mat-card>
+}

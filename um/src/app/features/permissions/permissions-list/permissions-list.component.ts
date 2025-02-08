@@ -1,25 +1,28 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { Permission } from '../../../shared/interfaces/permission.interface';
-import { PermissionsService } from '../permissions.service';
-import { LoadingService } from '../../../shared/services/loading.service';
-import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
-import { ListColumn } from '../../../shared/components/list/list.component';
-import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {Permission} from '../../../shared/interfaces/permission.interface';
+import {PermissionsService} from '../permissions.service';
+import {LoadingService} from '../../../shared/services/loading.service';
+import {ErrorHandlingService} from '../../../shared/services/error-handling.service';
+import {
+  ConfirmationDialogComponent
+} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import {ListColumn, ListComponent} from '../../../shared/components/list/list.component';
 
 @Component({
   selector: 'app-permissions-list',
   templateUrl: './permissions-list.component.html',
-  styleUrls: ['./permissions-list.component.css']
+  styleUrls: ['./permissions-list.component.css'],
+  imports: [ListComponent ]
 })
 export class PermissionsListComponent implements OnInit {
   permissions: Permission[] = [];
   loading = false;
-  
+
   columns: ListColumn[] = [
-    { key: 'name', label: 'Name' },
-    { key: 'description', label: 'Description' }
+    {key: 'name', label: 'Name'},
+    {key: 'description', label: 'Description'}
   ];
 
   constructor(
@@ -28,7 +31,8 @@ export class PermissionsListComponent implements OnInit {
     private dialog: MatDialog,
     private loadingService: LoadingService,
     private errorHandling: ErrorHandlingService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadPermissions();
@@ -43,7 +47,7 @@ export class PermissionsListComponent implements OnInit {
       },
       error: (error) => {
         this.errorHandling.handleError(error);
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       }
     });
   }
@@ -74,29 +78,31 @@ export class PermissionsListComponent implements OnInit {
         this.errorHandling.handleError(new Error('You do not have permission to delete permissions'));
         return;
       }
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: {
-        title: 'Delete Permission',
-        message: `Are you sure you want to delete the permission "${permission.name}"?`,
-        confirmText: 'Delete',
-        cancelText: 'Cancel'
-      }
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: 'Delete Permission',
+          message: `Are you sure you want to delete the permission "${permission.name}"?`,
+          confirmText: 'Delete',
+          cancelText: 'Cancel'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.loadingService.startLoading();
+          this.permissionsService.deletePermission(permission.id).subscribe({
+            next: () => {
+              this.loadPermissions();
+              this.loadingService.stopLoading();
+            },
+            error: (error) => {
+              this.errorHandling.handleError(error);
+              this.loadingService.stopLoading();
+            }
+          });
+        }
+      });
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.loadingService.show();
-        this.permissionsService.deletePermission(permission.id).subscribe({
-          next: () => {
-            this.loadPermissions();
-            this.loadingService.hide();
-          },
-          error: (error) => {
-            this.errorHandling.handleError(error);
-            this.loadingService.hide();
-          }
-        });
-      }
-    });
   }
 }

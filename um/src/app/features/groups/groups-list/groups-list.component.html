@@ -3,7 +3,8 @@
   [items]="groups"
   [columns]="columns"
   [loading]="loading"
-  (add)="onAddGroup()"
-  (edit)="onEditGroup($event)"
-  (delete)="onDeleteGroup($event)">
+
+  (edit)="onEditGroup($event.id)"
+  (delete)="onDeleteGroup($event.id)">
 </app-list>
+<!--  (add)="onAddGroup()"  -->

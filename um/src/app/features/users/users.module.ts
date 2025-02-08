@@ -11,16 +11,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 
 import { UsersRoutingModule } from './users-routing.module';
-import { UsersListComponent } from './users-list/users-list.component';
-import { UserDetailComponent } from './user-detail/user-detail.component';
-import { SharedModule } from '../../shared/shared.module';
+import {UserDetailComponent} from './user-detail/user-detail.component';
+import {UsersListComponent} from './users-list/users-list.component';
+import {ListComponent} from '../../shared/components/list/list.component';
 
 @NgModule({
-  declarations: [
-    UsersListComponent,
-    UserDetailComponent
-  ],
+  declarations: [UserDetailComponent,UsersListComponent],
   imports: [
+    ListComponent,
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
@@ -31,7 +29,6 @@ import { SharedModule } from '../../shared/shared.module';
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
-    SharedModule,
     UsersRoutingModule
   ]
 })

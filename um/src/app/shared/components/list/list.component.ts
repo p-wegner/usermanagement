@@ -13,7 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SearchComponent } from '../search/search.component';
 import {of} from 'rxjs';
 
-export interface Column {
+export interface ListColumn {
   key: string;
   label: string;
   sortable?: boolean;
@@ -41,7 +41,7 @@ export interface Column {
 export class ListComponent<T> implements OnInit {
   @Input() items: T[] = [];
   @Input() loading = false;
-  @Input() columns: Column[] = [];
+  @Input() columns: ListColumn[] = [];
   @Input() totalItems = 0;
   @Input() pageSize = 10;
   @Input() pageSizeOptions = [5, 10, 25, 50];

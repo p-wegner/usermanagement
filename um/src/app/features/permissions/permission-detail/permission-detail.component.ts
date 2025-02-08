@@ -10,7 +10,8 @@ import { ErrorHandlingService } from '../../../shared/services/error-handling.se
 @Component({
   selector: 'app-permission-detail',
   templateUrl: './permission-detail.component.html',
-  styleUrls: ['./permission-detail.component.css']
+  styleUrls: ['./permission-detail.component.css'],
+  standalone: false
 })
 export class PermissionDetailComponent implements OnInit {
   permissionForm: FormGroup;
@@ -51,17 +52,18 @@ export class PermissionDetailComponent implements OnInit {
       },
       error: (error) => {
         this.errorHandling.handleError(error);
-        this.loadingService.hide();
+        this.loadingService.stopLoading();
       }
     });
   }
 
   onSubmit(): void {
     if (this.permissionForm.valid) {
-      this.loadingService.show();
+
+      this.loadingService.startLoading();
       const permissionData: Permission = this.permissionForm.value;
-      
-      const request = this.isNewPermission ? 
+
+      const request = this.isNewPermission ?
         this.permissionsService.createPermission(permissionData) :
         this.permissionsService.updatePermission(this.permissionId!, permissionData);
 
@@ -73,11 +75,11 @@ export class PermissionDetailComponent implements OnInit {
             { duration: 3000 }
           );
           this.router.navigate(['/permissions']);
-          this.loadingService.hide();
+          this.loadingService.stopLoading();
         },
         error: (error) => {
           this.errorHandling.handleError(error);
-          this.loadingService.hide();
+          this.loadingService.stopLoading();
         }
       });
     }

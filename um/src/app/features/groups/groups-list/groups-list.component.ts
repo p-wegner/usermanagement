@@ -1,25 +1,28 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
-import { GroupsService } from '../groups.service';
-import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { LoadingService } from '../../../shared/services/loading.service';
-import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
-import { Group } from '../../../shared/interfaces/group.interface';
-import { Column } from '../../../shared/components/list/list.component';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {GroupsService} from '../groups.service';
+import {
+  ConfirmationDialogComponent
+} from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import {LoadingService} from '../../../shared/services/loading.service';
+import {ErrorHandlingService} from '../../../shared/services/error-handling.service';
+import {Group} from '../../../shared/interfaces/group.interface';
+import {ListColumn, ListComponent} from '../../../shared/components/list/list.component';
 
 @Component({
   selector: 'app-groups-list',
   templateUrl: './groups-list.component.html',
-  styleUrls: ['./groups-list.component.css']
+  styleUrls: ['./groups-list.component.css'],
+  imports: [ListComponent]
 })
 export class GroupsListComponent implements OnInit {
   groups: Group[] = [];
   loading = false;
 
-  columns: Column[] = [
-    { key: 'name', label: 'Name' },
-    { key: 'description', label: 'Description' }
+  columns: ListColumn[] = [
+    {key: 'name', label: 'Name'},
+    {key: 'description', label: 'Description'}
   ];
 
   constructor(
@@ -28,7 +31,8 @@ export class GroupsListComponent implements OnInit {
     private dialog: MatDialog,
     private loadingService: LoadingService,
     private errorHandling: ErrorHandlingService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadGroups();

@@ -12,17 +12,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatListModule } from '@angular/material/list';
 
 import { PermissionsRoutingModule } from './permissions-routing.module';
-import { PermissionsListComponent } from './permissions-list/permissions-list.component';
-import { PermissionDetailComponent } from './permission-detail/permission-detail.component';
-import { PermissionInheritanceComponent } from './permission-inheritance/permission-inheritance.component';
-import { SharedModule } from '../../shared/shared.module';
+import {PermissionInheritanceComponent} from './permission-inheritance/permission-inheritance.component';
+import {PermissionDetailComponent} from './permission-detail/permission-detail.component';
 
 @NgModule({
-  declarations: [
-    PermissionsListComponent,
-    PermissionDetailComponent,
-    PermissionInheritanceComponent
-  ],
+  declarations: [PermissionInheritanceComponent,PermissionDetailComponent],
   imports: [
     CommonModule,
     RouterModule,
@@ -35,8 +29,7 @@ import { SharedModule } from '../../shared/shared.module';
     MatInputModule,
     MatTableModule,
     MatListModule,
-    SharedModule,
-    PermissionsRoutingModule
+    PermissionsRoutingModule,
   ]
 })
 export class PermissionsModule { }

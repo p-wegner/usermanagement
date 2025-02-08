@@ -11,12 +11,13 @@ import { ListColumn } from '../../../shared/components/list/list.component';
 @Component({
   selector: 'app-users-list',
   templateUrl: './users-list.component.html',
-  styleUrls: ['./users-list.component.css']
+  styleUrls: ['./users-list.component.css'],
+  standalone: false,
 })
 export class UsersListComponent implements OnInit {
   users: User[] = [];
   loading = false;
-  
+
   columns: ListColumn[] = [
     { key: 'username', label: 'Username' },
     { key: 'fullName', label: 'Full Name' },

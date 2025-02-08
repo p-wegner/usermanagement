@@ -3,7 +3,7 @@
   [items]="users"
   [columns]="columns"
   [loading]="loading"
-  (add)="onAddUser()"
-  (edit)="onEditUser($event)"
-  (delete)="onDeleteUser($event)">
+  (edit)="onEditUser($event.id)"
+  (delete)="onDeleteUser($event.id)">
 </app-list>
+<!--  (add)="onAddUser()"-->
