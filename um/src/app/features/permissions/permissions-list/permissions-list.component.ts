@@ -9,12 +9,13 @@ import {
   ConfirmationDialogComponent
 } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 import {ListColumn, ListComponent} from '../../../shared/components/list/list.component';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-permissions-list',
   templateUrl: './permissions-list.component.html',
   styleUrls: ['./permissions-list.component.css'],
-  imports: [ListComponent ]
+  imports: [ListComponent, MatIcon]
 })
 export class PermissionsListComponent implements OnInit {
   permissions: Permission[] = [];

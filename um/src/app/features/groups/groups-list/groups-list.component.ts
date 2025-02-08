@@ -8,12 +8,13 @@ import {
 import {ErrorHandlingService} from '../../../shared/services/error-handling.service';
 import {Group} from '../../../shared/interfaces/group.interface';
 import {ListColumn, ListComponent} from '../../../shared/components/list/list.component';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-groups-list',
   templateUrl: './groups-list.component.html',
   styleUrls: ['./groups-list.component.css'],
-  imports: [ListComponent]
+  imports: [ListComponent, MatIcon]
 })
 export class GroupsListComponent implements OnInit {
   groups: Group[] = [];
