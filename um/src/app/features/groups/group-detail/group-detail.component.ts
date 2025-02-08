@@ -1,16 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Permission } from '../../../shared/interfaces/permission.interface';
-import { Group } from '../../../shared/interfaces/group.interface';
-import { GroupsService } from '../groups.service';
-import { LoadingService } from '../../../shared/services/loading.service';
-import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
-import {MatCard, MatCardActions, MatCardContent, MatCardHeader} from '@angular/material/card';
-import {MatFormField} from '@angular/material/form-field';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {Permission} from '../../../shared/interfaces/permission.interface';
+import {Group} from '../../../shared/interfaces/group.interface';
+import {GroupsService} from '../groups.service';
+import {LoadingService} from '../../../shared/services/loading.service';
+import {ErrorHandlingService} from '../../../shared/services/error-handling.service';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardModule,
+  MatCardTitle
+} from '@angular/material/card';
+import {MatError, MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatListOption, MatSelectionList} from '@angular/material/list';
 import {MatIcon} from '@angular/material/icon';
+import {NgIf} from '@angular/common';
+import {MatInput} from '@angular/material/input';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatButton} from '@angular/material/button';
 
 @Component({
   selector: 'app-group-detail',
@@ -19,12 +30,18 @@ import {MatIcon} from '@angular/material/icon';
     MatCardHeader,
     MatCardContent,
     MatFormField,
-    MatCard,
     ReactiveFormsModule,
     MatSelectionList,
     MatListOption,
     MatCardActions,
-    MatIcon
+    MatIcon,
+    MatLabel,
+    MatError,
+    MatCardModule,
+    NgIf,
+    MatInput,
+    MatTooltip,
+    MatButton
   ],
   styleUrls: ['./group-detail.component.css']
 })
@@ -66,7 +83,7 @@ export class GroupDetailComponent implements OnInit {
       next: (permissions) => {
         this.availablePermissions = this.availablePermissions.map(p => {
           const inherited = permissions.find(ip => ip.id === p.id);
-          return inherited ? { ...p, inherited: true } : p;
+          return inherited ? {...p, inherited: true} : p;
         });
         this.loadingService.stopLoading();
       },
@@ -121,7 +138,7 @@ export class GroupDetailComponent implements OnInit {
           this.snackBar.open(
             `Group ${this.isNewGroup ? 'created' : 'updated'} successfully`,
             'Close',
-            { duration: 3000 }
+            {duration: 3000}
           );
           this.router.navigate(['/groups']);
           this.loadingService.stopLoading();
