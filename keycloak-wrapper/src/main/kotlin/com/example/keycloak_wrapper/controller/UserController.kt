@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/users")
-class UserController {
+class UserController(
+    private val userService: UserService
+) {
 
     @GetMapping
     fun getUsers(
@@ -15,20 +17,20 @@ class UserController {
         @RequestParam(required = false) search: String?
     ): ResponseEntity<ApiResponse<List<UserDto>>> {
         val searchDto = UserSearchDto(page, size, search)
-        // TODO: Implement with service
-        return ResponseEntity.ok(ApiResponse(success = true, data = emptyList()))
+        val users = userService.getUsers(searchDto)
+        return ResponseEntity.ok(ApiResponse(success = true, data = users))
     }
 
     @GetMapping("/{id}")
     fun getUser(@PathVariable id: String): ResponseEntity<ApiResponse<UserDto>> {
-        // TODO: Implement with service
-        return ResponseEntity.ok(ApiResponse(success = true))
+        val user = userService.getUser(id)
+        return ResponseEntity.ok(ApiResponse(success = true, data = user))
     }
 
     @PostMapping
     fun createUser(@RequestBody user: UserCreateDto): ResponseEntity<ApiResponse<UserDto>> {
-        // TODO: Implement with service
-        return ResponseEntity.ok(ApiResponse(success = true))
+        val createdUser = userService.createUser(user)
+        return ResponseEntity.ok(ApiResponse(success = true, data = createdUser))
     }
 
     @PutMapping("/{id}")
@@ -36,13 +38,13 @@ class UserController {
         @PathVariable id: String,
         @RequestBody user: UserUpdateDto
     ): ResponseEntity<ApiResponse<UserDto>> {
-        // TODO: Implement with service
-        return ResponseEntity.ok(ApiResponse(success = true))
+        val updatedUser = userService.updateUser(id, user)
+        return ResponseEntity.ok(ApiResponse(success = true, data = updatedUser))
     }
 
     @DeleteMapping("/{id}")
     fun deleteUser(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
-        // TODO: Implement with service
+        userService.deleteUser(id)
         return ResponseEntity.ok(ApiResponse(success = true))
     }
 }
