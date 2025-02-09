@@ -22,11 +22,11 @@
 - [x] Create user Keycloak facade
 
 ## Group Management
-- [ ] Create group DTOs
-- [ ] Implement group controller
-- [ ] Implement group service
-- [ ] Implement group mapper
-- [ ] Create group Keycloak facade
+- [x] Create group DTOs
+- [x] Implement group controller
+- [x] Implement group service
+- [x] Implement group mapper
+- [x] Create group Keycloak facade
 
 ## Role Management
 - [ ] Create role DTOs
