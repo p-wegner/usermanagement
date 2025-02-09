@@ -1,0 +1,8 @@
+---
+files:
+- path: keycloak-wrapper/build.gradle.kts
+  readOnly: false
+- path: um/package.json
+  readOnly: false
+- path: README.md
+  readOnly: false
