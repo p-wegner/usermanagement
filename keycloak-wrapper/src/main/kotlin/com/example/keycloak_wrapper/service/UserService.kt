@@ -10,13 +10,13 @@ class UserService(
     private val keycloakUserFacade: KeycloakUserFacade,
     private val userMapper: UserMapper
 ) {
-    fun getUsers(searchDto: UserSearchDto): List<UserDto> {
-        val users = keycloakUserFacade.getUsers(
+    fun getUsers(searchDto: UserSearchDto): Pair<List<UserDto>, Int> {
+        val (users, total) = keycloakUserFacade.getUsers(
             search = searchDto.search,
             firstResult = searchDto.page * searchDto.size,
             maxResults = searchDto.size
         )
-        return users.map { userMapper.toDto(it) }
+        return Pair(users.map { userMapper.toDto(it) }, total)
     }
 
     fun getUser(id: String): UserDto {

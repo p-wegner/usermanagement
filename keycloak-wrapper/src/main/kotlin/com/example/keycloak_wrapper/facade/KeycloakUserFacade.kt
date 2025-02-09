@@ -12,10 +12,12 @@ class KeycloakUserFacade(
     private val keycloak: Keycloak,
     @Value("\${keycloak.realm}") private val realm: String
 ) {
-    fun getUsers(search: String?, firstResult: Int, maxResults: Int): List<UserRepresentation> {
+    fun getUsers(search: String?, firstResult: Int, maxResults: Int): Pair<List<UserRepresentation>, Int> {
         return try {
-            keycloak.realm(realm).users()
-                .search(search, firstResult, maxResults, true)
+            val users = keycloak.realm(realm).users()
+            val results = users.search(search, firstResult, maxResults, true)
+            val total = users.count(search)
+            Pair(results, total)
         } catch (e: Exception) {
             throw KeycloakException("Failed to fetch users", e)
         }
@@ -33,7 +35,8 @@ class KeycloakUserFacade(
         try {
             val response = keycloak.realm(realm).users().create(user)
             if (response.status != Response.Status.CREATED.statusCode) {
-                throw KeycloakException("Failed to create user: ${response.status}")
+                val errorBody = response.readEntity(String::class.java)
+                throw KeycloakException("Failed to create user: ${response.status} - $errorBody")
             }
             
             val locationHeader = response.location.toString()
@@ -46,10 +49,24 @@ class KeycloakUserFacade(
 
     fun updateUser(id: String, user: UserRepresentation): UserRepresentation {
         try {
-            keycloak.realm(realm).users().get(id).update(user)
+            val userResource = keycloak.realm(realm).users().get(id)
+            userResource.update(user)
             return getUser(id)
         } catch (e: Exception) {
             throw KeycloakException("Failed to update user with id: $id", e)
+        }
+    }
+
+    fun updatePassword(id: String, password: String) {
+        try {
+            val credentials = org.keycloak.representations.idm.CredentialRepresentation().apply {
+                type = org.keycloak.representations.idm.CredentialRepresentation.PASSWORD
+                value = password
+                isTemporary = false
+            }
+            keycloak.realm(realm).users().get(id).resetPassword(credentials)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to update password for user with id: $id", e)
         }
     }
 

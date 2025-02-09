@@ -15,10 +15,14 @@ class UserController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(required = false) search: String?
-    ): ResponseEntity<ApiResponse<List<UserDto>>> {
+    ): ResponseEntity<ApiResponse<Map<String, Any>>> {
         val searchDto = UserSearchDto(page, size, search)
-        val users = userService.getUsers(searchDto)
-        return ResponseEntity.ok(ApiResponse(success = true, data = users))
+        val (users, total) = userService.getUsers(searchDto)
+        val response = mapOf(
+            "items" to users,
+            "total" to total
+        )
+        return ResponseEntity.ok(ApiResponse(success = true, data = response))
     }
 
     @GetMapping("/{id}")

@@ -19,7 +19,7 @@
 - [x] Connect controller to service
 - [x] Implement user service
 - [x] Implement user mapper
-- [ ] Create user Keycloak facade
+- [x] Create user Keycloak facade
 
 ## Group Management
 - [ ] Create group DTOs
