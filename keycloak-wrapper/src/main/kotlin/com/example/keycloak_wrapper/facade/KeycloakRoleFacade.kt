@@ -5,7 +5,6 @@ import org.keycloak.admin.client.Keycloak
 import org.keycloak.representations.idm.RoleRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import javax.ws.rs.core.Response
 
 @Component
 class KeycloakRoleFacade(
@@ -36,11 +35,11 @@ class KeycloakRoleFacade(
 
     fun createRole(role: RoleRepresentation): RoleRepresentation {
         try {
-            val response = keycloak.realm(realm).roles().create(role)
-            if (response.status != Response.Status.CREATED.statusCode) {
-                val errorBody = response.readEntity(String::class.java)
-                throw KeycloakException("Failed to create role: ${response.status} - $errorBody")
-            }
+            keycloak.realm(realm).roles().create(role)
+//            if (response.status != Response.Status.CREATED.statusCode) {
+//                val errorBody = response.readEntity(String::class.java)
+//                throw KeycloakException("Failed to create role: ${response.status} - $errorBody")
+//            }
             return getRole(role.name)
         } catch (e: Exception) {
             throw KeycloakException("Failed to create role", e)

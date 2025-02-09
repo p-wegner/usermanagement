@@ -1,11 +1,11 @@
 package com.example.keycloak_wrapper.facade
 
 import com.example.keycloak_wrapper.exception.KeycloakException
+import jakarta.ws.rs.core.Response
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.representations.idm.GroupRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import javax.ws.rs.core.Response
 
 @Component
 class KeycloakGroupFacade(

@@ -1,6 +1,7 @@
 package com.example.keycloak_wrapper.controller
 
 import com.example.keycloak_wrapper.dto.*
+import com.example.keycloak_wrapper.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity

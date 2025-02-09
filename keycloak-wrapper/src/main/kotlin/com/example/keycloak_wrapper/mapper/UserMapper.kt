@@ -21,7 +21,7 @@ class UserMapper {
     }
 
     fun toRepresentation(dto: UserCreateDto): UserRepresentation {
-        val credentials = CredentialRepresentation().apply {
+        val myCredentials = CredentialRepresentation().apply {
             type = CredentialRepresentation.PASSWORD
             value = dto.password
             isTemporary = false
@@ -34,7 +34,7 @@ class UserMapper {
             email = dto.email
             isEnabled = dto.enabled
             isEmailVerified = false
-            credentials = listOf(credentials)
+            credentials = listOf(myCredentials)
         }
     }
 

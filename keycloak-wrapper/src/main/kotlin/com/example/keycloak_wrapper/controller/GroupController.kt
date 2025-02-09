@@ -1,6 +1,7 @@
 package com.example.keycloak_wrapper.controller
 
 import com.example.keycloak_wrapper.dto.*
+import com.example.keycloak_wrapper.service.GroupService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
