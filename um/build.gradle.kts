@@ -1,6 +1,6 @@
 plugins {
   id("com.github.node-gradle.node") version "3.5.1"
-  id("org.openapi.generator") version "6.5.0"
+  id("org.openapi.generator") version "7.10.0"
 }
 
 node {
@@ -27,12 +27,9 @@ openApiGenerate {
   invokerPackage.set("com.example.invoker")
 }
 
-tasks.named("generateAngularClient") {
-  dependsOn("openApiGenerate")
-}
 
 tasks.register("buildFrontend") {
-  dependsOn("npmInstall", "generateAngularClient")
+  dependsOn("npmInstall", "openApiGenerate")
   doLast {
     exec {
       commandLine("npm", "run", "build")

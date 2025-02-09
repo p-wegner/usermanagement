@@ -22,9 +22,9 @@ tasks.register<Copy>("generateOpenApiJson") {
     dependsOn("bootRun")
     finalizedBy("openApiGenerate")
 }
-
+val apispec by configurations.creating
 artifacts {
-    add("archives", file("$buildDir/docs/swagger.json")) {
+    add("apispec", file("$buildDir/docs/swagger.json")) {
         builtBy("generateOpenApiJson")
     }
 }
