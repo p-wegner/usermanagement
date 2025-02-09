@@ -36,9 +36,9 @@
 - [x] Create role Keycloak facade
 
 ## Error Handling
-- [ ] Implement global exception handler
-- [ ] Add specific exception types
-- [ ] Create error response DTOs
+- [x] Implement global exception handler
+- [x] Add specific exception types
+- [x] Create error response DTOs
 
 ## Final Steps
 - [ ] Review API consistency

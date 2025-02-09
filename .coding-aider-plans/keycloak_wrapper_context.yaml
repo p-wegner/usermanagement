@@ -30,3 +30,7 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/mapper/GroupMapper.kt
     readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/ErrorResponse.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/exception/GlobalExceptionHandler.kt
+    readOnly: false
