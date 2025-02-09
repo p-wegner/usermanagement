@@ -5,11 +5,11 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
-tasks.register("generateOpenApiDocs") {
+tasks.register("generateOpenApiJson") {
     doLast {
         println("Generating OpenAPI JSON...")
         exec {
-            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "src/main/resources/openapi.yaml", "-g", "spring", "-o", "build/generated")
+            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "src/main/resources/openapi.yaml", "-g", "openapi", "-o", "build/generated")
         }
     }
 }

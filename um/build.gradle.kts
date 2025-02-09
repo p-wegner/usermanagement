@@ -11,7 +11,7 @@ node {
 tasks.register("generateAngularClient") {
     doLast {
         exec {
-            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "../keycloak-wrapper/build/generated/openapi.json", "-g", "typescript-angular", "-o", "src/app/api")
+            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "../keycloak-wrapper/build/generated/openapi.yaml", "-g", "typescript-angular", "-o", "src/app/api")
         }
     }
 }
