@@ -14,3 +14,5 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/ApiResponse.kt
     readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/UserController.kt
+    readOnly: false
