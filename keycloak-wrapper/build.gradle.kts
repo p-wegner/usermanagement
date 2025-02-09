@@ -20,7 +20,7 @@ tasks.register("generateOpenApiJson", Copy::class) {
     doLast {
         copy {
             from("$buildDir/docs/swagger.json")
-            into("$rootDir/um/src/main/resources")
+            into("$rootDir/um/build/docs/")
         }
     }
     dependsOn("bootRun")
