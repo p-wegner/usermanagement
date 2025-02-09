@@ -1,9 +1,8 @@
 - [ ] connect frontend to backend
 - [ ] serve frontend from backend
+- [ ] connect keycloak + secure endpoints 
 - [ ] docker build
 - [ ] azure deployment
 - [ ] proper role/composite role management
 - [ ] realm creation
-- [ ] backend integration and unit tests
-- [ ] 
-- 
+- [ ] integration and unit tests
