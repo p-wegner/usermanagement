@@ -20,7 +20,7 @@ dependencies {
 
 openApiGenerate {
   generatorName.set("typescript-angular")
-  inputSpec.set(apispec.singleFile.absolutePath)
+  inputSpec.set(apispec.singleFile.toURI().toString())
   outputDir.set("$projectDir/src/app/api")
   apiPackage.set("com.example.api")
   modelPackage.set("com.example.model")
