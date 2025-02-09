@@ -6,7 +6,7 @@ plugins {
     id("org.springdoc.openapi-gradle-plugin") version "1.5.0"
 }
 
-openApi {
+openApiGenerate {
     apiDocsUrl.set("http://localhost:8080/v3/api-docs")
     outputDir.set(file("build/generated"))
     outputFileName.set("openapi.json")
