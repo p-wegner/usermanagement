@@ -1,33 +1,50 @@
 plugins {
-    id("com.github.node-gradle.node") version "3.5.1"
+  id("com.github.node-gradle.node") version "3.5.1"
 }
 
 node {
-    version.set("18.0.0")
-    npmVersion.set("8.0.0")
-    download.set(true)
+  version.set("18.0.0")
+  npmVersion.set("8.0.0")
+  download.set(true)
 }
 
+val apispec by configurations.creating
 dependencies {
-    implementation(project(":keycloak-wrapper"))
+  apispec(
+    project(
+      mapOf("path" to ":keycloak-wrapper", "configuration" to "apispec")
+    )
+  )
 }
 
 tasks.register("generateAngularClient") {
-    val swaggerJson = configurations.archives.get().singleFile
-    inputs.file(swaggerJson)
-    doLast {
-        exec {
-            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", swaggerJson.absolutePath, "-g", "typescript-angular", "-o", "src/app/api")
-        }
+  val swaggerJson = apispec.singleFile
+  inputs.file(swaggerJson)
+  // TODO: use openapigenerate plugin
+  doLast {
+    exec {
+      commandLine(
+        "java",
+        "-jar",
+        "openapi-generator-cli.jar",
+        "generate",
+        "-i",
+        swaggerJson.absolutePath,
+        "-g",
+        "typescript-angular",
+        "-o",
+        "src/app/api"
+      )
     }
+  }
 }
 
 tasks.register("buildFrontend") {
-    dependsOn("npmInstall", "generateAngularClient")
-    doLast {
-        exec {
-            commandLine("npm", "run", "build")
-        }
+  dependsOn("npmInstall", "generateAngularClient")
+  doLast {
+    exec {
+      commandLine("npm", "run", "build")
     }
+  }
 }
 
