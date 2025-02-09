@@ -1,5 +1,6 @@
 plugins {
   id("com.github.node-gradle.node") version "3.5.1"
+  id("org.openapi.generator") version "6.5.0"
 }
 
 node {
@@ -17,26 +18,17 @@ dependencies {
   )
 }
 
-tasks.register("generateAngularClient") {
-  val swaggerJson = apispec.singleFile
-  inputs.file(swaggerJson)
-  // TODO: use openapigenerate plugin
-  doLast {
-    exec {
-      commandLine(
-        "java",
-        "-jar",
-        "openapi-generator-cli.jar",
-        "generate",
-        "-i",
-        swaggerJson.absolutePath,
-        "-g",
-        "typescript-angular",
-        "-o",
-        "src/app/api"
-      )
-    }
-  }
+openApiGenerate {
+  generatorName.set("typescript-angular")
+  inputSpec.set(apispec.singleFile.absolutePath)
+  outputDir.set("$projectDir/src/app/api")
+  apiPackage.set("com.example.api")
+  modelPackage.set("com.example.model")
+  invokerPackage.set("com.example.invoker")
+}
+
+tasks.named("generateAngularClient") {
+  dependsOn("openApiGenerate")
 }
 
 tasks.register("buildFrontend") {
