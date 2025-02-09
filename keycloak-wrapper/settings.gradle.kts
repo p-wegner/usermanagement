@@ -1,2 +1,2 @@
 rootProject.name = "keycloak-wrapper"
-include("um", "backend")
+include("backend", "um")
