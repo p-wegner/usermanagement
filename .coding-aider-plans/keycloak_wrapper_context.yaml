@@ -16,3 +16,7 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/UserController.kt
     readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/mapper/UserMapper.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/UserService.kt
+    readOnly: false

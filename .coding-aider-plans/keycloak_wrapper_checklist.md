@@ -14,10 +14,10 @@
 - [x] Create configuration for Keycloak client
 
 ## User Management
-- [ ] Create user DTOs
-- [ ] Implement user controller
-- [ ] Implement user service
-- [ ] Implement user mapper
+- [x] Create user DTOs
+- [x] Implement user controller
+- [x] Implement user service
+- [x] Implement user mapper
 - [ ] Create user Keycloak facade
 
 ## Group Management
