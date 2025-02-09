@@ -9,12 +9,13 @@ import {ErrorHandlingService} from '../../../shared/services/error-handling.serv
 import {Group} from '../../../shared/interfaces/group.interface';
 import {ListColumn, ListComponent} from '../../../shared/components/list/list.component';
 import { MatIcon } from '@angular/material/icon';
+import {MatFabButton} from '@angular/material/button';
 
 @Component({
   selector: 'app-groups-list',
   templateUrl: './groups-list.component.html',
   styleUrls: ['./groups-list.component.css'],
-  imports: [ListComponent, MatIcon]
+  imports: [ListComponent, MatIcon, MatFabButton]
 })
 export class GroupsListComponent implements OnInit {
   groups: Group[] = [];
