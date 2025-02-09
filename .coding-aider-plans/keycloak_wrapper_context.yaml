@@ -10,3 +10,7 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/resources/application.properties
     readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/exception/KeycloakException.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/ApiResponse.kt
+    readOnly: false
