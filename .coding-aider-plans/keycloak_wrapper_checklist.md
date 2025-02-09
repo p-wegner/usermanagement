@@ -29,11 +29,11 @@
 - [x] Create group Keycloak facade
 
 ## Role Management
-- [ ] Create role DTOs
-- [ ] Implement role controller
-- [ ] Implement role service
-- [ ] Implement role mapper
-- [ ] Create role Keycloak facade
+- [x] Create role DTOs
+- [x] Implement role controller
+- [x] Implement role service
+- [x] Implement role mapper
+- [x] Create role Keycloak facade
 
 ## Error Handling
 - [ ] Implement global exception handler
