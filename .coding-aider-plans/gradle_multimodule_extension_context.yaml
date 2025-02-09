@@ -4,6 +4,10 @@ files:
   readOnly: false
 - path: um/build.gradle.kts
   readOnly: false
+- path: keycloak-wrapper/src/main/resources/openapi.yaml
+  readOnly: false
+- path: um/src/app/api
+  readOnly: false
 - path: keycloak-wrapper/settings.gradle.kts
   readOnly: false
 - path: um/package.json

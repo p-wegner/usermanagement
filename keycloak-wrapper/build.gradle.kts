@@ -8,7 +8,9 @@ plugins {
 tasks.register("generateOpenApiDocs") {
     doLast {
         println("Generating OpenAPI JSON...")
-        // Add logic to generate OpenAPI JSON
+        exec {
+            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "src/main/resources/openapi.yaml", "-g", "spring", "-o", "build/generated")
+        }
     }
 }
 

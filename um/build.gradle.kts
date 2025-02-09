@@ -8,8 +8,16 @@ node {
     download.set(true)
 }
 
+tasks.register("generateAngularClient") {
+    doLast {
+        exec {
+            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "../keycloak-wrapper/build/generated/openapi.json", "-g", "typescript-angular", "-o", "src/app/api")
+        }
+    }
+}
+
 tasks.register("buildFrontend") {
-    dependsOn("npmInstall")
+    dependsOn("npmInstall", "generateAngularClient")
     doLast {
         exec {
             commandLine("npm", "run", "build")
