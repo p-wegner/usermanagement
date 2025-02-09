@@ -6,6 +6,8 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/KeycloakWrapperApplication.kt
     readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/config/OpenApiConfig.kt
+    readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/config/KeycloakConfig.kt
     readOnly: false
   - path: keycloak-wrapper/src/main/resources/application.properties

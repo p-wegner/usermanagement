@@ -1,15 +1,22 @@
 package com.example.keycloak_wrapper.controller
 
 import com.example.keycloak_wrapper.dto.*
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "Users", description = "User management endpoints")
 class UserController(
     private val userService: UserService
 ) {
 
+    @Operation(
+        summary = "Get users",
+        description = "Retrieve a paginated list of users with optional search"
+    )
     @GetMapping
     fun getUsers(
         @RequestParam(defaultValue = "0") page: Int,
