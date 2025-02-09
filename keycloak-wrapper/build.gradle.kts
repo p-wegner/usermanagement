@@ -5,14 +5,21 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
 }
 
+plugins {
+    id("org.springdoc.openapi-gradle-plugin") version "1.5.0"
+}
+
+openApi {
+    apiDocsUrl.set("http://localhost:8080/v3/api-docs")
+    outputDir.set(file("build/generated"))
+    outputFileName.set("openapi.json")
+    waitTimeInSeconds.set(10)
+}
+
 tasks.register("generateOpenApiJson") {
-    // TODO use gradle plugin or the spec that springdoc-openapi-starter-webmvc-ui provides, if needed create a gradle task that starts the app and saves the spec
-//    doLast {
-//        println("Generating OpenAPI JSON...")
-//        exec {
-//            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "src/main/resources/openapi.yaml", "-g", "openapi", "-o", "build/generated")
-//        }
-//    }
+    dependsOn("bootRun")
+    finalizedBy("openApiGenerate")
+}
 }
 
 group = "com.example"
