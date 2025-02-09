@@ -14,6 +14,25 @@ tasks.register("generateOpenApiJson") {
     }
 }
 
+project(":backend") {
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
+    apply(plugin = "kotlin")
+    apply(plugin = "kotlin-spring")
+
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-web")
+        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+        implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("org.keycloak:keycloak-admin-client:26.0.4")
+        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4")
+        developmentOnly("org.springframework.boot:spring-boot-devtools")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    }
+}
+
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
 
