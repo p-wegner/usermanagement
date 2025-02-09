@@ -2,6 +2,10 @@
 files:
 - path: keycloak-wrapper/build.gradle.kts
   readOnly: false
+- path: um/build.gradle.kts
+  readOnly: false
+- path: keycloak-wrapper/settings.gradle.kts
+  readOnly: false
 - path: um/package.json
   readOnly: false
 - path: README.md
