@@ -13,12 +13,9 @@ class KeycloakGroupFacade(
     @Value("\${keycloak.realm}")
     private val realm: String
 ) {
-    fun getGroups(search: String?, firstResult: Int, maxResults: Int): Pair<List<GroupRepresentation>, Int> {
+    fun getGroups(search: String?, first: Int, max: Int): List<GroupRepresentation> {
         return try {
-            val groups = keycloak.realm(realm).groups()
-            val results = groups.groups(search, firstResult, maxResults)
-            val total = groups.count(search)
-            Pair(results, total)
+            keycloak.realm(realm).groups().groups(search, first, max)
         } catch (e: Exception) {
             throw KeycloakException("Failed to fetch groups", e)
         }
@@ -34,12 +31,7 @@ class KeycloakGroupFacade(
 
     fun createGroup(group: GroupRepresentation): GroupRepresentation {
         try {
-            val response = if (group.parentId != null) {
-                keycloak.realm(realm).groups().group(group.parentId).subGroup(group)
-            } else {
-                keycloak.realm(realm).groups().add(group)
-            }
-
+            val response = keycloak.realm(realm).groups().add(group)
             if (response.status != Response.Status.CREATED.statusCode) {
                 val errorBody = response.readEntity(String::class.java)
                 throw KeycloakException("Failed to create group: ${response.status} - $errorBody")
@@ -50,6 +42,22 @@ class KeycloakGroupFacade(
             return getGroup(groupId)
         } catch (e: Exception) {
             throw KeycloakException("Failed to create group", e)
+        }
+    }
+
+    fun createSubGroup(parentId: String, group: GroupRepresentation): GroupRepresentation {
+        try {
+            val response = keycloak.realm(realm).groups().group(parentId).subGroup(group)
+            if (response.status != Response.Status.CREATED.statusCode) {
+                val errorBody = response.readEntity(String::class.java)
+                throw KeycloakException("Failed to create subgroup: ${response.status} - $errorBody")
+            }
+            
+            val locationHeader = response.location.toString()
+            val groupId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1)
+            return getGroup(groupId)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to create subgroup", e)
         }
     }
 
