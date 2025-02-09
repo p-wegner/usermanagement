@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="21">
+      <module name="keycloak-wrapper" target="21" />
+      <module name="keycloak-wrapper.backend" target="21" />
+      <module name="keycloak-wrapper.backend.main" target="21" />
+      <module name="keycloak-wrapper.backend.test" target="21" />
+      <module name="keycloak-wrapper.main" target="21" />
+      <module name="keycloak-wrapper.test" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -25,12 +25,3 @@ tasks.register("buildFrontend") {
     }
 }
 
-project(":um") {
-    apply(plugin = "com.github.node-gradle.node")
-
-    node {
-        version.set("18.0.0")
-        npmVersion.set("8.0.0")
-        download.set(true)
-    }
-}

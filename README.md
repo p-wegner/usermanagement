@@ -10,7 +10,12 @@ features:
 
 # Run backend
 ```shell
-./keycloak-wrapper/gradlew.bat bootRun
+./keycloak-wrapper/gradlew.bat :keycloak-wrapper:bootRun
+```
+
+# Generate OpenAPI JSON
+```shell
+./keycloak-wrapper/gradlew.bat :backend:generateOpenApiJson
 ```
 # Run frontend
 http://localhost:8080/swagger-ui/index.htm
