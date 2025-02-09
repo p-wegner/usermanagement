@@ -19,3 +19,8 @@ features:
 ```
 # Run frontend
 http://localhost:8080/swagger-ui/index.htm
+
+
+## useful resources
+
+- https://github.com/springdoc/springdoc-openapi-gradle-plugin

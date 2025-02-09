@@ -3,14 +3,16 @@ plugins {
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.springdoc.openapi-gradle-plugin") version "1.5.0"
+    id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
-openApiGenerate {
-    apiDocsUrl.set("http://localhost:8080/v3/api-docs")
-    outputDir.set(file("build/generated"))
-    outputFileName.set("openapi.json")
+openApi {
+    outputDir.set(file("$buildDir/docs"))
+    outputFileName.set("swagger.json")
     waitTimeInSeconds.set(10)
+    customBootRun {
+//        args.addAll("--spring.profiles.active=special")
+    }
 }
 
 tasks.register("generateOpenApiJson") {
