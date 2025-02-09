@@ -20,3 +20,7 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/UserService.kt
     readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/GroupDto.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/facade/KeycloakGroupFacade.kt
+    readOnly: false
