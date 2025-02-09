@@ -9,7 +9,12 @@ import org.springframework.web.bind.annotation.*
 class UserController {
 
     @GetMapping
-    fun getUsers(searchDto: UserSearchDto): ResponseEntity<ApiResponse<List<UserDto>>> {
+    fun getUsers(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(required = false) search: String?
+    ): ResponseEntity<ApiResponse<List<UserDto>>> {
+        val searchDto = UserSearchDto(page, size, search)
         // TODO: Implement with service
         return ResponseEntity.ok(ApiResponse(success = true, data = emptyList()))
     }
@@ -21,7 +26,7 @@ class UserController {
     }
 
     @PostMapping
-    fun createUser(@RequestBody userDto: UserCreateDto): ResponseEntity<ApiResponse<UserDto>> {
+    fun createUser(@RequestBody user: UserCreateDto): ResponseEntity<ApiResponse<UserDto>> {
         // TODO: Implement with service
         return ResponseEntity.ok(ApiResponse(success = true))
     }
@@ -29,7 +34,7 @@ class UserController {
     @PutMapping("/{id}")
     fun updateUser(
         @PathVariable id: String,
-        @RequestBody userDto: UserUpdateDto
+        @RequestBody user: UserUpdateDto
     ): ResponseEntity<ApiResponse<UserDto>> {
         // TODO: Implement with service
         return ResponseEntity.ok(ApiResponse(success = true))
