@@ -9,10 +9,10 @@ node {
 }
 
 tasks.register("generateAngularClient") {
-    // TODO: use gradle openapi generator plugin
+    inputs.file("$rootDir/src/main/resources/swagger.json")
     doLast {
         exec {
-            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "../keycloak-wrapper/build/generated/openapi.yaml", "-g", "typescript-angular", "-o", "src/app/api")
+            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "$rootDir/src/main/resources/swagger.json", "-g", "typescript-angular", "-o", "src/app/api")
         }
     }
 }

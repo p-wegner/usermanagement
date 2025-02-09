@@ -15,7 +15,14 @@ openApi {
     }
 }
 
-tasks.register("generateOpenApiJson") {
+tasks.register("generateOpenApiJson", Copy::class) {
+    outputs.file("$buildDir/docs/swagger.json")
+    doLast {
+        copy {
+            from("$buildDir/docs/swagger.json")
+            into("$rootDir/um/src/main/resources")
+        }
+    }
     dependsOn("bootRun")
     finalizedBy("openApiGenerate")
 }
