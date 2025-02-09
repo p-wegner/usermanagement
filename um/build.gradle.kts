@@ -8,11 +8,16 @@ node {
     download.set(true)
 }
 
+dependencies {
+    implementation(project(":keycloak-wrapper"))
+}
+
 tasks.register("generateAngularClient") {
-    inputs.file("$rootDir/src/main/resources/swagger.json")
+    val swaggerJson = configurations.archives.get().singleFile
+    inputs.file(swaggerJson)
     doLast {
         exec {
-            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "$rootDir/src/main/resources/swagger.json", "-g", "typescript-angular", "-o", "src/app/api")
+            commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", swaggerJson.absolutePath, "-g", "typescript-angular", "-o", "src/app/api")
         }
     }
 }

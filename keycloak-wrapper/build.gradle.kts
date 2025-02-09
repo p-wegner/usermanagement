@@ -15,16 +15,18 @@ openApi {
     }
 }
 
-tasks.register("generateOpenApiJson", Copy::class) {
+tasks.register<Copy>("generateOpenApiJson") {
     outputs.file("$buildDir/docs/swagger.json")
-    doLast {
-        copy {
-            from("$buildDir/docs/swagger.json")
-            into("$rootDir/um/build/docs/")
-        }
-    }
+    from("$buildDir/docs/swagger.json")
+    into("$buildDir/docs/")
     dependsOn("bootRun")
     finalizedBy("openApiGenerate")
+}
+
+artifacts {
+    add("archives", file("$buildDir/docs/swagger.json")) {
+        builtBy("generateOpenApiJson")
+    }
 }
 
 group = "com.example"
