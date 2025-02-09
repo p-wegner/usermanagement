@@ -3,6 +3,7 @@ package com.example.keycloak_wrapper.mapper
 import com.example.keycloak_wrapper.dto.UserDto
 import com.example.keycloak_wrapper.dto.UserCreateDto
 import com.example.keycloak_wrapper.dto.UserUpdateDto
+import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.stereotype.Component
 
@@ -20,6 +21,12 @@ class UserMapper {
     }
 
     fun toRepresentation(dto: UserCreateDto): UserRepresentation {
+        val credentials = CredentialRepresentation().apply {
+            type = CredentialRepresentation.PASSWORD
+            value = dto.password
+            isTemporary = false
+        }
+
         return UserRepresentation().apply {
             username = dto.username
             firstName = dto.firstName
@@ -27,13 +34,16 @@ class UserMapper {
             email = dto.email
             isEnabled = dto.enabled
             isEmailVerified = false
+            credentials = listOf(credentials)
         }
     }
 
-    fun updateRepresentation(user: UserRepresentation, dto: UserUpdateDto) {
-        dto.firstName?.let { user.firstName = it }
-        dto.lastName?.let { user.lastName = it }
-        dto.email?.let { user.email = it }
-        dto.enabled?.let { user.isEnabled = it }
+    fun updateRepresentation(user: UserRepresentation, dto: UserUpdateDto): UserRepresentation {
+        return user.apply {
+            dto.firstName?.let { firstName = it }
+            dto.lastName?.let { lastName = it }
+            dto.email?.let { email = it }
+            dto.enabled?.let { isEnabled = it }
+        }
     }
 }
