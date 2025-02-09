@@ -10,3 +10,5 @@ files:
   readOnly: false
 - path: README.md
   readOnly: false
+- path: keycloak-wrapper/backend/build.gradle.kts
+  readOnly: false
