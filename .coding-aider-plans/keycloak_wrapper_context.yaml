@@ -34,3 +34,11 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/exception/GlobalExceptionHandler.kt
     readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/facade/KeycloakRoleFacade.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/RoleController.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/mapper/RoleMapper.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/RoleService.kt
+    readOnly: false
