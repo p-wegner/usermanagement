@@ -9,6 +9,7 @@ node {
 }
 
 tasks.register("generateAngularClient") {
+    // TODO: use gradle openapi generator plugin
     doLast {
         exec {
             commandLine("java", "-jar", "openapi-generator-cli.jar", "generate", "-i", "../keycloak-wrapper/build/generated/openapi.yaml", "-g", "typescript-angular", "-o", "src/app/api")
