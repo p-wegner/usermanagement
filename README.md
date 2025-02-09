@@ -7,3 +7,10 @@ features:
 - manage groups: create, edit, delete, search by name with pagination
 - manage roles and composite roles: create, edit, delete, search by name with pagination
 - assign roles to users and groups
+
+# Run backend
+```shell
+./keycloak-wrapper/gradlew.bat bootRun
+```
+# Run frontend
+http://localhost:8080/swagger-ui/index.htm

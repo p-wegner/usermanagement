@@ -36,6 +36,7 @@ class KeycloakRoleFacade(
     fun createRole(role: RoleRepresentation): RoleRepresentation {
         try {
             keycloak.realm(realm).roles().create(role)
+            // TODO: keycloak client lib doesn't provide a response
 //            if (response.status != Response.Status.CREATED.statusCode) {
 //                val errorBody = response.readEntity(String::class.java)
 //                throw KeycloakException("Failed to create role: ${response.status} - $errorBody")
