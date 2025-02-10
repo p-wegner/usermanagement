@@ -32,7 +32,7 @@ docker-compose up -d
 ```
 
 3. Wait for Keycloak to be ready (this may take a few minutes)
-   - Check status: http://localhost:8080/health/ready
+   - Check status: http://localhost:8081/health/ready
    - Default admin credentials: 
      - Username: admin
      - Password: admin
