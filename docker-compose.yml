@@ -2,13 +2,16 @@ version: '3.8'
 
 services:
   keycloak:
-    image: keycloak/keycloak:22.0.5
+    image: keycloak/keycloak:23.0.7
+    container_name: keycloak
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
       - KC_DB=dev-file
     ports:
       - "8080:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
     command: 
       - start-dev
     healthcheck:
@@ -16,3 +19,13 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - keycloak-net
+
+volumes:
+  keycloak_data:
+    name: keycloak_data
+
+networks:
+  keycloak-net:
+    name: keycloak-net
