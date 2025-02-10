@@ -22,4 +22,4 @@
   - [x] Set up test environment
   - [x] Add integration test support
 
-- [ ] update readme how to setup and start the application
+- [x] Update readme how to setup and start the application
