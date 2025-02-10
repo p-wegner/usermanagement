@@ -10,7 +10,7 @@
   - [x] Add Docker Compose properties
   - [x] Configure connection settings
   - [x] Add development profile
-  - [ ] Add test profile
+  - [x] Add test profile
 
 - [x] Add container lifecycle management
   - [x] Configure Spring Boot container support
@@ -19,5 +19,5 @@
 
 - [ ] Update test configuration
   - [x] Add test container dependencies
-  - [ ] Set up test environment
+  - [x] Set up test environment
   - [ ] Add integration test support
