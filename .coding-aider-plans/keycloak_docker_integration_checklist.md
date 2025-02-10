@@ -21,8 +21,3 @@
   - [ ] Configure test containers
   - [ ] Set up test environment
   - [ ] Add integration test support
-
-- [ ] Documentation
-  - [ ] Update README with setup instructions
-  - [ ] Document configuration options
-  - [ ] Add development guidelines
