@@ -17,7 +17,7 @@
   - [x] Add container health checks
   - [x] Set up container wait strategies
 
-- [ ] Update test configuration
+- [x] Update test configuration
   - [x] Add test container dependencies
   - [x] Set up test environment
-  - [ ] Add integration test support
+  - [x] Add integration test support

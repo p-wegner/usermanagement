@@ -10,3 +10,5 @@ files:
   readOnly: false
 - path: docker-compose.yml
   readOnly: false
+- path: keycloak-wrapper/src/test/kotlin/com/example/keycloak_wrapper/config/TestConfig.kt
+  readOnly: false
