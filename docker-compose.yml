@@ -8,19 +8,26 @@ services:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
       - KC_DB=dev-file
+      - KC_HEALTH_ENABLED=true
+      - KC_METRICS_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
     ports:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
     command: 
       - start-dev
+      - --health-enabled=true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - keycloak-net
+    restart: unless-stopped
 
 volumes:
   keycloak_data:
@@ -29,3 +36,4 @@ volumes:
 networks:
   keycloak-net:
     name: keycloak-net
+    driver: bridge
