@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard extends KeycloakAuthGuard {
   constructor(
-    protected override readonly keycloak: KeycloakService
+    protected override readonly keycloak: KeycloakService,
+    private authService: AuthService,
+    private router: Router
   ) {
     super(keycloak);
   }
@@ -17,9 +20,7 @@ export class AuthGuard extends KeycloakAuthGuard {
     state: RouterStateSnapshot
   ): Promise<boolean | UrlTree> {
     if (!this.authenticated) {
-      await this.keycloak.login({
-        redirectUri: window.location.origin + state.url,
-      });
+      await this.authService.login(window.location.origin + state.url);
       return false;
     }
 
@@ -28,6 +29,11 @@ export class AuthGuard extends KeycloakAuthGuard {
       return true;
     }
 
-    return requiredRoles.every((role: string) => this.keycloak.isUserInRole(role));
+    if (!this.authService.hasAnyRole(requiredRoles)) {
+      console.warn('User does not have required roles:', requiredRoles);
+      return this.router.createUrlTree(['/unauthorized']);
+    }
+
+    return true;
   }
 }
