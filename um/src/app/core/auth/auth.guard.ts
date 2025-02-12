@@ -1,21 +1,33 @@
-import { inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from './auth.service';
-import { map, take } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
 
-export const authGuard = () => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard extends KeycloakAuthGuard {
+  constructor(
+    protected override readonly keycloak: KeycloakService
+  ) {
+    super(keycloak);
+  }
 
-  return authService.isAuthenticated$.pipe(
-    take(1),
-    map(isAuthenticated => {
-      if (isAuthenticated) {
-        return true;
-      } else {
-        router.navigate(['/login']);
-        return false;
-      }
-    })
-  );
-};
+  async isAccessAllowed(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Promise<boolean | UrlTree> {
+    if (!this.authenticated) {
+      await this.keycloak.login({
+        redirectUri: window.location.origin + state.url,
+      });
+      return false;
+    }
+
+    const requiredRoles = route.data['roles'];
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
+
+    return requiredRoles.every((role: string) => this.keycloak.isUserInRole(role));
+  }
+}
