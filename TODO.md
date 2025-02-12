@@ -1,6 +1,7 @@
+- [ ] connect keycloak + login  
+- [ ] secure endpoints 
 - [ ] connect frontend to backend
 - [ ] serve frontend from backend
-- [ ] connect keycloak + secure endpoints 
 - [ ] docker build
 - [ ] azure deployment
 - [ ] proper role/composite role management
