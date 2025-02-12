@@ -19,16 +19,25 @@ The application needs to:
 
 ## Implementation Details
 1. Create HTTP interceptors for:
-   - Authentication token management
-   - Error handling
-   - Loading state management
+   - [ ] Authentication token management
+   - [ ] Error handling
+   - [ ] Loading state management
 2. Implement service layers for:
-   - Users
-   - Groups
-   - Permissions
-3. Create data transformation layers
-4. Implement error handling strategies
-5. Add loading state management
+   - [ ] Users service
+   - [ ] Groups service
+   - [ ] Permissions service
+3. Create data transformation layers:
+   - [ ] User DTOs and mappers
+   - [ ] Group DTOs and mappers
+   - [ ] Permission DTOs and mappers
+4. Implement error handling:
+   - [ ] Global error interceptor
+   - [ ] Error display service
+   - [ ] Error boundary components
+5. Add loading state management:
+   - [ ] Loading interceptor
+   - [ ] Loading service
+   - [ ] Loading indicators in UI
 
 ## Additional Notes
 - Use Angular HttpClient for API calls
