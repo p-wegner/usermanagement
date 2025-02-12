@@ -1,41 +1,49 @@
-import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
-import { KeycloakService } from 'keycloak-angular';
+import { 
+  provideKeycloak,
+  withAutoRefreshToken,
+  AutoRefreshTokenService,
+  UserActivityService,
+  createInterceptorCondition,
+  IncludeBearerTokenCondition,
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+  includeBearerTokenInterceptor
+} from 'keycloak-angular';
 
 import { routes } from './app.routes';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { AuthInterceptor } from './core/auth/auth.interceptor';
+import { keycloakConfig, keycloakInitOptions } from './core/auth/auth.config';
 
-function initializeKeycloak(keycloak: KeycloakService) {
-  return () =>
-    keycloak.init({
-      config: {
-        url: 'http://localhost:8081',
-        realm: 'master',
-        clientId: 'admin-cli'
-      },
-      initOptions: {
-        onLoad: 'check-sso',
-        silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-        checkLoginIframe: false,
-        flow: 'standard'
-      },
-      bearerExcludedUrls: ['/assets', '/public']
-    });
-}
+const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
+  bearerPrefix: 'Bearer'
+});
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }), 
+    provideKeycloak({
+      config: keycloakConfig,
+      initOptions: keycloakInitOptions,
+      features: [
+        withAutoRefreshToken({
+          onInactivityTimeout: 'logout',
+          sessionTimeout: 600000 // 10 minutes
+        })
+      ],
+      providers: [AutoRefreshTokenService, UserActivityService]
+    }),
+    {
+      provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+      useValue: [urlCondition]
+    },
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    provideHttpClient(withInterceptors([includeBearerTokenInterceptor])),
     provideAnimations(),
-    provideHttpClient(
-      withInterceptors([AuthInterceptor])
-    ),
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: {
@@ -50,14 +58,6 @@ export const appConfig: ApplicationConfig = {
         horizontalPosition: 'end',
         verticalPosition: 'bottom'
       }
-    },
-    provideAnimationsAsync(),
-    KeycloakService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeKeycloak,
-      multi: true,
-      deps: [KeycloakService]
     }
   ]
 };
