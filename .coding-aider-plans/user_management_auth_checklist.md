@@ -8,14 +8,16 @@
     - [ ] Configure client scopes
 
 2. Frontend Implementation:
-    - [x] Create auth service wrapper
+    - [x] Create auth service wrapper with Keycloak Angular adapter
     - [ ] Implement login component
     - [x] Add logout functionality
-    - [x] Create auth guards for routes
-    - [x] Add token interceptor
+    - [x] Create auth guards with role-based access
+    - [x] Add token interceptor with refresh handling
     - [x] Implement token refresh logic
     - [x] Add session management
     - [ ] Create user profile component
+    - [x] Add Keycloak profile integration
+    - [x] Implement role-based authorization
 
 3. Backend Integration:
     - [ ] Configure Spring Security
