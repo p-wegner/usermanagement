@@ -7,20 +7,20 @@ import {
   HttpErrorResponse
 } from '@angular/common/http';
 import { Observable, from, throwError } from 'rxjs';
-import { catchError, switchMap, retryWhen, delay, take } from 'rxjs/operators';
-import { AuthService } from './auth.service';
+import { catchError, switchMap } from 'rxjs/operators';
+import { KeycloakService } from 'keycloak-angular';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private keycloak: KeycloakService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Skip authentication for public endpoints
-    if (request.url.includes('/public/') || request.url.includes('/auth/')) {
+    if (request.url.includes('/assets/') || request.url.includes('/public/')) {
       return next.handle(request);
     }
 
-    return from(this.authService.getToken()).pipe(
+    return from(this.keycloak.getToken()).pipe(
       switchMap(token => {
         if (token) {
           request = request.clone({
@@ -32,29 +32,12 @@ export class AuthInterceptor implements HttpInterceptor {
         }
         return next.handle(request);
       }),
-      retryWhen(errors => 
-        errors.pipe(
-          delay(1000),
-          take(3)
-        )
-      ),
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
-          return from(this.handleUnauthorized(error));
+          this.keycloak.login();
         }
         return throwError(() => error);
       })
     );
-  }
-
-  private async handleUnauthorized(error: HttpErrorResponse): Promise<never> {
-    try {
-      // Try to refresh the token
-      await this.authService.getToken();
-    } catch (refreshError) {
-      // If refresh fails, logout
-      await this.authService.logout();
-    }
-    throw error;
   }
 }
