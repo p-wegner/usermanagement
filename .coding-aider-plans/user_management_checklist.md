@@ -20,6 +20,18 @@
   - [x] Add permissions management to groups
 - [ ] Complete permissions management implementation
   - [Subplan: Permissions Management](user_management_permissions.md)
+- [ ] Complete backend integration implementation
+  - [ ] Set up HTTP interceptors
+  - [ ] Implement service layer abstractions
+  - [ ] Add error handling
+  - [ ] Implement data transformation
+  - [ ] Add loading state management
+- [ ] Complete authentication implementation
+  - [ ] Configure Keycloak integration
+  - [ ] Implement login/logout flows
+  - [ ] Add route guards
+  - [ ] Set up token management
+  - [ ] Integrate with backend security
 - [x] Add global error handling
 - [x] Add loading states
 - [ ] Test responsive design

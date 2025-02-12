@@ -34,8 +34,17 @@ The application needs a user management system with these key features:
 - Angular Material: https://material.angular.io/
 - Angular Router: https://angular.io/guide/router
 - Angular Forms: https://angular.io/guide/forms-overview
+- Keycloak Documentation: https://www.keycloak.org/documentation
+- Spring Boot Security: https://docs.spring.io/spring-security/reference/index.html
 
 ## Subplans
+<!-- SUBPLAN:user_management_backend -->
+[Subplan: Backend Integration](user_management_backend.md)
+<!-- END_SUBPLAN -->
+
+<!-- SUBPLAN:user_management_auth -->
+[Subplan: Authentication & Authorization](user_management_auth.md)
+<!-- END_SUBPLAN -->
 <!-- SUBPLAN:user_management_shared -->
 [Subplan: Shared Components](user_management_shared.md)
 <!-- END_SUBPLAN -->
