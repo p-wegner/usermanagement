@@ -2,14 +2,19 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
 import { KeycloakProfile } from 'keycloak-js';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private userProfileSubject = new BehaviorSubject<KeycloakProfile | null>(null);
+  private savedUrl: string | null = null;
 
-  constructor(private keycloak: KeycloakService) {
+  constructor(
+    private keycloak: KeycloakService,
+    private router: Router
+  ) {
     this.init();
   }
 
@@ -53,5 +58,18 @@ export class AuthService {
 
   getUsername(): string | undefined {
     return this.keycloak.getKeycloakInstance().tokenParsed?.preferred_username;
+  }
+
+  saveUrl(url: string): void {
+    this.savedUrl = url;
+  }
+
+  redirectToSavedUrl(): void {
+    if (this.savedUrl) {
+      this.router.navigateByUrl(this.savedUrl);
+      this.savedUrl = null;
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 }
