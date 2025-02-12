@@ -38,6 +38,7 @@ export class AuthService {
   }
 
   async login(redirectUri?: string): Promise<void> {
+    this.saveUrl(window.location.pathname);
     await this.keycloak.login({
       redirectUri: redirectUri || window.location.origin
     });
