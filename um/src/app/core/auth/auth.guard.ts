@@ -19,19 +19,27 @@ export class AuthGuard extends KeycloakAuthGuard {
   ): Promise<boolean | UrlTree> {
     if (!this.authenticated) {
       await this.keycloak.login({
-        redirectUri: window.location.origin + state.url
+        redirectUri: window.location.origin + state.url,
+        prompt: 'login'
       });
       return false;
     }
 
+    // Check for resource-specific roles if specified
     const requiredRoles = route.data['roles'];
-    if (!requiredRoles || requiredRoles.length === 0) {
-      return true;
-    }
+    if (requiredRoles && requiredRoles.length > 0) {
+      const hasRole = requiredRoles.some(role => {
+        const roleMatch = this.roles.includes(role);
+        if (!roleMatch) {
+          console.debug(`User missing required role: ${role}`);
+        }
+        return roleMatch;
+      });
 
-    if (!requiredRoles.some(role => this.roles.includes(role))) {
-      console.warn('User does not have any required roles:', requiredRoles);
-      return this.router.createUrlTree(['/unauthorized']);
+      if (!hasRole) {
+        console.warn('Access denied - missing required roles:', requiredRoles);
+        return this.router.createUrlTree(['/unauthorized']);
+      }
     }
 
     return true;

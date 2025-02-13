@@ -37,16 +37,49 @@ export class AuthService {
     return this.userProfileSubject.asObservable();
   }
 
-  async login(redirectUri?: string): Promise<void> {
+  async login(redirectUri?: string, options: { prompt?: string } = {}): Promise<void> {
     this.saveUrl(window.location.pathname);
     await this.keycloak.login({
-      redirectUri: redirectUri || window.location.origin
+      redirectUri: redirectUri || window.location.origin,
+      prompt: options.prompt
     });
   }
 
   async logout(redirectUri?: string): Promise<void> {
-    await this.keycloak.logout(redirectUri || window.location.origin);
-    this.userProfileSubject.next(null);
+    try {
+      await this.keycloak.logout(redirectUri || window.location.origin);
+      this.userProfileSubject.next(null);
+      localStorage.removeItem('user_profile');
+      sessionStorage.clear();
+    } catch (error) {
+      console.error('Logout failed:', error);
+      throw error;
+    }
+  }
+
+  async refreshToken(minValidity: number = 20): Promise<boolean> {
+    try {
+      return await this.keycloak.updateToken(minValidity);
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      await this.login();
+      return false;
+    }
+  }
+
+  async checkAuthentication(): Promise<boolean> {
+    try {
+      const isLoggedIn = await this.keycloak.isLoggedIn();
+      if (isLoggedIn) {
+        const profile = await this.keycloak.loadUserProfile();
+        this.userProfileSubject.next(profile);
+        localStorage.setItem('user_profile', JSON.stringify(profile));
+      }
+      return isLoggedIn;
+    } catch (error) {
+      console.error('Authentication check failed:', error);
+      return false;
+    }
   }
 
   hasRole(role: string): boolean {
