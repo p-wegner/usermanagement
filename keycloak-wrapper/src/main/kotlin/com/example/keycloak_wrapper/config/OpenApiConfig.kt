@@ -18,7 +18,7 @@ class OpenApiConfig(
 ) {
     @Bean
     fun openAPI(): OpenAPI {
-        val securitySchemeName = "Bearer Authentication"
+        val securitySchemeName = "OAuth2"
         
         return OpenAPI()
             .info(
@@ -27,9 +27,11 @@ class OpenApiConfig(
                     .description("""
                         REST API for managing Keycloak users, groups and roles.
                         
-                        To authenticate:
-                        1. Get a token from Keycloak: $keycloakServerUrl/realms/$realm/protocol/openid-connect/token
-                        2. Click 'Authorize' and enter the token with format: Bearer <your-token>
+                        Default credentials:
+                        - Username: admin
+                        - Password: admin
+                        
+                        Click 'Authorize' and use these credentials to login.
                     """.trimIndent())
                     .version("1.0")
             )
@@ -38,15 +40,16 @@ class OpenApiConfig(
                     .addSecuritySchemes(
                         securitySchemeName,
                         SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                            .description(
-                                """
-                                Enter your Bearer token in the format: Bearer <token>
-                                You can obtain a token from: $keycloakServerUrl/realms/$realm/protocol/openid-connect/token
-                                """.trimIndent()
+                            .type(SecurityScheme.Type.OAUTH2)
+                            .flows(
+                                io.swagger.v3.oas.models.security.OAuthFlows()
+                                    .password(
+                                        io.swagger.v3.oas.models.security.OAuthFlow()
+                                            .tokenUrl("$keycloakServerUrl/realms/$realm/protocol/openid-connect/token")
+                                            .scopes(mapOf())
+                                    )
                             )
+                            .description("OAuth2 authentication with Keycloak")
                     )
             )
             .addSecurityItem(SecurityRequirement().addList(securitySchemeName))
