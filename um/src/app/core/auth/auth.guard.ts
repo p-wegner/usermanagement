@@ -1,47 +1,36 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
-import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { KeycloakService } from 'keycloak-angular';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard extends KeycloakAuthGuard {
-  constructor(
-    protected override readonly keycloak: KeycloakService,
-    private router: Router
-  ) {
-    super(keycloak);
+export const authGuard: CanActivateFn = async (route, state) => {
+  const keycloak = inject(KeycloakService);
+  const router = inject(Router);
+
+  if (!await keycloak.isLoggedIn()) {
+    await keycloak.login({
+      redirectUri: window.location.origin + state.url,
+    });
+    return false;
   }
 
-  async isAccessAllowed(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Promise<boolean | UrlTree> {
-    if (!this.authenticated) {
-      await this.keycloak.login({
-        redirectUri: window.location.origin + state.url,
-        prompt: 'login'
-      });
-      return false;
-    }
-
-    // Check for resource-specific roles if specified
-    const requiredRoles = route.data['roles'];
-    if (requiredRoles && requiredRoles.length > 0) {
-      const hasRole = requiredRoles.some(role => {
-        const roleMatch = this.roles.includes(role);
-        if (!roleMatch) {
-          console.debug(`User missing required role: ${role}`);
-        }
-        return roleMatch;
-      });
-
-      if (!hasRole) {
-        console.warn('Access denied - missing required roles:', requiredRoles);
-        return this.router.createUrlTree(['/unauthorized']);
-      }
-    }
-
+  const requiredRoles = route.data['roles'] as Array<string>;
+  if (!requiredRoles || requiredRoles.length === 0) {
     return true;
   }
-}
+
+  const hasRequiredRole = requiredRoles.some(role => {
+    const roleMatch = keycloak.isUserInRole(role);
+    if (!roleMatch) {
+      console.debug(`User missing required role: ${role}`);
+    }
+    return roleMatch;
+  });
+
+  if (!hasRequiredRole) {
+    console.warn('Access denied - missing required roles:', requiredRoles);
+    await router.navigate(['/forbidden']);
+    return false;
+  }
+
+  return true;
+};
