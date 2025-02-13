@@ -60,7 +60,7 @@ class SecurityConfig(
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
             // Allow both frontend and Swagger UI origins
-            allowedOrigins = listOf("*")
+            allowedOrigins = allowedOrigins + listOf("http://localhost:8081")
             allowedMethods = listOf(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),

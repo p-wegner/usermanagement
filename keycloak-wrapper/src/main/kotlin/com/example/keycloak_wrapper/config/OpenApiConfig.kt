@@ -46,7 +46,7 @@ class OpenApiConfig(
                             .bearerFormat("JWT")
                             .flows(
                                 io.swagger.v3.oas.models.security.OAuthFlows()
-                                    .password(
+                                    .clientCredentials(
                                         io.swagger.v3.oas.models.security.OAuthFlow()
                                             .tokenUrl("${keycloakServerUrl}realms/$realm/protocol/openid-connect/token")
                                             .scopes(Scopes())
