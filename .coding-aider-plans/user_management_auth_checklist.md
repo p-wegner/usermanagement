@@ -4,7 +4,7 @@
     - [ ] Configure Keycloak realm
     - [ ] Set up client applications
     - [ ] Configure user federation if needed
-    - [ ] Set up required roles and groups
+    - [x] Set up required roles and groups
     - [ ] Configure client scopes
 
 2. Frontend Implementation:
@@ -33,3 +33,4 @@
     - [x] Add token propagation logic
     - [x] Enhance CORS configuration
     - [x] Secure actuator endpoints
+    - [x] Implement viewer role permissions
