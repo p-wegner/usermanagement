@@ -68,4 +68,45 @@ class SecurityContextHelper {
         }
         return null
     }
+
+    fun getTokenClaims(): Map<String, Any> {
+        val authentication = SecurityContextHolder.getContext().authentication
+        return if (authentication is JwtAuthenticationToken) {
+            authentication.token.claims
+        } else {
+            emptyMap()
+        }
+    }
+
+    fun getResourceRoles(resource: String): List<String> {
+        val claims = getTokenClaims()
+        @Suppress("UNCHECKED_CAST")
+        val resourceAccess = claims["resource_access"] as? Map<String, Any>
+        @Suppress("UNCHECKED_CAST")
+        val resourceRoles = (resourceAccess?.get(resource) as? Map<String, Any>)?.get("roles") as? List<String>
+        return resourceRoles ?: emptyList()
+    }
+
+    fun getRealmRoles(): List<String> {
+        val claims = getTokenClaims()
+        @Suppress("UNCHECKED_CAST")
+        val realmAccess = claims["realm_access"] as? Map<String, Any>
+        @Suppress("UNCHECKED_CAST")
+        val roles = realmAccess?.get("roles") as? List<String>
+        return roles ?: emptyList()
+    }
+
+    fun getTokenExpirationTime(): Long? {
+        val claims = getTokenClaims()
+        return claims["exp"] as? Long
+    }
+
+    fun isTokenExpired(): Boolean {
+        val expirationTime = getTokenExpirationTime()
+        return if (expirationTime != null) {
+            System.currentTimeMillis() / 1000 >= expirationTime
+        } else {
+            true
+        }
+    }
 }

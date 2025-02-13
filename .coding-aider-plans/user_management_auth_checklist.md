@@ -28,6 +28,7 @@
     - [x] Add granular endpoint security
     - [x] Add proper error handling
     - [x] Add security context helper
+    - [x] Enhance token handling and claims extraction
     - [x] Implement method security
     - [x] Add token propagation logic
     - [x] Enhance CORS configuration
