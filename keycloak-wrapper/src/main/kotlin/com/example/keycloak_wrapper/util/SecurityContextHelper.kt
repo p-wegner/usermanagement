@@ -14,6 +14,15 @@ class SecurityContextHelper {
         return null
     }
 
+    fun getCurrentUsername(): String? {
+        return SecurityContextHolder.getContext().authentication?.name
+    }
+
+    fun isAuthenticated(): Boolean {
+        val authentication = SecurityContextHolder.getContext().authentication
+        return authentication != null && authentication.isAuthenticated
+    }
+
     fun hasRole(role: String): Boolean {
         val authentication = SecurityContextHolder.getContext().authentication
         return authentication?.authorities?.any { it.authority == "ROLE_${role.uppercase()}" } ?: false
@@ -21,6 +30,27 @@ class SecurityContextHelper {
 
     fun hasAnyRole(roles: List<String>): Boolean {
         return roles.any { hasRole(it) }
+    }
+
+    fun getAuthorities(): List<String> {
+        return SecurityContextHolder.getContext().authentication?.authorities
+            ?.map { it.authority }
+            ?.filter { it.startsWith("ROLE_") }
+            ?.map { it.removePrefix("ROLE_") }
+            ?.toList() 
+            ?: emptyList()
+    }
+
+    fun hasResourceRole(role: String, resource: String): Boolean {
+        val authentication = SecurityContextHolder.getContext().authentication
+        return authentication?.authorities?.any { 
+            it.authority == "ROLE_${role.uppercase()}" && 
+            it.authority.contains(resource.uppercase())
+        } ?: false
+    }
+
+    fun hasAnyResourceRole(roles: List<String>, resource: String): Boolean {
+        return roles.any { hasResourceRole(it, resource) }
     }
 
     fun getToken(): String? {
