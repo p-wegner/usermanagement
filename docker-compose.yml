@@ -14,10 +14,11 @@ services:
       - KC_HOSTNAME_STRICT_HTTPS=false
       - KC_HTTP_ENABLED=true
       - KC_PROXY=edge
-      - KC_HOSTNAME=localhost:8081
-      - KC_HOSTNAME_ADMIN=localhost:8081
-      - KC_HOSTNAME_PATH=/
-      - KC_HTTP_RELATIVE_PATH=/
+      - KC_HOSTNAME=localhost
+      - KC_HOSTNAME_PORT=8081
+      - KC_HOSTNAME_ADMIN_URL=http://localhost:8081
+      - KC_HOSTNAME_PATH=/auth
+      - KC_HTTP_RELATIVE_PATH=/auth
     ports:
       - "8081:8080"
     volumes:
