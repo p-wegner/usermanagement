@@ -1,5 +1,6 @@
 package com.example.keycloak_wrapper.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
@@ -27,8 +28,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
     securedEnabled = true,
     jsr250Enabled = true
 )
-class SecurityConfig {
-
+class SecurityConfig(
+    @Value("\${app.cors.allowed-origins:http://localhost:4200}")
+    private val allowedOrigins: List<String>
+) {
     @Bean
     fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
         return NullAuthenticatedSessionStrategy()
@@ -44,7 +47,7 @@ class SecurityConfig {
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            allowedOrigins = listOf("http://localhost:4200") // Angular default dev server
+            allowedOrigins = this@SecurityConfig.allowedOrigins
             allowedMethods = listOf(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
@@ -52,7 +55,20 @@ class SecurityConfig {
                 HttpMethod.DELETE.name(),
                 HttpMethod.OPTIONS.name()
             )
-            allowedHeaders = listOf("*")
+            allowedHeaders = listOf(
+                "Authorization",
+                "Content-Type",
+                "X-Requested-With",
+                "Accept",
+                "Origin",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"
+            )
+            exposedHeaders = listOf(
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Credentials",
+                "Authorization"
+            )
             allowCredentials = true
             maxAge = 3600L
         }
@@ -77,11 +93,15 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 // Public endpoints
                 it.requestMatchers(
-                    "/actuator/**",
+                    "/actuator/health",
+                    "/actuator/info",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/error"
                 ).permitAll()
+
+                // Secured actuator endpoints
+                it.requestMatchers("/actuator/**").hasRole("ADMIN")
 
                 // User management endpoints
                 it.requestMatchers(HttpMethod.GET, "/api/users/**")

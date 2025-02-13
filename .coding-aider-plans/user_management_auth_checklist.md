@@ -30,3 +30,5 @@
     - [ ] Add security context helper
     - [x] Implement method security
     - [x] Add token propagation logic
+    - [x] Enhance CORS configuration
+    - [x] Secure actuator endpoints
