@@ -122,6 +122,17 @@ export class AuthService {
     return this.keycloak.getKeycloakInstance().tokenParsed?.preferred_username;
   }
 
+  async loadUserProfile(): Promise<KeycloakProfile> {
+    try {
+      const profile = await this.keycloak.loadUserProfile();
+      this.userProfileSubject.next(profile);
+      return profile;
+    } catch (error) {
+      console.error('Failed to load user profile:', error);
+      throw error;
+    }
+  }
+
   saveUrl(url: string): void {
     this.savedUrl = url;
   }
