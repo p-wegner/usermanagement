@@ -49,8 +49,6 @@ class OpenApiConfig(
                                     .password(
                                         io.swagger.v3.oas.models.security.OAuthFlow()
                                             .tokenUrl("${keycloakServerUrl}realms/$realm/protocol/openid-connect/token")
-                                            .authorizationUrl("${keycloakServerUrl}realms/$realm/protocol/openid-connect/auth")
-                                            .refreshUrl("${keycloakServerUrl}realms/$realm/protocol/openid-connect/token")
                                             .scopes(Scopes())
                                     )
                             )
