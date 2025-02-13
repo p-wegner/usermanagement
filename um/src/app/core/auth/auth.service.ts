@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, from } from 'rxjs';
+import { BehaviorSubject, Observable, from, timer } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
-import { KeycloakProfile } from 'keycloak-js';
+import { KeycloakProfile, KeycloakTokenParsed } from 'keycloak-js';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -10,12 +10,15 @@ import { Router } from '@angular/router';
 export class AuthService {
   private userProfileSubject = new BehaviorSubject<KeycloakProfile | null>(null);
   private savedUrl: string | null = null;
+  private readonly TOKEN_MIN_VALIDITY_SECONDS = 70;
+  private readonly TOKEN_CHECK_INTERVAL = 60000; // 1 minute
 
   constructor(
     private keycloak: KeycloakService,
     private router: Router
   ) {
     this.init();
+    this.setupTokenRefresh();
   }
 
   private async init() {
@@ -23,10 +26,24 @@ export class AuthService {
       if (await this.keycloak.isLoggedIn()) {
         const profile = await this.keycloak.loadUserProfile();
         this.userProfileSubject.next(profile);
+        localStorage.setItem('user_profile', JSON.stringify(profile));
       }
     } catch (error) {
       console.error('Failed to initialize auth service:', error);
     }
+  }
+
+  private setupTokenRefresh(): void {
+    timer(0, this.TOKEN_CHECK_INTERVAL).subscribe(() => {
+      this.keycloak.isTokenExpired(this.TOKEN_MIN_VALIDITY_SECONDS).then(isExpired => {
+        if (isExpired) {
+          this.refreshToken().catch(error => {
+            console.error('Auto token refresh failed:', error);
+            this.login();
+          });
+        }
+      });
+    });
   }
 
   isAuthenticated(): Observable<boolean> {
@@ -35,6 +52,10 @@ export class AuthService {
 
   getUserProfile(): Observable<KeycloakProfile | null> {
     return this.userProfileSubject.asObservable();
+  }
+
+  getTokenParsed(): KeycloakTokenParsed | undefined {
+    return this.keycloak.getKeycloakInstance().tokenParsed;
   }
 
   async login(redirectUri?: string, options: { prompt?: string } = {}): Promise<void> {
@@ -57,13 +78,16 @@ export class AuthService {
     }
   }
 
-  async refreshToken(minValidity: number = 20): Promise<boolean> {
+  async refreshToken(minValidity: number = this.TOKEN_MIN_VALIDITY_SECONDS): Promise<boolean> {
     try {
-      return await this.keycloak.updateToken(minValidity);
+      const success = await this.keycloak.updateToken(minValidity);
+      if (!success) {
+        console.warn('Token refresh was not successful');
+      }
+      return success;
     } catch (error) {
       console.error('Token refresh failed:', error);
-      await this.login();
-      return false;
+      throw error;
     }
   }
 
@@ -84,6 +108,10 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     return this.keycloak.isUserInRole(role);
+  }
+
+  hasAnyRole(roles: string[]): boolean {
+    return roles.some(role => this.hasRole(role));
   }
 
   getRoles(): string[] {

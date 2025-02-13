@@ -8,9 +8,10 @@ import {
   HttpHeaders
 } from '@angular/common/http';
 import { Observable, from, throwError } from 'rxjs';
-import { catchError, switchMap, finalize } from 'rxjs/operators';
+import { catchError, switchMap, finalize, retryWhen, delay, take } from 'rxjs/operators';
 import { KeycloakService } from 'keycloak-angular';
 import { Router } from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -22,9 +23,12 @@ export class AuthInterceptor implements HttpInterceptor {
     '/v3/api-docs',
     '/swagger-ui'
   ];
+  private readonly maxRetries = 3;
+  private readonly retryDelay = 1000;
 
   constructor(
     private keycloak: KeycloakService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -47,11 +51,17 @@ export class AuthInterceptor implements HttpInterceptor {
         const authRequest = request.clone({ headers });
         return next.handle(authRequest);
       }),
+      retryWhen(errors => 
+        errors.pipe(
+          delay(this.retryDelay),
+          take(this.maxRetries)
+        )
+      ),
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401 && !this.refreshTokenInProgress) {
           this.refreshTokenInProgress = true;
           
-          return from(this.keycloak.updateToken(20)).pipe(
+          return from(this.authService.refreshToken()).pipe(
             switchMap(() => {
               return from(this.keycloak.getToken()).pipe(
                 switchMap(newToken => {
@@ -67,8 +77,7 @@ export class AuthInterceptor implements HttpInterceptor {
             }),
             catchError(refreshError => {
               console.error('Token refresh failed:', refreshError);
-              this.keycloak.logout();
-              this.router.navigate(['/login']);
+              this.authService.logout();
               return throwError(() => refreshError);
             }),
             finalize(() => {
