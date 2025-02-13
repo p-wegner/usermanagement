@@ -4,21 +4,32 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpErrorResponse
+  HttpErrorResponse,
+  HttpHeaders
 } from '@angular/common/http';
 import { Observable, from, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, switchMap, finalize } from 'rxjs/operators';
 import { KeycloakService } from 'keycloak-angular';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private keycloak: KeycloakService) {}
+  private refreshTokenInProgress = false;
+  private readonly publicPaths = [
+    '/assets/',
+    '/public/',
+    '/api/public/',
+    '/v3/api-docs',
+    '/swagger-ui'
+  ];
+
+  constructor(
+    private keycloak: KeycloakService,
+    private router: Router
+  ) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Skip authentication for public endpoints
-    if (request.url.includes('/assets/') || 
-        request.url.includes('/public/') ||
-        request.url.includes('/api/public/')) {
+    if (this.isPublicPath(request.url)) {
       return next.handle(request);
     }
 
@@ -28,39 +39,54 @@ export class AuthInterceptor implements HttpInterceptor {
           return throwError(() => new Error('No token available'));
         }
 
-        const authRequest = request.clone({
-          setHeaders: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
+        const headers = new HttpHeaders()
+          .set('Authorization', `Bearer ${token}`)
+          .set('Content-Type', 'application/json')
+          .set('X-Requested-With', 'XMLHttpRequest');
+
+        const authRequest = request.clone({ headers });
         return next.handle(authRequest);
       }),
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
+        if (error.status === 401 && !this.refreshTokenInProgress) {
+          this.refreshTokenInProgress = true;
+          
           return from(this.keycloak.updateToken(20)).pipe(
             switchMap(() => {
               return from(this.keycloak.getToken()).pipe(
                 switchMap(newToken => {
-                  const retryRequest = request.clone({
-                    setHeaders: {
-                      Authorization: `Bearer ${newToken}`,
-                      'Content-Type': 'application/json'
-                    }
-                  });
+                  const headers = new HttpHeaders()
+                    .set('Authorization', `Bearer ${newToken}`)
+                    .set('Content-Type', 'application/json')
+                    .set('X-Requested-With', 'XMLHttpRequest');
+
+                  const retryRequest = request.clone({ headers });
                   return next.handle(retryRequest);
                 })
               );
             }),
-            catchError(() => {
-              this.keycloak.login();
-              return throwError(() => error);
+            catchError(refreshError => {
+              console.error('Token refresh failed:', refreshError);
+              this.keycloak.logout();
+              this.router.navigate(['/login']);
+              return throwError(() => refreshError);
+            }),
+            finalize(() => {
+              this.refreshTokenInProgress = false;
             })
           );
         }
+
+        if (error.status === 403) {
+          this.router.navigate(['/forbidden']);
+        }
+
         return throwError(() => error);
       })
     );
+  }
+
+  private isPublicPath(url: string): boolean {
+    return this.publicPaths.some(path => url.includes(path));
   }
 }
