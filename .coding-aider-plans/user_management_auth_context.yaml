@@ -1,0 +1,4 @@
+---
+files:
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/config/SecurityConfig.kt
+    readOnly: false

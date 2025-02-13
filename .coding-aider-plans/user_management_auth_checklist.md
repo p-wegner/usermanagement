@@ -20,8 +20,8 @@
     - [x] Implement role-based authorization
 
 3. Backend Integration:
-    - [ ] Configure Spring Security
-    - [ ] Add Keycloak adapter configuration
+    - [x] Configure Spring Security
+    - [x] Add Keycloak adapter configuration
     - [ ] Implement token validation
     - [ ] Set up role-based access control
     - [ ] Add security context helper
