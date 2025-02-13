@@ -4,12 +4,14 @@ import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "Users", description = "User management endpoints")
+@PreAuthorize("isAuthenticated()")
 class UserController(
     private val userService: UserService
 ) {
@@ -18,6 +20,7 @@ class UserController(
         summary = "Get users",
         description = "Retrieve a paginated list of users with optional search"
     )
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER', 'USER_VIEWER')")
     @GetMapping
     fun getUsers(
         @RequestParam(defaultValue = "0") page: Int,
@@ -33,18 +36,21 @@ class UserController(
         return ResponseEntity.ok(ApiResponse(success = true, data = response))
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER', 'USER_VIEWER')")
     @GetMapping("/{id}")
     fun getUser(@PathVariable id: String): ResponseEntity<ApiResponse<UserDto>> {
         val user = userService.getUser(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = user))
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER')")
     @PostMapping
     fun createUser(@RequestBody user: UserCreateDto): ResponseEntity<ApiResponse<UserDto>> {
         val createdUser = userService.createUser(user)
         return ResponseEntity.ok(ApiResponse(success = true, data = createdUser))
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER')")
     @PutMapping("/{id}")
     fun updateUser(
         @PathVariable id: String,
@@ -54,6 +60,7 @@ class UserController(
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedUser))
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     fun deleteUser(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
         userService.deleteUser(id)

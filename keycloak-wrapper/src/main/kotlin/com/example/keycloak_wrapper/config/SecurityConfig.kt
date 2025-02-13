@@ -103,35 +103,6 @@ class SecurityConfig(
                 // Secured actuator endpoints
                 it.requestMatchers("/actuator/**").hasRole("ADMIN")
 
-                // User management endpoints
-                it.requestMatchers(HttpMethod.GET, "/api/users/**")
-                    .hasAnyRole("ADMIN", "USER_MANAGER", "USER_VIEWER")
-                it.requestMatchers(HttpMethod.POST, "/api/users/**")
-                    .hasAnyRole("ADMIN", "USER_MANAGER")
-                it.requestMatchers(HttpMethod.PUT, "/api/users/**")
-                    .hasAnyRole("ADMIN", "USER_MANAGER")
-                it.requestMatchers(HttpMethod.DELETE, "/api/users/**")
-                    .hasAnyRole("ADMIN")
-
-                // Group management endpoints
-                it.requestMatchers(HttpMethod.GET, "/api/groups/**")
-                    .hasAnyRole("ADMIN", "GROUP_MANAGER", "GROUP_VIEWER")
-                it.requestMatchers(HttpMethod.POST, "/api/groups/**")
-                    .hasAnyRole("ADMIN", "GROUP_MANAGER")
-                it.requestMatchers(HttpMethod.PUT, "/api/groups/**")
-                    .hasAnyRole("ADMIN", "GROUP_MANAGER")
-                it.requestMatchers(HttpMethod.DELETE, "/api/groups/**")
-                    .hasRole("ADMIN")
-
-                // Role management endpoints
-                it.requestMatchers(HttpMethod.GET, "/api/roles/**")
-                    .hasAnyRole("ADMIN", "ROLE_VIEWER")
-                it.requestMatchers(HttpMethod.POST, "/api/roles/**")
-                    .hasRole("ADMIN")
-                it.requestMatchers(HttpMethod.PUT, "/api/roles/**")
-                    .hasRole("ADMIN")
-                it.requestMatchers(HttpMethod.DELETE, "/api/roles/**")
-                    .hasRole("ADMIN")
 
                 // Require authentication for all other endpoints
                 it.anyRequest().authenticated()
