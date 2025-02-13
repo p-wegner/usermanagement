@@ -59,7 +59,11 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            allowedOrigins = this@SecurityConfig.allowedOrigins
+            // Allow both frontend and Swagger UI origins
+            allowedOrigins = listOf(
+                *this@SecurityConfig.allowedOrigins.toTypedArray(),
+                "http://localhost:8080"
+            )
             allowedMethods = listOf(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
