@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
+import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -30,8 +32,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 )
 class SecurityConfig(
     @Value("\${app.cors.allowed-origins:http://localhost:4200}")
-    private val allowedOrigins: List<String>
+    private val allowedOrigins: List<String>,
+    @Value("\${keycloak.auth-server-url}")
+    private val keycloakServerUrl: String,
+    @Value("\${keycloak.realm}")
+    private val realm: String
 ) {
+
+    @Bean
+    fun jwtDecoder(): JwtDecoder {
+        val jwkSetUri = "$keycloakServerUrl/realms/$realm/protocol/openid-connect/certs"
+        return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build()
+    }
     @Bean
     fun sessionAuthenticationStrategy(): SessionAuthenticationStrategy {
         return NullAuthenticatedSessionStrategy()
