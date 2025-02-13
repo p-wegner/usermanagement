@@ -3,6 +3,7 @@ package com.example.keycloak_wrapper.config
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.security.Scopes
 import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.security.SecurityRequirement
 import org.springframework.beans.factory.annotation.Value
@@ -46,7 +47,7 @@ class OpenApiConfig(
                                     .password(
                                         io.swagger.v3.oas.models.security.OAuthFlow()
                                             .tokenUrl("$keycloakServerUrl/realms/$realm/protocol/openid-connect/token")
-                                            .scopes(mapOf())
+                                            .scopes(Scopes())
                                     )
                             )
                             .description("OAuth2 authentication with Keycloak")
