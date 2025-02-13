@@ -27,7 +27,7 @@
     - [x] Configure CORS for Angular frontend
     - [x] Add granular endpoint security
     - [x] Add proper error handling
-    - [ ] Add security context helper
+    - [x] Add security context helper
     - [x] Implement method security
     - [x] Add token propagation logic
     - [x] Enhance CORS configuration
