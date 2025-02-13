@@ -42,13 +42,15 @@ class OpenApiConfig(
                         securitySchemeName,
                         SecurityScheme()
                             .type(SecurityScheme.Type.OAUTH2)
+                            .scheme("bearer")
+                            .bearerFormat("JWT")
                             .flows(
                                 io.swagger.v3.oas.models.security.OAuthFlows()
                                     .password(
                                         io.swagger.v3.oas.models.security.OAuthFlow()
-                                            .tokenUrl("$keycloakServerUrl/realms/$realm/protocol/openid-connect/token")
-                                            .authorizationUrl("$keycloakServerUrl/realms/$realm/protocol/openid-connect/auth")
-                                            .refreshUrl("$keycloakServerUrl/realms/$realm/protocol/openid-connect/token")
+                                            .tokenUrl("${keycloakServerUrl}realms/$realm/protocol/openid-connect/token")
+                                            .authorizationUrl("${keycloakServerUrl}realms/$realm/protocol/openid-connect/auth")
+                                            .refreshUrl("${keycloakServerUrl}realms/$realm/protocol/openid-connect/token")
                                             .scopes(Scopes())
                                     )
                             )
