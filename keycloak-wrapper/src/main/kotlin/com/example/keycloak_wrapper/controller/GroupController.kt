@@ -24,13 +24,13 @@ class GroupController(
     @GetMapping("/{id}")
     fun getGroup(@PathVariable id: String): ResponseEntity<ApiResponse<GroupDto>> {
         val group = groupService.getGroup(id)
-        return ResponseEntity.ok(ApiResponse(success = true, data = group))
+        return group.responseEntity()
     }
 
     @PostMapping
     fun createGroup(@RequestBody group: GroupCreateDto): ResponseEntity<ApiResponse<GroupDto>> {
         val createdGroup = groupService.createGroup(group)
-        return ResponseEntity.ok(ApiResponse(success = true, data = createdGroup))
+        return createdGroup.responseEntity()
     }
 
     @PutMapping("/{id}")
@@ -39,8 +39,11 @@ class GroupController(
         @RequestBody group: GroupUpdateDto
     ): ResponseEntity<ApiResponse<GroupDto>> {
         val updatedGroup = groupService.updateGroup(id, group)
-        return ResponseEntity.ok(ApiResponse(success = true, data = updatedGroup))
+        return updatedGroup.responseEntity()
     }
+
+    private fun GroupDto.responseEntity() =
+        ResponseEntity.ok(ApiResponse(success = true, data = this))
 
     @DeleteMapping("/{id}")
     fun deleteGroup(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
