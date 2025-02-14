@@ -3,6 +3,8 @@ package com.example.keycloak_wrapper.config
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.security.OAuthFlow
+import io.swagger.v3.oas.models.security.OAuthFlows
 import io.swagger.v3.oas.models.security.Scopes
 import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.security.SecurityRequirement
@@ -15,11 +17,14 @@ class OpenApiConfig(
     @Value("\${keycloak.auth-server-url}")
     private val keycloakServerUrl: String,
     @Value("\${keycloak.realm}")
-    private val realm: String
+    private val realm: String,
+    @Value("\${keycloak.resource}")
+    private val clientId: String
 ) {
     @Bean
     fun openAPI(): OpenAPI {
         val securitySchemeName = "OAuth2"
+        val realmUrl = "${keycloakServerUrl}realms/$realm"
         
         return OpenAPI()
             .info(
@@ -32,7 +37,7 @@ class OpenApiConfig(
                         - Username: admin
                         - Password: admin
                         
-                        Click 'Authorize' and use these credentials to login.
+                        Click 'Authorize' to login.
                     """.trimIndent())
                     .version("1.0")
             )
@@ -41,10 +46,15 @@ class OpenApiConfig(
                     .addSecuritySchemes(
                         securitySchemeName,
                         SecurityScheme()
-                            .type(SecurityScheme.Type.HTTP)
-                            .scheme("bearer")
-                            .bearerFormat("JWT")
-                            .description("Enter your Bearer token (without 'Bearer ' prefix)")
+                            .type(SecurityScheme.Type.OAUTH2)
+                            .flows(
+                                OAuthFlows()
+                                    .password(
+                                        OAuthFlow()
+                                            .tokenUrl("$realmUrl/protocol/openid-connect/token")
+                                            .scopes(Scopes())
+                                    )
+                            )
                     )
             )
             .addSecurityItem(SecurityRequirement().addList(securitySchemeName))
