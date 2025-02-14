@@ -25,10 +25,15 @@ class KeycloakConfig {
     fun keycloak(): Keycloak {
         return KeycloakBuilder.builder()
             .serverUrl(authServerUrl)
-            .realm(realm)
+            .realm("master")  // Always use master realm for admin operations
             .clientId(clientId)
             .clientSecret(clientSecret)
             .grantType("client_credentials")
+            .resteasyClient(
+                org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl()
+                    .connectionPoolSize(10)
+                    .build()
+            )
             .build()
     }
 }
