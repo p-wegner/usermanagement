@@ -37,7 +37,7 @@ class OpenApiConfig(
                         - Username: admin
                         - Password: admin
                         
-                        Click 'Authorize' to login.
+                        Click 'Authorize' and use the credentials above to login.
                     """.trimIndent())
                     .version("1.0")
             )
@@ -49,9 +49,8 @@ class OpenApiConfig(
                             .type(SecurityScheme.Type.OAUTH2)
                             .flows(
                                 OAuthFlows()
-                                    .authorizationCode(
+                                    .password(
                                         OAuthFlow()
-                                            .authorizationUrl("$realmUrl/protocol/openid-connect/auth")
                                             .tokenUrl("$realmUrl/protocol/openid-connect/token")
                                             .refreshUrl("$realmUrl/protocol/openid-connect/token")
                                             .scopes(Scopes())
