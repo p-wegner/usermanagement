@@ -41,18 +41,10 @@ class OpenApiConfig(
                     .addSecuritySchemes(
                         securitySchemeName,
                         SecurityScheme()
-                            .type(SecurityScheme.Type.OAUTH2)
+                            .type(SecurityScheme.Type.HTTP)
                             .scheme("bearer")
                             .bearerFormat("JWT")
-                            .flows(
-                                io.swagger.v3.oas.models.security.OAuthFlows()
-                                    .clientCredentials(
-                                        io.swagger.v3.oas.models.security.OAuthFlow()
-                                            .tokenUrl("${keycloakServerUrl}realms/$realm/protocol/openid-connect/token")
-                                            .scopes(Scopes())
-                                    )
-                            )
-                            .description("OAuth2 authentication with Keycloak")
+                            .description("Enter your Bearer token (without 'Bearer ' prefix)")
                     )
             )
             .addSecurityItem(SecurityRequirement().addList(securitySchemeName))
