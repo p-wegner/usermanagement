@@ -49,9 +49,11 @@ class OpenApiConfig(
                             .type(SecurityScheme.Type.OAUTH2)
                             .flows(
                                 OAuthFlows()
-                                    .password(
+                                    .authorizationCode(
                                         OAuthFlow()
+                                            .authorizationUrl("$realmUrl/protocol/openid-connect/auth")
                                             .tokenUrl("$realmUrl/protocol/openid-connect/token")
+                                            .refreshUrl("$realmUrl/protocol/openid-connect/token")
                                             .scopes(Scopes())
                                     )
                             )
