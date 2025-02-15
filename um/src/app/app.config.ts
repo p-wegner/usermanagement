@@ -1,4 +1,5 @@
 import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -46,11 +47,7 @@ export const appConfig: ApplicationConfig = {
       deps: [KeycloakService, AuthConfigService],
     },
     provideKeycloak({
-      config: {
-        url: 'http://localhost:8081',
-        realm: 'master',
-        clientId: 'keycloak-wrapper-client'
-      },
+      config: await firstValueFrom(authConfig.getConfig()),
       initOptions: keycloakInitOptions,
       features: [
         withAutoRefreshToken({
