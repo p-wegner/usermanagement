@@ -55,6 +55,14 @@ npm start
 ### Backend Development
 
 - Access Swagger UI: http://localhost:8080/swagger-ui/index.html
+- To use Swagger UI:
+  1. Click the "Authorize" button at the top
+  2. Use these credentials:
+     - Username: admin
+     - Password: admin
+  3. Click "Authorize" to log in
+  4. Close the authorization dialog
+  5. You can now test the API endpoints
 - Generate OpenAPI documentation:
 ```shell
 ./gradlew generateOpenApiJson
