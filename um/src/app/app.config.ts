@@ -1,5 +1,4 @@
 import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -14,7 +13,7 @@ import {
   createInterceptorCondition,
   IncludeBearerTokenCondition,
   INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
-  includeBearerTokenInterceptor
+  includeBearerTokenInterceptor, KeycloakOptions
 } from 'keycloak-angular';
 
 import { routes } from './app.routes';
@@ -37,6 +36,18 @@ function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigSer
     });
   };
 }
+
+let options: KeycloakOptions = {
+  initOptions: keycloakInitOptions,
+  configResolver: (service: AuthConfigService) => service.getConfig(),
+  features: [
+    withAutoRefreshToken({
+      onInactivityTimeout: 'logout',
+      sessionTimeout: 600000 // 10 minutes
+    })
+  ],
+  providers: [AutoRefreshTokenService, UserActivityService]
+};
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
@@ -46,17 +57,7 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak({
-      config: await firstValueFrom(authConfig.getConfig()),
-      initOptions: keycloakInitOptions,
-      features: [
-        withAutoRefreshToken({
-          onInactivityTimeout: 'logout',
-          sessionTimeout: 600000 // 10 minutes
-        })
-      ],
-      providers: [AutoRefreshTokenService, UserActivityService]
-    }),
+    provideKeycloak(options),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
