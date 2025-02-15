@@ -29,7 +29,10 @@ function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigSer
     const config = await authConfig.getConfig();
     await keycloak.init({
       config,
-      initOptions: keycloakInitOptions,
+      initOptions: {
+        ...keycloakInitOptions,
+        onLoad: 'check-sso' as const
+      },
     });
   };
 }
