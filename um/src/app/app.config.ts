@@ -59,10 +59,7 @@ export const appConfig: ApplicationConfig = {
         clientId: ''
       },
       initOptions: keycloakInitOptions,
-      enableBearerInterceptor: true,
-      loadUserProfileAtStartUp: true,
-      bearerPrefix: 'Bearer',
-      bearerExcludedUrls: []
+      loadUserProfileAtStartUp: true
     }),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
