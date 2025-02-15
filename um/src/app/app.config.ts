@@ -27,26 +27,29 @@ const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
 
 function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigService) {
   return async () => {
-    const config = await authConfig.getConfig();
-    await keycloak.init({
-      config,
-      initOptions: {
-        ...keycloakInitOptions,
-      },
-    });
+    try {
+      const config = await authConfig.getConfig();
+      await keycloak.init({
+        config,
+        initOptions: keycloakInitOptions,
+        enableBearerInterceptor: true,
+        bearerPrefix: 'Bearer',
+        bearerExcludedUrls: []
+      });
+    } catch (error) {
+      console.error('Failed to initialize Keycloak:', error);
+      throw error;
+    }
   };
 }
 
 let options: KeycloakOptions = {
+  config: await new AuthConfigService(new HttpClient()).getConfig(),
   initOptions: keycloakInitOptions,
-  configResolver: (service: AuthConfigService) => service.getConfig(),
-  features: [
-    withAutoRefreshToken({
-      onInactivityTimeout: 'logout',
-      sessionTimeout: 600000 // 10 minutes
-    })
-  ],
-  providers: [AutoRefreshTokenService, UserActivityService]
+  enableBearerInterceptor: true,
+  loadUserProfileAtStartUp: true,
+  bearerPrefix: 'Bearer',
+  bearerExcludedUrls: []
 };
 export const appConfig: ApplicationConfig = {
   providers: [
