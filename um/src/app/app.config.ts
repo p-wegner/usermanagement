@@ -46,8 +46,12 @@ export const appConfig: ApplicationConfig = {
       deps: [KeycloakService, AuthConfigService],
     },
     provideKeycloak({
+      config: {
+        url: 'http://localhost:8081',
+        realm: 'master',
+        clientId: 'keycloak-wrapper-client'
+      },
       initOptions: keycloakInitOptions,
-      configResolver: (service: AuthConfigService) => service.getConfig(),
       features: [
         withAutoRefreshToken({
           onInactivityTimeout: 'logout',
