@@ -43,15 +43,6 @@ function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigSer
   };
 }
 
-let handler:HttpHandler;
-let options: KeycloakOptions = {
-  config: await new AuthConfigService(new HttpClient(handler)).getConfig(),
-  initOptions: keycloakInitOptions,
-  enableBearerInterceptor: true,
-  loadUserProfileAtStartUp: true,
-  bearerPrefix: 'Bearer',
-  bearerExcludedUrls: []
-};
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
@@ -61,7 +52,18 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak(options),
+    provideKeycloak({
+      config: {
+        url: '',
+        realm: '',
+        clientId: ''
+      },
+      initOptions: keycloakInitOptions,
+      enableBearerInterceptor: true,
+      loadUserProfileAtStartUp: true,
+      bearerPrefix: 'Bearer',
+      bearerExcludedUrls: []
+    }),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
