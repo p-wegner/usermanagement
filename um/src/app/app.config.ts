@@ -37,7 +37,11 @@ function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigSer
   };
 }
 
-const config :KeycloakConfig={};
+const config: KeycloakConfig = {
+  url: 'http://localhost:8081/',
+  realm: 'master',
+  clientId: 'keycloak-wrapper-client'
+};
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
