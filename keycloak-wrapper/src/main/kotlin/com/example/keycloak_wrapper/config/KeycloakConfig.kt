@@ -16,20 +16,24 @@ class KeycloakConfig {
     @Value("\${keycloak.realm}")
     private lateinit var realm: String
 
-    @Value("\${keycloak.resource}")
-    private lateinit var clientId: String
+    @Value("\${keycloak.admin.username}")
+    private lateinit var adminUsername: String
 
-    @Value("\${keycloak.credentials.secret}")
-    private lateinit var clientSecret: String
+    @Value("\${keycloak.admin.password}")
+    private lateinit var adminPassword: String
+
+    @Value("\${keycloak.admin.client-id}")
+    private lateinit var adminClientId: String
 
     @Bean
     fun keycloak(): Keycloak {
         return KeycloakBuilder.builder()
             .serverUrl(authServerUrl)
             .realm("master")  // Always use master realm for admin operations
-            .clientId(clientId)
-            .clientSecret(clientSecret)
-            .grantType("client_credentials")
+            .clientId(adminClientId)
+            .username(adminUsername)
+            .password(adminPassword)
+            .grantType("password")
             .resteasyClient(
                 org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl()
                     .connectionPoolSize(10)
