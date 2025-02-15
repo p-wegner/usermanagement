@@ -36,12 +36,8 @@ function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigSer
     });
   };
 }
-
-const config: KeycloakConfig = {
-  url: 'http://localhost:8081/',
-  realm: 'master',
-  clientId: 'keycloak-wrapper-client'
-};
+// TODO pieed 2025-02-16: use the data from the backend endpoint call to initialize keycloak
+let config: KeycloakConfig;
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
