@@ -4,7 +4,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
-import { 
+import {
   KeycloakService,
   provideKeycloak,
   withAutoRefreshToken,
@@ -18,6 +18,7 @@ import {
 
 import { routes } from './app.routes';
 import { AuthConfigService, keycloakInitOptions } from './core/auth/auth.config';
+import {KeycloakConfig} from 'keycloak-js';
 
 const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
@@ -31,12 +32,12 @@ function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigSer
       config,
       initOptions: {
         ...keycloakInitOptions,
-        onLoad: 'check-sso' as const
       },
     });
   };
 }
 
+const config :KeycloakConfig={};
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
@@ -48,6 +49,7 @@ export const appConfig: ApplicationConfig = {
     },
     provideKeycloak({
       initOptions: keycloakInitOptions,
+      config: config,
       features: [
         withAutoRefreshToken({
           onInactivityTimeout: 'logout',
