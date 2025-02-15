@@ -43,14 +43,6 @@ function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigSer
   };
 }
 
-let options: KeycloakOptions = {
-  config: await new AuthConfigService(new HttpClient()).getConfig(),
-  initOptions: keycloakInitOptions,
-  enableBearerInterceptor: true,
-  loadUserProfileAtStartUp: true,
-  bearerPrefix: 'Bearer',
-  bearerExcludedUrls: []
-};
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
@@ -60,7 +52,12 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak(options),
+    provideKeycloak({
+      enableBearerInterceptor: true,
+      loadUserProfileAtStartUp: true,
+      bearerPrefix: 'Bearer',
+      bearerExcludedUrls: []
+    }),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
