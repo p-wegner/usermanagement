@@ -15,7 +15,7 @@ ADMIN_TOKEN=$(curl -s -X POST "${KEYCLOAK_URL}/realms/master/protocol/openid-con
   -d "password=$ADMIN_PASSWORD" \
   -d "grant_type=password" \
   -d "client_id=admin-cli" \
-  | jq -r '.access_token')
+  | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
 
 if [ -z "$ADMIN_TOKEN" ]; then
   echo "Failed to get admin token"
@@ -51,7 +51,7 @@ CLIENT_RESPONSE=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM}/clients
 echo "Getting client details..."
 CLIENT_UUID=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM}/clients" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  | jq -r '.[] | select(.clientId=="'$CLIENT_ID'") | .id')
+  | grep -o '"id":"[^"]*","clientId":"'$CLIENT_ID'"' | cut -d'"' -f4)
 
 if [ -z "$CLIENT_UUID" ]; then
   echo "Failed to get client UUID"
@@ -62,7 +62,7 @@ fi
 echo "Getting client secret..."
 CLIENT_SECRET=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM}/clients/${CLIENT_UUID}/client-secret" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  | jq -r '.value')
+  | grep -o '"value":"[^"]*"' | cut -d'"' -f4)
 
 if [ -z "$CLIENT_SECRET" ]; then
   echo "Failed to get client secret"
