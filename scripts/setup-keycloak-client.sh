@@ -1,4 +1,4 @@
-C:\Program Files\Git\git-bash.exe
+#!/bin/bash
 
 # Keycloak settings
 KEYCLOAK_URL="http://localhost:8081"
@@ -11,8 +11,8 @@ ADMIN_PASSWORD="admin"
 echo "Getting admin token..."
 ADMIN_TOKEN=$(curl -s -X POST "${KEYCLOAK_URL}/realms/master/protocol/openid-connect/token" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=${ADMIN_USERNAME}" \
-  -d "password=${ADMIN_PASSWORD}" \
+  -d "username=$ADMIN_USERNAME" \
+  -d "password=$ADMIN_PASSWORD" \
   -d "grant_type=password" \
   -d "client_id=admin-cli" \
   | jq -r '.access_token')
@@ -28,7 +28,7 @@ CLIENT_RESPONSE=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM}/clients
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
-    "clientId": "'"${CLIENT_ID}"'",
+    "clientId": "'$CLIENT_ID'",
     "enabled": true,
     "protocol": "openid-connect",
     "publicClient": false,
@@ -51,7 +51,7 @@ CLIENT_RESPONSE=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM}/clients
 echo "Getting client details..."
 CLIENT_UUID=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM}/clients" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  | jq -r '.[] | select(.clientId=="'"${CLIENT_ID}"'") | .id')
+  | jq -r '.[] | select(.clientId=="'$CLIENT_ID'") | .id')
 
 if [ -z "$CLIENT_UUID" ]; then
   echo "Failed to get client UUID"
