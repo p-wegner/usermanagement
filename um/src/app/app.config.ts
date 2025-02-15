@@ -1,6 +1,6 @@
 import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import {HttpClient, HttpHandler, provideHttpClient, withInterceptors} from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
@@ -43,6 +43,15 @@ function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigSer
   };
 }
 
+let handler:HttpHandler;
+let options: KeycloakOptions = {
+  config: await new AuthConfigService(new HttpClient(handler)).getConfig(),
+  initOptions: keycloakInitOptions,
+  enableBearerInterceptor: true,
+  loadUserProfileAtStartUp: true,
+  bearerPrefix: 'Bearer',
+  bearerExcludedUrls: []
+};
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
@@ -52,12 +61,7 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak({
-      enableBearerInterceptor: true,
-      loadUserProfileAtStartUp: true,
-      bearerPrefix: 'Bearer',
-      bearerExcludedUrls: []
-    }),
+    provideKeycloak(options),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]

@@ -1,4 +1,4 @@
-import { KeycloakConfig } from 'keycloak-js';
+import {KeycloakConfig, KeycloakInitOptions} from 'keycloak-js';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
@@ -29,11 +29,11 @@ export class AuthConfigService {
       const response = await firstValueFrom(
         this.http.get<ApiResponse<AuthConfig>>('/api/auth/config')
       );
-      
+
       if (!response.success || !response.data) {
         throw new Error('Failed to load auth config');
       }
-      
+
       this.config = response.data;
     }
 
@@ -45,7 +45,7 @@ export class AuthConfigService {
   }
 }
 
-export const keycloakInitOptions = {
+export const keycloakInitOptions : KeycloakInitOptions = {
   onLoad: 'check-sso',
   silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
   checkLoginIframe: false,
