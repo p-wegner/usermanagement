@@ -1,10 +1,49 @@
 import { KeycloakConfig } from 'keycloak-js';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
-export const keycloakConfig: KeycloakConfig = {
-  url: 'http://localhost:8081',
-  realm: 'master',
-  clientId: 'um-client'
-};
+export interface AuthConfig {
+  authServerUrl: string;
+  realm: string;
+  clientId: string;
+  resourceServerUrl: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthConfigService {
+  private config: AuthConfig | null = null;
+
+  constructor(private http: HttpClient) {}
+
+  async getConfig(): Promise<KeycloakConfig> {
+    if (!this.config) {
+      const response = await firstValueFrom(
+        this.http.get<ApiResponse<AuthConfig>>('/api/auth/config')
+      );
+      
+      if (!response.success || !response.data) {
+        throw new Error('Failed to load auth config');
+      }
+      
+      this.config = response.data;
+    }
+
+    return {
+      url: this.config.authServerUrl,
+      realm: this.config.realm,
+      clientId: this.config.clientId
+    };
+  }
+}
 
 export const keycloakInitOptions = {
   onLoad: 'check-sso',

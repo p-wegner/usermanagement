@@ -1,10 +1,11 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { 
+  KeycloakService,
   provideKeycloak,
   withAutoRefreshToken,
   AutoRefreshTokenService,
@@ -16,17 +17,33 @@ import {
 } from 'keycloak-angular';
 
 import { routes } from './app.routes';
-import { keycloakConfig, keycloakInitOptions } from './core/auth/auth.config';
+import { AuthConfigService, keycloakInitOptions } from './core/auth/auth.config';
 
 const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
   bearerPrefix: 'Bearer'
 });
 
+function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigService) {
+  return async () => {
+    const config = await authConfig.getConfig();
+    await keycloak.init({
+      config,
+      initOptions: keycloakInitOptions,
+    });
+  };
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    AuthConfigService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService, AuthConfigService],
+    },
     provideKeycloak({
-      config: keycloakConfig,
       initOptions: keycloakInitOptions,
       features: [
         withAutoRefreshToken({
