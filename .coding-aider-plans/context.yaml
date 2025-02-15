@@ -1,8 +1,0 @@
----
-files:
-  - path: um/src/app/core/auth/auth.service.ts
-    readOnly: false
-  - path: um/src/app/core/auth/auth.guard.ts
-    readOnly: false
-  - path: um/src/app/core/auth/auth.interceptor.ts
-    readOnly: false
