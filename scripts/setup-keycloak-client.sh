@@ -1,4 +1,4 @@
-#!/bin/bash
+C:\Program Files\Git\git-bash.exe
 
 # Keycloak settings
 KEYCLOAK_URL="http://localhost:8081"
