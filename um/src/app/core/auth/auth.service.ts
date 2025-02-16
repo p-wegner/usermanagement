@@ -34,15 +34,24 @@ export class AuthService {
   }
 
   private setupTokenRefresh(): void {
-    timer(0, this.TOKEN_CHECK_INTERVAL).subscribe(() => {
-      this.keycloak.isTokenExpired(this.TOKEN_MIN_VALIDITY_SECONDS).then(isExpired => {
+    timer(0, this.TOKEN_CHECK_INTERVAL).subscribe(async () => {
+      try {
+        const isExpired = await this.keycloak.isTokenExpired(this.TOKEN_MIN_VALIDITY_SECONDS);
         if (isExpired) {
-          this.refreshToken().catch(error => {
-            console.error('Auto token refresh failed:', error);
-            this.login();
-          });
+          const success = await this.refreshToken();
+          if (success) {
+            const instance = this.keycloak.getKeycloakInstance();
+            sessionStorage.setItem('kc_token', instance.token || '');
+            sessionStorage.setItem('kc_refreshToken', instance.refreshToken || '');
+          } else {
+            console.warn('Token refresh was not successful');
+            await this.login();
+          }
         }
-      });
+      } catch (error) {
+        console.error('Token refresh check failed:', error);
+        await this.login();
+      }
     });
   }
 

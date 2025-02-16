@@ -23,7 +23,11 @@ async function initializeApp() {
       providers: [
         provideKeycloak({
           config: keycloakConfig,
-          initOptions: keycloakInitOptions
+          initOptions: {
+            ...keycloakInitOptions,
+            token: sessionStorage.getItem('kc_token') || undefined,
+            refreshToken: sessionStorage.getItem('kc_refreshToken') || undefined
+          }
         }),
         ...appConfig.providers.map(provider => {
         if (typeof provider === 'object' && 'provide' in provider && provider.provide.toString().includes('KeycloakOptions')) {

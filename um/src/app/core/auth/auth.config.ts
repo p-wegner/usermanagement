@@ -45,5 +45,8 @@ export const keycloakInitOptions : KeycloakInitOptions = {
   onLoad: 'login-required',
   silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
   checkLoginIframe: false,
-  pkceMethod: 'S256'
+  pkceMethod: 'S256',
+  enableLogging: true,
+  token: sessionStorage.getItem('kc_token') || undefined,
+  refreshToken: sessionStorage.getItem('kc_refreshToken') || undefined
 };
