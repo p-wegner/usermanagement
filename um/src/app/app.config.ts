@@ -52,11 +52,12 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak({
-      // TODO pieed 2025-02-16: inject can not be called here
-      // NG0203: inject() must be called from an injection context such as a constructor, a factory function, a field initializer, or a function used with `runInInjectionContext`
-      config: inject(AuthConfigService).getInitialConfig(),
-      initOptions: keycloakInitOptions,
+    provideKeycloak(() => {
+      const authConfig = inject(AuthConfigService);
+      return {
+        config: authConfig.getInitialConfig(),
+        initOptions: keycloakInitOptions,
+      };
     }),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
