@@ -14,9 +14,9 @@ export class AuthConfigService {
 
   getInitialConfig(): KeycloakConfig {
     return {
-      url: '',
-      realm: '',
-      clientId: ''
+      url: 'http://localhost:8081',
+      realm: 'master',
+      clientId: 'keycloak-wrapper-client'
     };
   }
 
@@ -42,11 +42,10 @@ export class AuthConfigService {
 }
 
 export const keycloakInitOptions: KeycloakInitOptions = {
-  onLoad: 'login-required',
+  onLoad: 'check-sso',
   silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
   checkLoginIframe: false,
   pkceMethod: 'S256',
   enableLogging: true,
-  redirectUri: window.location.origin,
-  flow: 'standard'
+  redirectUri: window.location.origin
 };
