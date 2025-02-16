@@ -9,11 +9,13 @@ import org.springframework.stereotype.Component
 @Component
 class GroupMapper {
     fun toDto(group: GroupRepresentation): GroupDto {
+        val realmRoles = group.realmRoles?.map { it.name } ?: emptyList()
         return GroupDto(
             id = group.id,
             name = group.name,
             path = group.path,
-            subGroups = group.subGroups?.map { toDto(it) } ?: emptyList()
+            subGroups = group.subGroups?.map { toDto(it) } ?: emptyList(),
+            realmRoles = realmRoles
         )
     }
 
