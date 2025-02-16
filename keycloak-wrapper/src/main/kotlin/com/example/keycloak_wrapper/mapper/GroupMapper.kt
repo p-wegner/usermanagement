@@ -7,9 +7,23 @@ import org.keycloak.representations.idm.GroupRepresentation
 import org.springframework.stereotype.Component
 
 @Component
-class GroupMapper {
+class GroupMapper(
+    private val keycloak: Keycloak,
+    @Value("\${keycloak.realm}")
+    private val realm: String
+) {
     fun toDto(group: GroupRepresentation): GroupDto {
-        val realmRoles = group.realmRoles ?: emptyList()
+        val realmRoles = group.realmRoles?.map { roleName ->
+            val roleRep = keycloak.realm(realm).roles().get(roleName).toRepresentation()
+            RoleDto(
+                id = roleRep.id,
+                name = roleRep.name,
+                description = roleRep.description,
+                composite = roleRep.isComposite,
+                clientRole = roleRep.clientRole
+            )
+        } ?: emptyList()
+        
         return GroupDto(
             id = group.id,
             name = group.name,
