@@ -1,7 +1,22 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import { provideKeycloak, withAutoRefreshToken, AutoRefreshTokenService, UserActivityService } from 'keycloak-angular';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { 
+  provideKeycloak, 
+  withAutoRefreshToken, 
+  AutoRefreshTokenService, 
+  UserActivityService,
+  includeBearerTokenInterceptor,
+  createInterceptorCondition,
+  IncludeBearerTokenCondition,
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG 
+} from 'keycloak-angular';
+const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
+  urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
+  bearerPrefix: 'Bearer'
+});
+
 async function fetchAuthConfig() {
   try {
     const response = await fetch('http://localhost:8080/api/auth/config');
@@ -36,7 +51,8 @@ function createKeycloakProvider(authConfig: any) {
       checkLoginIframe: false,
       pkceMethod: 'S256',
       redirectUri: window.location.origin,
-      flow: 'standard'
+      flow: 'standard',
+      enableLogging: true
     },
     features: [
       withAutoRefreshToken({
@@ -44,7 +60,15 @@ function createKeycloakProvider(authConfig: any) {
         sessionTimeout: 300000
       })
     ],
-    providers: [AutoRefreshTokenService, UserActivityService]
+    providers: [
+      AutoRefreshTokenService, 
+      UserActivityService,
+      {
+        provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
+        useValue: [urlCondition]
+      },
+      provideHttpClient(withInterceptors([includeBearerTokenInterceptor]))
+    ]
   });
 }
 
