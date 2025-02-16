@@ -2,6 +2,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import {provideKeycloak} from 'keycloak-angular';
+import {keycloakInitOptions} from './app/core/auth/auth.config';
 
 async function initializeApp() {
   try {
@@ -28,7 +29,7 @@ async function initializeApp() {
         if (typeof provider === 'object' && 'provide' in provider && provider.provide.toString().includes('KeycloakOptions')) {
           return {
             ...provider,
-            useValue: { 
+            useValue: {
               config: keycloakConfig,
               initOptions: keycloakInitOptions
             }
