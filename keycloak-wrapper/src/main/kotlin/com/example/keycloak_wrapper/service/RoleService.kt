@@ -40,5 +40,20 @@ class RoleService(
     fun deleteRole(name: String) {
         keycloakRoleFacade.deleteRole(name)
     }
+
+    fun addCompositeRoles(roleId: String, compositeRoleIds: List<String>): RoleDto {
+        keycloakRoleFacade.addCompositeRoles(roleId, compositeRoleIds)
+        return getRole(roleId)
+    }
+
+    fun removeCompositeRoles(roleId: String, compositeRoleIds: List<String>): RoleDto {
+        keycloakRoleFacade.removeCompositeRoles(roleId, compositeRoleIds)
+        return getRole(roleId)
+    }
+
+    fun getCompositeRoles(roleId: String): List<RoleDto> {
+        val roles = keycloakRoleFacade.getCompositeRoles(roleId)
+        return roles.map { roleMapper.toDto(it) }
+    }
 }
 
