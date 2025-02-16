@@ -34,9 +34,9 @@ export class AuthConfigService {
     }
 
     return {
-      url: this.config.authServerUrl,
-      realm: this.config.realm,
-      clientId: this.config.clientId
+      url: this.config!.authServerUrl,
+      realm: this.config!.realm,
+      clientId: this.config!.clientId
     };
   }
 }

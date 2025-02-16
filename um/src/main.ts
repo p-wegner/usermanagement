@@ -1,6 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
+import {provideKeycloak} from 'keycloak-angular';
 
 async function initializeApp() {
   try {
@@ -9,7 +10,7 @@ async function initializeApp() {
     if (!result.success || !result.data) {
       throw new Error('Failed to load auth config');
     }
-    
+
     const keycloakConfig = {
       url: result.data.authServerUrl,
       realm: result.data.realm,
