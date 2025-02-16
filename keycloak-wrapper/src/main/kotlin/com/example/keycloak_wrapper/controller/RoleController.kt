@@ -49,9 +49,36 @@ class RoleController(
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{name}")
-    fun deleteRole(@PathVariable name: String): ResponseEntity<ApiResponse<Unit>> {
-        roleService.deleteRole(name)
+    @DeleteMapping("/{id}")
+    fun deleteRole(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
+        roleService.deleteRole(id)
         return ResponseEntity.ok(ApiResponse(success = true))
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{roleId}/composites")
+    fun addCompositeRoles(
+        @PathVariable roleId: String,
+        @RequestBody compositeRoles: RoleAssignmentDto
+    ): ResponseEntity<ApiResponse<RoleDto>> {
+        val updatedRole = roleService.addCompositeRoles(roleId, compositeRoles.roleIds)
+        return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{roleId}/composites")
+    fun removeCompositeRoles(
+        @PathVariable roleId: String,
+        @RequestBody compositeRoles: RoleAssignmentDto
+    ): ResponseEntity<ApiResponse<RoleDto>> {
+        val updatedRole = roleService.removeCompositeRoles(roleId, compositeRoles.roleIds)
+        return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/{roleId}/composites")
+    fun getCompositeRoles(@PathVariable roleId: String): ResponseEntity<ApiResponse<List<RoleDto>>> {
+        val compositeRoles = roleService.getCompositeRoles(roleId)
+        return ResponseEntity.ok(ApiResponse(success = true, data = compositeRoles))
     }
 }
