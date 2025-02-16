@@ -52,10 +52,11 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak(() => {
+    provideKeycloak(async () => {
       const authConfig = inject(AuthConfigService);
+      const config = await authConfig.getConfig();
       return {
-        config: authConfig.getInitialConfig(),
+        config,
         initOptions: keycloakInitOptions,
       };
     }),
