@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, map} from 'rxjs';
+import {Observable, map, of} from 'rxjs';
 import {Permission} from '../../shared/interfaces/permission.interface';
 import {RoleControllerService} from '../../api/com/example/api/roleController.service';
 import {RoleCreateDto} from '../../api/com/example/model/roleCreateDto';

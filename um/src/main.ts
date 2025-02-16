@@ -2,7 +2,6 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { provideKeycloak, withAutoRefreshToken, AutoRefreshTokenService, UserActivityService } from 'keycloak-angular';
-import { firstValueFrom } from 'rxjs';
 async function fetchAuthConfig() {
   try {
     const response = await fetch('http://localhost:8080/api/auth/config');
