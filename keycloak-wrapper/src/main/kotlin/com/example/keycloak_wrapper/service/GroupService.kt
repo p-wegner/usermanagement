@@ -44,4 +44,8 @@ class GroupService(
     fun deleteGroup(id: String) {
         keycloakGroupFacade.deleteGroup(id)
     }
+
+    fun updateGroupRoles(id: String, roles: List<String>) {
+        // TODO: implement
+    }
 }
