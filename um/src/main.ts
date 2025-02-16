@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import { provideKeycloak, withAutoRefreshToken } from 'keycloak-angular';
+import { provideKeycloak, withAutoRefreshToken, AutoRefreshTokenService, UserActivityService } from 'keycloak-angular';
 import { firstValueFrom } from 'rxjs';
 async function fetchAuthConfig() {
   try {
@@ -43,7 +43,8 @@ function createKeycloakProvider(authConfig: any) {
         onInactivityTimeout: 'logout',
         sessionTimeout: 300000
       })
-    ]
+    ],
+    providers: [AutoRefreshTokenService, UserActivityService]
   });
 }
 
