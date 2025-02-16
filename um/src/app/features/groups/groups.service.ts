@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import {Observable, map, of} from 'rxjs';
+import {Observable, map, of, throwError} from 'rxjs';
 import { Permission, PermissionGroup } from '../../shared/interfaces/permission.interface';
 import { GroupControllerService } from '../../api/com/example/api/groupController.service';
+import { RoleControllerService } from '../../api/com/example/api/roleController.service';
 import { GroupCreateDto } from '../../api/com/example/model/groupCreateDto';
 import { GroupUpdateDto } from '../../api/com/example/model/groupUpdateDto';
 import { GroupDto } from '../../api/com/example/model/groupDto';
@@ -10,7 +11,10 @@ import { GroupDto } from '../../api/com/example/model/groupDto';
   providedIn: 'root'
 })
 export class GroupsService {
-  constructor(private groupControllerService: GroupControllerService) {}
+  constructor(
+    private groupControllerService: GroupControllerService,
+    private roleControllerService: RoleControllerService
+  ) {}
 
   getGroups(page: number = 0, size: number = 20, search?: string): Observable<PermissionGroup[]> {
     return this.groupControllerService.getGroups(page, size, search).pipe(
@@ -75,26 +79,33 @@ export class GroupsService {
     );
   }
 
-  // These methods still need to be implemented with actual API calls once available
   getAvailablePermissions(): Observable<Permission[]> {
-    return of([
-      { id: '1', name: 'user.create', description: 'Create new users', groups: [], inherited: false },
-      { id: '2', name: 'user.edit', description: 'Edit existing users', groups: [], inherited: false },
-      { id: '3', name: 'user.delete', description: 'Delete users', groups: [], inherited: false },
-      { id: '4', name: 'group.create', description: 'Create new groups', groups: [], inherited: false },
-      { id: '5', name: 'group.edit', description: 'Edit existing groups', groups: [], inherited: false },
-      { id: '6', name: 'group.delete', description: 'Delete groups', groups: [], inherited: false }
-    ]);
+    return this.roleControllerService.getRoles().pipe(
+      map(response => {
+        if (!response.success || !response.data) {
+          throw new Error(response.error || 'Failed to fetch roles');
+        }
+        return response.data.map(role => ({
+          id: role.id || '',
+          name: role.name,
+          description: role.description || '',
+          composite: role.composite,
+          clientRole: role.clientRole
+        }));
+      })
+    );
   }
 
   assignPermissionsToGroup(groupId: string, permissions: Permission[]): Observable<void> {
-    // TODO: Implement when API is available
-    return of(void 0);
+    // Note: This would need a backend API endpoint to assign roles to groups
+    // For now, we'll throw an error
+    return throwError(() => new Error('API endpoint for assigning permissions to groups is not yet available'));
   }
 
   getInheritedPermissions(groupId: string): Observable<Permission[]> {
-    // TODO: Implement when API is available
-    return of([]);
+    return this.getGroup(groupId).pipe(
+      map(group => group.permissions.filter(p => p.composite))
+    );
   }
 
   private mapToPermissionGroup(dto: GroupDto): PermissionGroup {
@@ -102,7 +113,13 @@ export class GroupsService {
       id: dto.id!,
       name: dto.name,
       path: dto.path || '',
-      permissions: [], // TODO: Add when API supports permissions
+      permissions: dto.roles?.map(role => ({
+        id: role.id || '',
+        name: role.name,
+        description: role.description || '',
+        composite: role.composite,
+        clientRole: role.clientRole
+      })) || [],
       subGroups: dto.subGroups.map(this.mapToPermissionGroup)
     };
   }
