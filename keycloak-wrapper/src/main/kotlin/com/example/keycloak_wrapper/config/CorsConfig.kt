@@ -17,7 +17,6 @@ class CorsConfig(
         val source = UrlBasedCorsConfigurationSource()
         val config = CorsConfiguration().apply {
             allowCredentials = true
-            allowedOrigins = allowedOrigins.split(",")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf(
                 "Origin",
