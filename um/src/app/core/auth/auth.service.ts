@@ -12,12 +12,10 @@ import { HttpClient } from '@angular/common/http';
 export class AuthService {
   private userProfileSubject = new BehaviorSubject<KeycloakProfile | null>(null);
   private savedUrl: string | null = null;
-  private keycloakEventSignal = inject(KEYCLOAK_EVENT_SIGNAL);
 
   constructor(
     private keycloak: KeycloakService,
     private router: Router,
-    private http: HttpClient
   ) {
     this.init();
   }
@@ -52,9 +50,9 @@ export class AuthService {
         const currentUrl = window.location.pathname + window.location.search;
         this.saveUrl(currentUrl);
       }
-      
+
       // Construct the redirect URI
-      const finalRedirectUri = redirectUri || 
+      const finalRedirectUri = redirectUri ||
         (this.savedUrl ? `${window.location.origin}${this.savedUrl}` : window.location.origin);
 
       // Ensure the redirect URI is properly encoded
@@ -86,9 +84,6 @@ export class AuthService {
     return this.keycloak.isUserInRole(role);
   }
 
-  hasAnyRole(roles: string[]): boolean {
-    return roles.some(role => this.hasRole(role));
-  }
 
   getRoles(): string[] {
     return this.keycloak.getKeycloakInstance().realmAccess?.roles || [];
@@ -117,14 +112,4 @@ export class AuthService {
     }
   }
 
-  redirectToSavedUrl(): void {
-    const savedUrl = this.savedUrl || sessionStorage.getItem('redirectUrl');
-    if (savedUrl) {
-      this.router.navigateByUrl(savedUrl);
-      this.savedUrl = null;
-      sessionStorage.removeItem('redirectUrl');
-    } else {
-      this.router.navigate(['/']);
-    }
-  }
 }
