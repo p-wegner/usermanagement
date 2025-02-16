@@ -19,6 +19,7 @@ openApi {
 tasks.register<Copy>("copyDockerCompose") {
     from("docker-compose.yml")
     into("build/resources/main")
+    into("src/main/resources")  // Also copy to resources for development
 }
 
 tasks.register<Copy>("generateOpenApiJson") {
@@ -30,6 +31,11 @@ tasks.register<Copy>("generateOpenApiJson") {
 }
 
 tasks.processResources {
+    dependsOn("copyDockerCompose")
+    from("docker-compose.yml")  // Ensure docker-compose.yml is included in resources
+}
+
+tasks.bootJar {
     dependsOn("copyDockerCompose")
 }
 val apispec by configurations.creating
