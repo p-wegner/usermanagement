@@ -57,6 +57,21 @@ class KeycloakUserFacade(
         }
     }
 
+    fun updateUserRoles(id: String, roles: List<String>) {
+        try {
+            val userResource = keycloak.realm(realm).users().get(id)
+            val roleRepresentations = roles.map { 
+                keycloak.realm(realm).roles().get(it).toRepresentation() 
+            }
+            userResource.roles().realmLevel().remove(userResource.roles().realmLevel().listAll())
+            if (roleRepresentations.isNotEmpty()) {
+                userResource.roles().realmLevel().add(roleRepresentations)
+            }
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to update roles for user with id: $id", e)
+        }
+    }
+
     fun updatePassword(id: String, password: String) {
         try {
             val credentials = org.keycloak.representations.idm.CredentialRepresentation().apply {

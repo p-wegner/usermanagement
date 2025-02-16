@@ -71,6 +71,21 @@ class KeycloakGroupFacade(
         }
     }
 
+    fun updateGroupRoles(id: String, roles: List<String>) {
+        try {
+            val groupResource = keycloak.realm(realm).groups().group(id)
+            val roleRepresentations = roles.map { 
+                keycloak.realm(realm).roles().get(it).toRepresentation() 
+            }
+            groupResource.roles().realmLevel().remove(groupResource.roles().realmLevel().listAll())
+            if (roleRepresentations.isNotEmpty()) {
+                groupResource.roles().realmLevel().add(roleRepresentations)
+            }
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to update roles for group with id: $id", e)
+        }
+    }
+
     fun deleteGroup(id: String) {
         try {
             keycloak.realm(realm).groups().group(id).remove()

@@ -6,7 +6,8 @@ data class UserDto(
     val firstName: String? = null,
     val lastName: String? = null,
     val email: String,
-    val enabled: Boolean = true
+    val enabled: Boolean = true,
+    val realmRoles: List<String> = emptyList()
 )
 
 data class UserCreateDto(
@@ -15,14 +16,16 @@ data class UserCreateDto(
     val lastName: String? = null,
     val email: String,
     val password: String,
-    val enabled: Boolean = true
+    val enabled: Boolean = true,
+    val realmRoles: List<String> = emptyList()
 )
 
 data class UserUpdateDto(
     val firstName: String? = null,
     val lastName: String? = null,
     val email: String? = null,
-    val enabled: Boolean? = null
+    val enabled: Boolean? = null,
+    val realmRoles: List<String>? = null
 )
 
 data class UserSearchDto(
