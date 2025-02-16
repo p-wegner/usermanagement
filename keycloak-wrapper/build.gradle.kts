@@ -16,12 +16,21 @@ openApi {
     }
 }
 
+tasks.register<Copy>("copyDockerCompose") {
+    from("docker-compose.yml")
+    into("src/main/resources")
+}
+
 tasks.register<Copy>("generateOpenApiJson") {
     outputs.file("$buildDir/docs/swagger.json")
     from("$buildDir/docs/swagger.json")
     into("$buildDir/docs/")
     dependsOn("bootRun")
     finalizedBy("openApiGenerate")
+}
+
+tasks.processResources {
+    dependsOn("copyDockerCompose")
 }
 val apispec by configurations.creating
 artifacts {
