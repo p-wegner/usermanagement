@@ -52,13 +52,12 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak(async () => {
-      const authConfig = inject(AuthConfigService);
-      const config = await authConfig.getConfig();
-      return {
-        config,
-        initOptions: keycloakInitOptions,
-      };
+    provideKeycloak({
+      config: async () => {
+        const authConfig = inject(AuthConfigService);
+        return await authConfig.getConfig();
+      },
+      initOptions: keycloakInitOptions
     }),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
