@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   isAuthenticated(): Observable<boolean> {
-    return from(this.keycloak.isLoggedIn());
+    return from(Promise.resolve(this.keycloak.isLoggedIn()));
   }
 
   getUserProfile(): Observable<KeycloakProfile | null> {
