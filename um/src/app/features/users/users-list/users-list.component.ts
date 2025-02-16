@@ -40,7 +40,7 @@ export class UsersListComponent implements OnInit {
     this.loading = true;
     this.usersService.getUsers().subscribe({
       next: (users) => {
-        this.users = users;
+        this.users = users.users;
         this.loading = false;
       },
       error: (error) => {

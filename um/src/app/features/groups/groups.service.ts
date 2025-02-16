@@ -113,7 +113,7 @@ export class GroupsService {
       id: dto.id!,
       name: dto.name,
       path: dto.path || '',
-      permissions: dto.roles?.map(role => ({
+      permissions: dto.realmRoles?.map(role => ({
         id: role.id || '',
         name: role.name,
         description: role.description || '',

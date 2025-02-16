@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, from, timer } from 'rxjs';
-import { KeycloakService } from 'keycloak-angular';
-import { KeycloakProfile, KeycloakTokenParsed } from 'keycloak-js';
-import { Router } from '@angular/router';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Observable, from, timer} from 'rxjs';
+import {KeycloakService} from 'keycloak-angular';
+import {KeycloakProfile, KeycloakTokenParsed} from 'keycloak-js';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -71,7 +71,7 @@ export class AuthService {
     this.saveUrl(window.location.pathname);
     await this.keycloak.login({
       redirectUri: redirectUri || window.location.origin,
-      prompt: options.prompt
+      // prompt: options.prompt
     });
   }
 
@@ -128,7 +128,7 @@ export class AuthService {
   }
 
   getUsername(): string | undefined {
-    return this.keycloak.getKeycloakInstance().tokenParsed?.preferred_username;
+    return this.keycloak.getKeycloakInstance().tokenParsed?.['preferred_username'] ?? '';
   }
 
   async loadUserProfile(): Promise<KeycloakProfile> {

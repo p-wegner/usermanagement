@@ -5,6 +5,7 @@ import { RoleControllerService } from '../../api/com/example/api/roleController.
 import { RoleCreateDto } from '../../api/com/example/model/roleCreateDto';
 import { RoleUpdateDto } from '../../api/com/example/model/roleUpdateDto';
 import { AuthService } from '../../core/auth/auth.service';
+import {RoleDto} from '../../api/com/example';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class PermissionsService {
         if (!response.success || !response.data) {
           throw new Error('Failed to fetch permissions');
         }
-        return response.data.map(role => ({
+        return response.data.map((role: RoleDto) => ({
           id: role.id || '',
           name: role.name,
           description: role.description,

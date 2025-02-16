@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class GroupMapper {
     fun toDto(group: GroupRepresentation): GroupDto {
-        val realmRoles = group.realmRoles?.map { it.name } ?: emptyList()
+        val realmRoles = group.realmRoles ?: emptyList()
         return GroupDto(
             id = group.id,
             name = group.name,

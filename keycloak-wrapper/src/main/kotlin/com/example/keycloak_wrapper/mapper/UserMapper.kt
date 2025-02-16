@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 @Component
 class UserMapper {
     fun toDto(user: UserRepresentation): UserDto {
-        val realmRoles = user.realmRoles?.map { it.name } ?: emptyList()
+        val realmRoles = user.realmRoles ?: emptyList()
         return UserDto(
             id = user.id,
             username = user.username,

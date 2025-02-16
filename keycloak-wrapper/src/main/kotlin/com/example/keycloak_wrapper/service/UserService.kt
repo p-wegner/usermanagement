@@ -40,4 +40,8 @@ class UserService(
     fun deleteUser(id: String) {
         keycloakUserFacade.deleteUser(id)
     }
+
+    fun updateUserRoles(id: String, roles: List<String>) {
+        // TODO: implement
+    }
 }

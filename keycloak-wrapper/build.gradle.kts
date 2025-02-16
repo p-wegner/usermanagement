@@ -13,7 +13,6 @@ openApi {
     waitTimeInSeconds.set(10)
     customBootRun {
         args.add("--spring.profiles.active=apidocs")
-        systemProperty("spring.config.location", "classpath:/application.properties,classpath:/application-apidocs.properties")
     }
 }
 
