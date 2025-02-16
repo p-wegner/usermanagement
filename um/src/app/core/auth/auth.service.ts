@@ -47,9 +47,14 @@ export class AuthService {
 
   async login(redirectUri?: string): Promise<void> {
     try {
-      this.saveUrl(window.location.pathname);
+      const currentUrl = window.location.pathname + window.location.search;
+      this.saveUrl(currentUrl);
+      
+      const finalRedirectUri = redirectUri || 
+        (this.savedUrl ? `${window.location.origin}${this.savedUrl}` : window.location.origin);
+
       await this.keycloak.login({
-        redirectUri: redirectUri || window.location.origin,
+        redirectUri: finalRedirectUri,
         scope: 'openid profile email'
       });
     } catch (error) {
@@ -96,13 +101,19 @@ export class AuthService {
   }
 
   saveUrl(url: string): void {
-    this.savedUrl = url;
+    // Sanitize and validate the URL
+    if (url && url.startsWith('/') && !url.includes('//')) {
+      this.savedUrl = url;
+      sessionStorage.setItem('redirectUrl', url);
+    }
   }
 
   redirectToSavedUrl(): void {
-    if (this.savedUrl) {
-      this.router.navigateByUrl(this.savedUrl);
+    const savedUrl = this.savedUrl || sessionStorage.getItem('redirectUrl');
+    if (savedUrl) {
+      this.router.navigateByUrl(savedUrl);
       this.savedUrl = null;
+      sessionStorage.removeItem('redirectUrl');
     } else {
       this.router.navigate(['/']);
     }
