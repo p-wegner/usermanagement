@@ -6,6 +6,8 @@ import { RoleControllerService } from '../../api/com/example/api/roleController.
 import { GroupCreateDto } from '../../api/com/example/model/groupCreateDto';
 import { GroupUpdateDto } from '../../api/com/example/model/groupUpdateDto';
 import { GroupDto } from '../../api/com/example/model/groupDto';
+import {group} from '@angular/animations';
+import {RoleDto} from '../../api/com/example';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +42,7 @@ export class GroupsService {
 
   createGroup(group: Omit<PermissionGroup, 'id'>): Observable<PermissionGroup> {
     const dto: GroupCreateDto = {
+      realmRoles: [],
       name: group.name,
       parentGroupId: group.parentGroupId
     };
@@ -85,7 +88,7 @@ export class GroupsService {
         if (!response.success || !response.data) {
           throw new Error(response.error || 'Failed to fetch roles');
         }
-        return response.data.map(role => ({
+        return response.data.map((role:RoleDto) => ({
           id: role.id || '',
           name: role.name,
           description: role.description || '',

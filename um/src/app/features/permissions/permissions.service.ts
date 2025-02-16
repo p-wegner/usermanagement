@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
-import { Permission } from '../../shared/interfaces/permission.interface';
-import { RoleControllerService } from '../../api/com/example/api/roleController.service';
-import { RoleCreateDto } from '../../api/com/example/model/roleCreateDto';
-import { RoleUpdateDto } from '../../api/com/example/model/roleUpdateDto';
-import { AuthService } from '../../core/auth/auth.service';
+import {Injectable} from '@angular/core';
+import {Observable, map} from 'rxjs';
+import {Permission} from '../../shared/interfaces/permission.interface';
+import {RoleControllerService} from '../../api/com/example/api/roleController.service';
+import {RoleCreateDto} from '../../api/com/example/model/roleCreateDto';
+import {RoleUpdateDto} from '../../api/com/example/model/roleUpdateDto';
+import {AuthService} from '../../core/auth/auth.service';
 import {RoleDto} from '../../api/com/example';
 
 @Injectable({
@@ -14,7 +14,8 @@ export class PermissionsService {
   constructor(
     private roleController: RoleControllerService,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   getPermissions(): Observable<Permission[]> {
     return this.roleController.getRoles().pipe(
@@ -53,6 +54,7 @@ export class PermissionsService {
 
   createPermission(permission: Omit<Permission, 'id'>): Observable<Permission> {
     const roleCreate: RoleCreateDto = {
+      compositeRoleIds: [],
       name: permission.name,
       description: permission.description,
       composite: permission.composite

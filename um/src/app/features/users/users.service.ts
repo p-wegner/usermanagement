@@ -40,6 +40,7 @@ export class UsersService {
 
   createUser(user: Omit<User, 'id'>): Observable<User> {
     const dto: UserCreateDto = {
+      realmRoles: [],
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,

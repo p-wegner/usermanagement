@@ -83,7 +83,7 @@ class KeycloakRoleFacade(
             val compositeRoles = compositeRoleIds.map { 
                 keycloak.realm(realm).roles().get(it).toRepresentation() 
             }
-            roleResource.removeComposites(compositeRoles)
+            roleResource.deleteComposites(compositeRoles)
         } catch (e: Exception) {
             throw KeycloakException("Failed to remove composite roles from role with id: $roleId", e)
         }
@@ -91,7 +91,7 @@ class KeycloakRoleFacade(
 
     fun getCompositeRoles(roleId: String): List<RoleRepresentation> {
         try {
-            return keycloak.realm(realm).roles().get(roleId).composites().list()
+            return keycloak.realm(realm).roles().get(roleId).roleComposites.toList()
         } catch (e: Exception) {
             throw KeycloakException("Failed to get composite roles for role with id: $roleId", e)
         }
