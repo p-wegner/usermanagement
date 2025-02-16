@@ -53,6 +53,10 @@ export const appConfig: ApplicationConfig = {
       deps: [KeycloakService, AuthConfigService],
     },
     provideKeycloak({
+      // TODO pieed 2025-02-16: initialize keycloak only once the backend has provided the url and clientinfo
+      // Configures and provides Keycloak as a dependency in an Angular application.
+      // This function initializes a Keycloak instance with the provided configuration and optional initialization options. It integrates Keycloak into Angular dependency injection system, allowing easy consumption throughout the application. Additionally, it supports custom providers and Keycloak Angular features.
+      // If initOptions is not provided, the Keycloak instance will not be automatically initialized. In such cases, the application must call keycloak. init() explicitly.
       config: inject(AuthConfigService).getInitialConfig(),
       initOptions: keycloakInitOptions
     }),
