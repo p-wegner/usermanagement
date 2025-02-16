@@ -3,12 +3,13 @@ import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { provideKeycloak, withAutoRefreshToken } from 'keycloak-angular';
 import { firstValueFrom } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-
-async function fetchAuthConfig(http: HttpClient) {
+async function fetchAuthConfig() {
   try {
-    // TODO pieed 2025-02-16: cant use angulars http client here
-    const result = await firstValueFrom(http.get<{data: any}>('http://localhost:8080/api/auth/config'));
+    const response = await fetch('http://localhost:8080/api/auth/config');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
     if (!result || !result.data) {
       throw new Error('Failed to load auth config');
     }
@@ -48,8 +49,7 @@ function createKeycloakProvider(authConfig: any) {
 
 async function initializeApp() {
   try {
-    const http = new HttpClient(null!);
-    const authConfig = await fetchAuthConfig(http);
+    const authConfig = await fetchAuthConfig();
     const keycloakProvider = createKeycloakProvider(authConfig);
 
     const finalConfig = {
