@@ -1,12 +1,1 @@
-
-export const keycloakInitOptions = {
-  enableBearerInterceptor: true,
-  loadUserProfileAtStartUp: true,
-  initOptions: {
-    onLoad: 'check-sso',
-    silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-    checkLoginIframe: false,
-    pkceMethod: 'S256',
-    enableLogging: true
-  }
-};
+// This file can be safely deleted as the configuration is now handled directly in main.ts

@@ -1,8 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import {provideKeycloak} from 'keycloak-angular';
-import {keycloakInitOptions} from './app/core/auth/auth.config';
+import { provideKeycloak, withAutoRefreshToken } from 'keycloak-angular';
 
 async function initializeApp() {
   try {
@@ -15,9 +14,7 @@ async function initializeApp() {
     const keycloakConfig = {
       url: result.data.authServerUrl,
       realm: result.data.realm,
-      clientId: result.data.clientId,
-      'auth-server-url': result.data.authServerUrl,
-      'realm-url': `${result.data.authServerUrl}/realms/${result.data.realm}`
+      clientId: result.data.clientId
     };
 
     const finalConfig = {
@@ -26,23 +23,20 @@ async function initializeApp() {
         provideKeycloak({
           config: keycloakConfig,
           initOptions: {
-            ...keycloakInitOptions,
-            token: sessionStorage.getItem('kc_token') || undefined,
-            refreshToken: sessionStorage.getItem('kc_refreshToken') || undefined
-          }
+            onLoad: 'login-required',
+            silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+            checkLoginIframe: false,
+            pkceMethod: 'S256'
+          },
+          features: [
+            withAutoRefreshToken({
+              onInactivityTimeout: 'logout',
+              sessionTimeout: 300000 // 5 minutes
+            })
+          ]
         }),
-        ...appConfig.providers.map(provider => {
-        if (typeof provider === 'object' && 'provide' in provider && provider.provide.toString().includes('KeycloakOptions')) {
-          return {
-            ...provider,
-            useValue: {
-              config: keycloakConfig,
-              initOptions: keycloakInitOptions
-            }
-          };
-        }
-        return provider;
-      })]
+        ...appConfig.providers
+      ]
     };
 
     await bootstrapApplication(AppComponent, finalConfig);
