@@ -52,21 +52,7 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak({
-      // TODO pieed 2025-02-16: this has to be done earlier, e.g. in main.ts , since config can't be a callback
-      config: async () => {
-        const response = await fetch('http://localhost:8080/api/auth/config');
-        const result = await response.json();
-        if (!result.success || !result.data) {
-          throw new Error('Failed to load auth config');
-        }
-        return {
-          url: result.data.authServerUrl,
-          realm: result.data.realm,
-          clientId: result.data.clientId
-        };
-      }
-    }),
+    provideKeycloak({}),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
