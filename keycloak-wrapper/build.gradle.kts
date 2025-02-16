@@ -25,7 +25,13 @@ tasks.register<Copy>("copyDockerCompose") {
 tasks.processResources {
     dependsOn("copyDockerCompose")
 }
-
+tasks.register<Copy>("generateOpenApiJson") {
+    outputs.file("$buildDir/docs/swagger.json")
+    from("$buildDir/docs/swagger.json")
+    into("$buildDir/docs/")
+    dependsOn("bootRun")
+    finalizedBy("openApiGenerate")
+}
 tasks.bootRun {
     dependsOn("processResources")
 }
