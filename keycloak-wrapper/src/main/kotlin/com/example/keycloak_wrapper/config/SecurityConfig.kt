@@ -77,7 +77,8 @@ class SecurityConfig(
                     "/actuator/info",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/error"
+                    "/error",
+                    "/api/auth/config"
                 ).permitAll()
 
                 // Secured actuator endpoints
