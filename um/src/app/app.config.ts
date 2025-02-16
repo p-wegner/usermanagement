@@ -52,12 +52,20 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    // TODO pieed 2025-02-16: call the backend auth endpoint using js methods to ensure data is available here, inject can't be used yet, since the DI is not started yet
-    provideKeycloak({config: {
-        url: '',
-        realm: '',
-        clientId: ''
-      }}),
+    provideKeycloak({
+      config: async () => {
+        const response = await fetch('http://localhost:8080/api/auth/config');
+        const result = await response.json();
+        if (!result.success || !result.data) {
+          throw new Error('Failed to load auth config');
+        }
+        return {
+          url: result.data.authServerUrl,
+          realm: result.data.realm,
+          clientId: result.data.clientId
+        };
+      }
+    }),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
