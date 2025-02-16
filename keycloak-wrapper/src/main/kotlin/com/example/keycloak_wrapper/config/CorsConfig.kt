@@ -17,6 +17,7 @@ class CorsConfig(
         val source = UrlBasedCorsConfigurationSource()
         val config = CorsConfiguration().apply {
             allowCredentials = true
+            allowedOriginPatterns = allowedOrigins.split(",").map { it.trim() }
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf(
                 "Origin",
@@ -26,6 +27,10 @@ class CorsConfig(
                 "Access-Control-Allow-Origin",
                 "Access-Control-Request-Method",
                 "Access-Control-Request-Headers",
+                "Access-Control-Allow-Credentials"
+            )
+            exposedHeaders = listOf(
+                "Access-Control-Allow-Origin",
                 "Access-Control-Allow-Credentials"
             )
         }
