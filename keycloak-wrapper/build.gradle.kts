@@ -19,7 +19,8 @@ openApi {
 tasks.register<Copy>("copyDockerCompose") {
     from("docker-compose.yml")
     into("build/resources/main")
-    into("build/classes/kotlin/main")  // Copy to classes directory
+    into("build/classes/kotlin/main")
+    into("src/main/resources")  // Also copy to resources directory
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
@@ -44,6 +45,12 @@ tasks.bootJar {
     from("docker-compose.yml") {
         into("BOOT-INF/classes")
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    doFirst {
+        copy {
+            from("docker-compose.yml")
+            into("build/resources/main")
+        }
     }
 }
 
