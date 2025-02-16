@@ -21,13 +21,17 @@ async function initializeApp() {
       ...appConfig,
       providers: [
         provideKeycloak({
-          config: keycloakConfig
+          config: keycloakConfig,
+          initOptions: keycloakInitOptions
         }),
         ...appConfig.providers.map(provider => {
         if (typeof provider === 'object' && 'provide' in provider && provider.provide.toString().includes('KeycloakOptions')) {
           return {
             ...provider,
-            useValue: { config: keycloakConfig }
+            useValue: { 
+              config: keycloakConfig,
+              initOptions: keycloakInitOptions
+            }
           };
         }
         return provider;

@@ -42,7 +42,7 @@ export class AuthConfigService {
 }
 
 export const keycloakInitOptions : KeycloakInitOptions = {
-  onLoad: 'check-sso',
+  onLoad: 'login-required',
   silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
   checkLoginIframe: false,
   pkceMethod: 'S256'
