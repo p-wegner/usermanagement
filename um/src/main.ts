@@ -7,11 +7,15 @@ import { HttpClient } from '@angular/common/http';
 
 async function fetchAuthConfig(http: HttpClient) {
   try {
-    const result = await firstValueFrom(http.get('http://localhost:8080/api/auth/config'));
+    const result = await firstValueFrom(http.get<{data: any}>('http://localhost:8080/api/auth/config'));
     if (!result || !result.data) {
       throw new Error('Failed to load auth config');
     }
-    return result.data;
+    return result.data as {
+      authServerUrl: string;
+      realm: string;
+      clientId: string;
+    };
   } catch (error) {
     console.error('Failed to fetch auth config:', error);
     throw error;
@@ -24,9 +28,6 @@ function createKeycloakProvider(authConfig: any) {
       url: authConfig.authServerUrl,
       realm: authConfig.realm,
       clientId: authConfig.clientId,
-      credentials: {
-        secret: authConfig.clientSecret
-      }
     },
     initOptions: {
       onLoad: 'check-sso',
