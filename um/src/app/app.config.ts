@@ -25,34 +25,10 @@ const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   bearerPrefix: 'Bearer'
 });
 
-function initializeKeycloak(keycloak: KeycloakService, authConfig: AuthConfigService) {
-  return async () => {
-    try {
-      const config = await authConfig.getConfig();
-      await keycloak.init({
-        config,
-        initOptions: keycloakInitOptions,
-        enableBearerInterceptor: true,
-        bearerPrefix: 'Bearer',
-        bearerExcludedUrls: []
-      });
-    } catch (error) {
-      console.error('Failed to initialize Keycloak:', error);
-      throw error;
-    }
-  };
-}
 
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeKeycloak,
-      multi: true,
-      deps: [KeycloakService, AuthConfigService],
-    },
-    provideKeycloak({}),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]

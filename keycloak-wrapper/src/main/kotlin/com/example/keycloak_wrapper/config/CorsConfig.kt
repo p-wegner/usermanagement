@@ -10,14 +10,14 @@ import org.springframework.web.filter.CorsFilter
 @Configuration
 class CorsConfig(
     @Value("\${app.cors.allowed-origins}")
-    private val allowedOrigins: List<String>
+    private val allowedOriginsFromProps: String
 ) {
     @Bean
     fun corsFilter(): CorsFilter {
         val source = UrlBasedCorsConfigurationSource()
         val config = CorsConfiguration().apply {
             allowCredentials = true
-            allowedOriginPatterns = allowedOrigins
+            allowedOriginPatterns = allowedOriginsFromProps.split(",")
             allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf(
                 "Origin",
