@@ -66,4 +66,14 @@ class UserController(
         userService.deleteUser(id)
         return ResponseEntity.ok(ApiResponse(success = true))
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER')")
+    @PutMapping("/{id}/roles")
+    fun updateUserRoles(
+        @PathVariable id: String,
+        @RequestBody roles: List<String>
+    ): ResponseEntity<ApiResponse<Unit>> {
+        userService.updateUserRoles(id, roles)
+        return ResponseEntity.ok(ApiResponse(success = true))
+    }
 }

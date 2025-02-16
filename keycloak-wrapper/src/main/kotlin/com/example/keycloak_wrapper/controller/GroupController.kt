@@ -57,4 +57,14 @@ class GroupController(
         groupService.deleteGroup(id)
         return ResponseEntity.ok(ApiResponse(success = true))
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER')")
+    @PutMapping("/{id}/roles")
+    fun updateGroupRoles(
+        @PathVariable id: String,
+        @RequestBody roles: List<String>
+    ): ResponseEntity<ApiResponse<Unit>> {
+        groupService.updateGroupRoles(id, roles)
+        return ResponseEntity.ok(ApiResponse(success = true))
+    }
 }
