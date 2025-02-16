@@ -98,6 +98,29 @@ class SecurityConfig(
 
         return http.build()
     }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins = allowedOrigins
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        configuration.allowedHeaders = listOf(
+            "Origin",
+            "Content-Type",
+            "Accept",
+            "Authorization",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers",
+            "Access-Control-Allow-Credentials"
+        )
+        configuration.allowCredentials = true
+        configuration.maxAge = 3600L
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
+    }
 }
 
 class KeycloakRoleConverter : Converter<Jwt, Collection<GrantedAuthority>> {
