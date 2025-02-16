@@ -53,10 +53,7 @@ export const appConfig: ApplicationConfig = {
       deps: [KeycloakService, AuthConfigService],
     },
     provideKeycloak({
-      config: async () => {
-        const authConfig = inject(AuthConfigService);
-        return await authConfig.getConfig();
-      },
+      config: inject(AuthConfigService).getInitialConfig(),
       initOptions: keycloakInitOptions
     }),
     {
