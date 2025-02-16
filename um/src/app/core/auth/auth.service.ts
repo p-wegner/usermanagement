@@ -51,18 +51,9 @@ export class AuthService {
         this.saveUrl(currentUrl);
       }
 
-      // Construct the redirect URI
-      const finalRedirectUri = redirectUri ||
-        (this.savedUrl ? `${window.location.origin}${this.savedUrl}` : window.location.origin);
-
-      // Ensure the redirect URI is properly encoded
-      const encodedRedirectUri = encodeURI(finalRedirectUri);
-
-      // Initialize login with Keycloak
       await this.keycloak.login({
-        redirectUri: encodedRedirectUri,
-        scope: 'openid profile email',
-        prompt: 'login'
+        redirectUri: redirectUri || window.location.origin,
+        scope: 'openid profile email'
       });
     } catch (error) {
       console.error('Login failed:', error);

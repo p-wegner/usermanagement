@@ -31,10 +31,11 @@ function createKeycloakProvider(authConfig: any) {
       clientId: authConfig.clientId,
     },
     initOptions: {
-      onLoad: 'check-sso',
+      onLoad: 'login-required',
       silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-      checkLoginIframe: true,
+      checkLoginIframe: false,
       pkceMethod: 'S256',
+      redirectUri: window.location.origin,
       flow: 'standard'
     },
     features: [
