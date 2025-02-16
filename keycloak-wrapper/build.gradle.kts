@@ -20,8 +20,15 @@ tasks.register<Copy>("copyDockerCompose") {
     from("docker-compose.yml")
     into("build/resources/main")
     into("build/classes/kotlin/main")
-    into("src/main/resources")  // Also copy to resources directory
+    into("src/main/resources")
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    doLast {
+        // Ensure the file exists in the working directory during development
+        copy {
+            from("docker-compose.yml")
+            into(".")
+        }
+    }
 }
 
 tasks.register<Copy>("generateOpenApiJson") {
@@ -50,6 +57,14 @@ tasks.bootJar {
         copy {
             from("docker-compose.yml")
             into("build/resources/main")
+        }
+    }
+    doLast {
+        // Verify the file exists in the JAR
+        if (!fileTree("${buildDir}/libs").matching { include("**/*.jar") }.any { 
+            zipTree(it).matching { include("**/docker-compose.yml") }.files.isNotEmpty() 
+        }) {
+            throw GradleException("docker-compose.yml not found in the built JAR!")
         }
     }
 }
