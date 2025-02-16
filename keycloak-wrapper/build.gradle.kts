@@ -20,6 +20,7 @@ tasks.register<Copy>("copyDockerCompose") {
     from("docker-compose.yml")
     into("build/resources/main")
     into("src/main/resources")  // Also copy to resources for development
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 tasks.register<Copy>("generateOpenApiJson") {
@@ -32,10 +33,20 @@ tasks.register<Copy>("generateOpenApiJson") {
 
 tasks.processResources {
     dependsOn("copyDockerCompose")
-    from("docker-compose.yml")  // Ensure docker-compose.yml is included in resources
+    from("docker-compose.yml") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
 }
 
 tasks.bootJar {
+    dependsOn("copyDockerCompose")
+    from("docker-compose.yml") {
+        into("BOOT-INF/classes")
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+}
+
+tasks.bootRun {
     dependsOn("copyDockerCompose")
 }
 val apispec by configurations.creating
