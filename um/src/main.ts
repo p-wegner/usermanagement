@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 
 async function fetchAuthConfig(http: HttpClient) {
   try {
+    // TODO pieed 2025-02-16: cant use angulars http client here
     const result = await firstValueFrom(http.get<{data: any}>('http://localhost:8080/api/auth/config'));
     if (!result || !result.data) {
       throw new Error('Failed to load auth config');
