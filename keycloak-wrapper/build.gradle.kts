@@ -16,61 +16,18 @@ openApi {
     }
 }
 
+// Copy docker-compose.yml to resources
 tasks.register<Copy>("copyDockerCompose") {
     from("docker-compose.yml")
-    into("build/resources/main")
-    into("build/classes/kotlin/main")
     into("src/main/resources")
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    doLast {
-        // Ensure the file exists in the working directory during development
-        copy {
-            from("docker-compose.yml")
-            into(".")
-        }
-    }
-}
-
-tasks.register<Copy>("generateOpenApiJson") {
-    outputs.file("$buildDir/docs/swagger.json")
-    from("$buildDir/docs/swagger.json")
-    into("$buildDir/docs/")
-    dependsOn("bootRun")
-    finalizedBy("openApiGenerate")
 }
 
 tasks.processResources {
     dependsOn("copyDockerCompose")
 }
 
-tasks.classes {
-    dependsOn("copyDockerCompose")
-}
-
-tasks.bootJar {
-    dependsOn("copyDockerCompose")
-    from("docker-compose.yml") {
-        into("BOOT-INF/classes")
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
-    doFirst {
-        copy {
-            from("docker-compose.yml")
-            into("build/resources/main")
-        }
-    }
-    doLast {
-        // Verify the file exists in the JAR
-        if (!fileTree("${buildDir}/libs").matching { include("**/*.jar") }.any { 
-            zipTree(it).matching { include("**/docker-compose.yml") }.files.isNotEmpty() 
-        }) {
-            throw GradleException("docker-compose.yml not found in the built JAR!")
-        }
-    }
-}
-
 tasks.bootRun {
-    dependsOn("copyDockerCompose")
+    dependsOn("processResources")
 }
 val apispec by configurations.creating
 artifacts {
