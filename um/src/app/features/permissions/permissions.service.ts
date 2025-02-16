@@ -112,10 +112,6 @@ export class PermissionsService {
   }
 
   hasPermission(permissionName: string): Observable<boolean> {
-    return new Observable(observer => {
-      const hasRole = this.authService.hasRole(permissionName);
-      observer.next(hasRole);
-      observer.complete();
-    });
+    return of(this.hasRole(permissionName));
   }
 }
