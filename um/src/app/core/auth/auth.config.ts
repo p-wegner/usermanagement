@@ -1,51 +1,19 @@
-import { KeycloakConfig, KeycloakInitOptions } from 'keycloak-js';
-import { Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { AuthControllerService } from '../../api/com/example/api/authController.service';
-import { AuthConfigDto } from '../../api/com/example/model/authConfigDto';
+import { KeycloakConfig } from 'keycloak-js';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthConfigService {
-  private config: AuthConfigDto | null = null;
+export const defaultKeycloakConfig: KeycloakConfig = {
+  url: 'http://localhost:8081/',
+  realm: 'master',
+  clientId: 'keycloak-wrapper-client'
+};
 
-  constructor(private authController: AuthControllerService) {}
-
-  getInitialConfig(): KeycloakConfig {
-    return {
-      url: 'http://localhost:8081',
-      realm: 'master',
-      clientId: 'keycloak-wrapper-client'
-    };
+export const keycloakInitOptions = {
+  enableBearerInterceptor: true,
+  loadUserProfileAtStartUp: true,
+  initOptions: {
+    onLoad: 'check-sso',
+    silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+    checkLoginIframe: false,
+    pkceMethod: 'S256',
+    enableLogging: true
   }
-
-  async getConfig(): Promise<KeycloakConfig> {
-    if (!this.config) {
-      const response = await firstValueFrom(
-        this.authController.getAuthConfig()
-      );
-
-      if (!response.success || !response.data) {
-        throw new Error('Failed to load auth config');
-      }
-
-      this.config = response.data;
-    }
-
-    return {
-      url: this.config!.authServerUrl,
-      realm: this.config!.realm,
-      clientId: this.config!.clientId
-    };
-  }
-}
-
-export const keycloakInitOptions: KeycloakInitOptions = {
-  onLoad: 'check-sso',
-  silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
-  checkLoginIframe: false,
-  pkceMethod: 'S256',
-  enableLogging: true,
-  redirectUri: window.location.origin
 };
