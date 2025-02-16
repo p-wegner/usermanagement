@@ -10,13 +10,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatListModule } from '@angular/material/list';
+import { KeycloakService } from 'keycloak-angular';
 
 import { PermissionsRoutingModule } from './permissions-routing.module';
-import {PermissionInheritanceComponent} from './permission-inheritance/permission-inheritance.component';
-import {PermissionDetailComponent} from './permission-detail/permission-detail.component';
+import { PermissionInheritanceComponent } from './permission-inheritance/permission-inheritance.component';
+import { PermissionDetailComponent } from './permission-detail/permission-detail.component';
+import { AuthService } from '../../core/auth/auth.service';
+import { PermissionsService } from './permissions.service';
 
 @NgModule({
-  declarations: [PermissionInheritanceComponent,PermissionDetailComponent],
+  declarations: [PermissionInheritanceComponent, PermissionDetailComponent],
   imports: [
     CommonModule,
     RouterModule,
@@ -30,6 +33,11 @@ import {PermissionDetailComponent} from './permission-detail/permission-detail.c
     MatTableModule,
     MatListModule,
     PermissionsRoutingModule,
+  ],
+  providers: [
+    KeycloakService,
+    AuthService,
+    PermissionsService
   ]
 })
 export class PermissionsModule { }
