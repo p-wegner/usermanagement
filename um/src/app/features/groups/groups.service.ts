@@ -117,11 +117,12 @@ export class GroupsService {
       name: dto.name,
       path: dto.path || '',
       permissions: dto.realmRoles?.map(role => ({
-        id: role.id || '',
-        name: role.name,
-        description: role.description || '',
-        composite: role.composite,
-        clientRole: role.clientRole
+        // TODO pieed 2025-02-16: implement properly once api returns it
+        id: '',
+        name: '',
+        description: '',
+        composite: false,
+        clientRole: false
       })) || [],
       subGroups: dto.subGroups.map(this.mapToPermissionGroup)
     };

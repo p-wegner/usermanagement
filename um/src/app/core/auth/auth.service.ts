@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, from, timer} from 'rxjs';
+import {BehaviorSubject, Observable, from, timer, of} from 'rxjs';
 import {KeycloakService} from 'keycloak-angular';
 import {KeycloakProfile, KeycloakTokenParsed} from 'keycloak-js';
 import {Router} from '@angular/router';
@@ -56,7 +56,7 @@ export class AuthService {
   }
 
   isAuthenticated(): Observable<boolean> {
-    return from(this.keycloak.isLoggedIn());
+    return of(this.keycloak.isLoggedIn());
   }
 
   getUserProfile(): Observable<KeycloakProfile | null> {
