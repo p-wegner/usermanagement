@@ -53,13 +53,13 @@ export const appConfig: ApplicationConfig = {
       deps: [KeycloakService, AuthConfigService],
     },
     provideKeycloak({
+      // TODO pieed 2025-02-16: call the backend auth info endpoint to retrieve those
       config: {
         url: '',
         realm: '',
         clientId: ''
       },
       initOptions: keycloakInitOptions,
-      loadUserProfileAtStartUp: true
     }),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
