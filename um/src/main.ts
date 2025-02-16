@@ -18,6 +18,7 @@ async function initializeApp() {
 
     const finalConfig = {
       ...appConfig,
+      // TODO pieed 2025-02-16:  configure provideKeycloak here
       providers: appConfig.providers.map(provider => {
         if (typeof provider === 'object' && 'provide' in provider && provider.provide.toString().includes('KeycloakOptions')) {
           return {
