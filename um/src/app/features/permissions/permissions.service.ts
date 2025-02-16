@@ -8,13 +8,6 @@ import { Permission } from '../../shared/interfaces/permission.interface';
 })
 export class PermissionsService {
   private permissions: Permission[] = [
-    // Temporary mock data
-    { id: '1', name: 'user.create', description: 'Create new users' },
-    { id: '2', name: 'user.edit', description: 'Edit existing users' },
-    { id: '3', name: 'user.delete', description: 'Delete users' },
-    { id: '4', name: 'group.create', description: 'Create new groups' },
-    { id: '5', name: 'group.edit', description: 'Edit existing groups' },
-    { id: '6', name: 'group.delete', description: 'Delete groups' }
   ];
 
   constructor(private http: HttpClient) {}
