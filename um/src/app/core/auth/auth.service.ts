@@ -81,7 +81,7 @@ export class AuthService {
   }
 
   getUsername(): string {
-    return this.keycloak.getKeycloakInstance().tokenParsed?.preferred_username || '';
+    return this.keycloak.getKeycloakInstance().tokenParsed?.['preferred_username'] || '';
   }
 
   async loadUserProfile(): Promise<KeycloakProfile> {
