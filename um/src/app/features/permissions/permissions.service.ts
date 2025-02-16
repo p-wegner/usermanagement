@@ -1,57 +1,118 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Permission } from '../../shared/interfaces/permission.interface';
+import { RoleControllerService } from '../../api/com/example/api/roleController.service';
+import { RoleCreateDto } from '../../api/com/example/model/roleCreateDto';
+import { RoleUpdateDto } from '../../api/com/example/model/roleUpdateDto';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PermissionsService {
-  private permissions: Permission[] = [
-  ];
-
-  constructor(private http: HttpClient) {}
+  constructor(
+    private roleController: RoleControllerService,
+    private authService: AuthService
+  ) {}
 
   getPermissions(): Observable<Permission[]> {
-    // TODO: Replace with actual API call
-    return of(this.permissions);
+    return this.roleController.getRoles().pipe(
+      map(response => {
+        if (!response.success || !response.data) {
+          throw new Error('Failed to fetch permissions');
+        }
+        return response.data.map(role => ({
+          id: role.id || '',
+          name: role.name,
+          description: role.description,
+          composite: role.composite,
+          clientRole: role.clientRole
+        }));
+      })
+    );
   }
 
-  getPermission(id: string): Observable<Permission | undefined> {
-    // TODO: Replace with actual API call
-    return of(this.permissions.find(permission => permission.id === id));
+  getPermission(name: string): Observable<Permission | undefined> {
+    return this.roleController.getRole(name).pipe(
+      map(response => {
+        if (!response.success || !response.data) {
+          return undefined;
+        }
+        const role = response.data;
+        return {
+          id: role.id || '',
+          name: role.name,
+          description: role.description,
+          composite: role.composite,
+          clientRole: role.clientRole
+        };
+      })
+    );
   }
 
   createPermission(permission: Omit<Permission, 'id'>): Observable<Permission> {
-    // TODO: Replace with actual API call
-    const newPermission = { ...permission, id: Date.now().toString() };
-    this.permissions.push(newPermission);
-    return of(newPermission);
+    const roleCreate: RoleCreateDto = {
+      name: permission.name,
+      description: permission.description,
+      composite: permission.composite
+    };
+
+    return this.roleController.createRole(roleCreate).pipe(
+      map(response => {
+        if (!response.success || !response.data) {
+          throw new Error('Failed to create permission');
+        }
+        const role = response.data;
+        return {
+          id: role.id || '',
+          name: role.name,
+          description: role.description,
+          composite: role.composite,
+          clientRole: role.clientRole
+        };
+      })
+    );
   }
 
-  updatePermission(id: string, permission: Partial<Permission>): Observable<Permission> {
-    // TODO: Replace with actual API call
-    const index = this.permissions.findIndex(p => p.id === id);
-    if (index >= 0) {
-      this.permissions[index] = { ...this.permissions[index], ...permission };
-      return of(this.permissions[index]);
-    }
-    throw new Error('Permission not found');
+  updatePermission(name: string, permission: Partial<Permission>): Observable<Permission> {
+    const roleUpdate: RoleUpdateDto = {
+      name: permission.name,
+      description: permission.description,
+      composite: permission.composite
+    };
+
+    return this.roleController.updateRole(name, roleUpdate).pipe(
+      map(response => {
+        if (!response.success || !response.data) {
+          throw new Error('Failed to update permission');
+        }
+        const role = response.data;
+        return {
+          id: role.id || '',
+          name: role.name,
+          description: role.description,
+          composite: role.composite,
+          clientRole: role.clientRole
+        };
+      })
+    );
   }
 
-  deletePermission(id: string): Observable<void> {
-    // TODO: Replace with actual API call
-    const index = this.permissions.findIndex(p => p.id === id);
-    if (index >= 0) {
-      this.permissions.splice(index, 1);
-      return of(void 0);
-    }
-    throw new Error('Permission not found');
+  deletePermission(name: string): Observable<void> {
+    return this.roleController.deleteRole(name).pipe(
+      map(response => {
+        if (!response.success) {
+          throw new Error('Failed to delete permission');
+        }
+      })
+    );
   }
 
   hasPermission(permissionName: string): Observable<boolean> {
-    // TODO: Replace with actual API call that checks user's permissions
-    // For now, return true to allow access
-    return of(true);
+    return new Observable(observer => {
+      const hasRole = this.authService.hasRole(permissionName);
+      observer.next(hasRole);
+      observer.complete();
+    });
   }
 }
