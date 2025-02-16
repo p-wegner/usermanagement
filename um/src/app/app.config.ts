@@ -52,7 +52,12 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak(),
+    // TODO pieed 2025-02-16: call the backend auth endpoint using js methods to ensure data is available here
+    provideKeycloak({config: {
+        url: '',
+        realm: '',
+        clientId: ''
+      }}),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
