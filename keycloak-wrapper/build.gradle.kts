@@ -19,7 +19,7 @@ openApi {
 tasks.register<Copy>("copyDockerCompose") {
     from("docker-compose.yml")
     into("build/resources/main")
-    into("src/main/resources")  // Also copy to resources for development
+    into("build/classes/kotlin/main")  // Copy to classes directory
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
@@ -33,9 +33,10 @@ tasks.register<Copy>("generateOpenApiJson") {
 
 tasks.processResources {
     dependsOn("copyDockerCompose")
-    from("docker-compose.yml") {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
+}
+
+tasks.classes {
+    dependsOn("copyDockerCompose")
 }
 
 tasks.bootJar {
