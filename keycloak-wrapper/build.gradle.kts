@@ -12,7 +12,7 @@ openApi {
     outputFileName.set("swagger.json")
     waitTimeInSeconds.set(10)
     customBootRun {
-//        args.addAll("--spring.profiles.active=special")
+        args.add("--spring.profiles.active=apidocs")
     }
 }
 
