@@ -1,28 +1,16 @@
-import {KeycloakConfig, KeycloakInitOptions} from 'keycloak-js';
+import { KeycloakConfig, KeycloakInitOptions } from 'keycloak-js';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-
-export interface AuthConfig {
-  authServerUrl: string;
-  realm: string;
-  clientId: string;
-  resourceServerUrl: string;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
+import { AuthControllerService } from '../../api/com/example/api/authController.service';
+import { AuthConfigDto } from '../../api/com/example/model/authConfigDto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthConfigService {
-  private config: AuthConfig | null = null;
+  private config: AuthConfigDto | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private authController: AuthControllerService) {}
 
   getInitialConfig(): KeycloakConfig {
     return {
@@ -35,7 +23,7 @@ export class AuthConfigService {
   async getConfig(): Promise<KeycloakConfig> {
     if (!this.config) {
       const response = await firstValueFrom(
-        this.http.get<ApiResponse<AuthConfig>>('/api/auth/config')
+        this.authController.getAuthConfig()
       );
 
       if (!response.success || !response.data) {
