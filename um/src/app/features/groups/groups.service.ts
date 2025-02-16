@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import {Observable, map, of} from 'rxjs';
 import { Permission, PermissionGroup } from '../../shared/interfaces/permission.interface';
 import { GroupControllerService } from '../../api/com/example/api/groupController.service';
 import { GroupCreateDto } from '../../api/com/example/model/groupCreateDto';
