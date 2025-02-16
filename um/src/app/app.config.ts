@@ -1,6 +1,6 @@
-import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, inject, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import {HttpClient, HttpHandler, provideHttpClient, withInterceptors} from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
@@ -53,12 +53,7 @@ export const appConfig: ApplicationConfig = {
       deps: [KeycloakService, AuthConfigService],
     },
     provideKeycloak({
-      // TODO pieed 2025-02-16: call the backend auth info endpoint to retrieve those
-      config: {
-        url: '',
-        realm: '',
-        clientId: ''
-      },
+      config: inject(AuthConfigService).getConfig(),
       initOptions: keycloakInitOptions,
     }),
     {
