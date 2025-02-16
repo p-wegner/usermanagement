@@ -72,21 +72,19 @@ export class AuthService {
       this.saveUrl(window.location.pathname);
       const response = await fetch('http://localhost:8080/api/auth/config');
       const result = await response.json();
-      
+
       if (!result.success || !result.data) {
         throw new Error('Failed to load auth config');
       }
 
       const loginUrl = `${result.data.authServerUrl}/realms/${result.data.realm}/protocol/openid-connect/auth`;
       const clientId = result.data.clientId;
-      
+
       await this.keycloak.login({
         redirectUri: redirectUri || window.location.origin,
         loginHint: options.prompt,
         idpHint: undefined,
         scope: 'openid',
-        clientId: clientId,
-        loginUrl: loginUrl
       });
     } catch (error) {
       console.error('Login failed:', error);
