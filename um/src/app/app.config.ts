@@ -13,22 +13,26 @@ import {
   createInterceptorCondition,
   IncludeBearerTokenCondition,
   INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
-  includeBearerTokenInterceptor, KeycloakOptions
+  includeBearerTokenInterceptor
 } from 'keycloak-angular';
 
 import { routes } from './app.routes';
 import { AuthConfigService, keycloakInitOptions } from './core/auth/auth.config';
-import {KeycloakConfig} from 'keycloak-js';
 
 const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
   bearerPrefix: 'Bearer'
 });
 
+const keycloakService = new KeycloakService();
 
 export const appConfig: ApplicationConfig = {
   providers: [
     AuthConfigService,
+    {
+      provide: KeycloakService,
+      useValue: keycloakService
+    },
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
@@ -51,6 +55,11 @@ export const appConfig: ApplicationConfig = {
         horizontalPosition: 'end',
         verticalPosition: 'bottom'
       }
-    }
+    },
+    provideKeycloak({
+      enableBearerInterceptor: true,
+      bearerPrefix: 'Bearer',
+      bearerExcludedUrls: ['/assets']
+    })
   ]
 };
