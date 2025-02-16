@@ -24,6 +24,14 @@ export class AuthConfigService {
 
   constructor(private http: HttpClient) {}
 
+  getInitialConfig(): KeycloakConfig {
+    return {
+      url: '',
+      realm: '',
+      clientId: ''
+    };
+  }
+
   async getConfig(): Promise<KeycloakConfig> {
     if (!this.config) {
       const response = await firstValueFrom(
