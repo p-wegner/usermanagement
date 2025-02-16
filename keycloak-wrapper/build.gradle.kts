@@ -18,7 +18,7 @@ openApi {
 
 tasks.register<Copy>("copyDockerCompose") {
     from("docker-compose.yml")
-    into("src/main/resources")
+    into("build/resources/main")
 }
 
 tasks.register<Copy>("generateOpenApiJson") {
