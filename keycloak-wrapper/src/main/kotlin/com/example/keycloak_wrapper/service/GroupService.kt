@@ -46,6 +46,6 @@ class GroupService(
     }
 
     fun updateGroupRoles(id: String, roles: List<String>) {
-        // TODO: implement
+        keycloakGroupFacade.updateGroupRoles(id, roles)
     }
 }
