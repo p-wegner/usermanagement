@@ -15,8 +15,11 @@ data class GroupCreateDto(
 )
 
 data class GroupUpdateDto(
-    val name: String? = null,
-    val realmRoles: List<String>? = null
+    val name: String? = null
+)
+
+data class GroupRoleAssignmentDto(
+    val roleIds: List<String>
 )
 
 data class GroupSearchDto(

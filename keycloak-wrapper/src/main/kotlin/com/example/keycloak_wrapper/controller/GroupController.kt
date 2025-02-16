@@ -59,12 +59,29 @@ class GroupController(
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER')")
-    @PutMapping("/{id}/roles")
-    fun updateGroupRoles(
+    @PostMapping("/{id}/roles")
+    fun addGroupRoles(
         @PathVariable id: String,
-        @RequestBody roles: List<String>
-    ): ResponseEntity<ApiResponse<Unit>> {
-        groupService.updateGroupRoles(id, roles)
-        return ResponseEntity.ok(ApiResponse(success = true))
+        @RequestBody roleAssignment: GroupRoleAssignmentDto
+    ): ResponseEntity<ApiResponse<GroupDto>> {
+        val updatedGroup = groupService.addGroupRoles(id, roleAssignment.roleIds)
+        return ResponseEntity.ok(ApiResponse(success = true, data = updatedGroup))
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER')")
+    @DeleteMapping("/{id}/roles")
+    fun removeGroupRoles(
+        @PathVariable id: String,
+        @RequestBody roleAssignment: GroupRoleAssignmentDto
+    ): ResponseEntity<ApiResponse<GroupDto>> {
+        val updatedGroup = groupService.removeGroupRoles(id, roleAssignment.roleIds)
+        return ResponseEntity.ok(ApiResponse(success = true, data = updatedGroup))
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER', 'GROUP_VIEWER')")
+    @GetMapping("/{id}/roles")
+    fun getGroupRoles(@PathVariable id: String): ResponseEntity<ApiResponse<List<String>>> {
+        val roles = groupService.getGroupRoles(id)
+        return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }
 }
