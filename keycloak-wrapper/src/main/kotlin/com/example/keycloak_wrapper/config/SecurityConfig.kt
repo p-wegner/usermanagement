@@ -56,39 +56,6 @@ class SecurityConfig(
         return jwtConverter
     }
 
-    @Bean
-    fun corsConfigurationSource(): CorsConfigurationSource {
-        val configuration = CorsConfiguration().apply {
-            // Allow both frontend and Swagger UI origins
-            allowedOrigins = listOf("http://localhost:8081", "http://localhost:8080", "http://localhost:8080/swagger-ui/index.html")
-            allowedMethods = listOf(
-                HttpMethod.GET.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name()
-            )
-            allowedHeaders = listOf(
-                "Authorization",
-                "Content-Type",
-                "X-Requested-With",
-                "Accept",
-                "Origin",
-                "Access-Control-Request-Method",
-                "Access-Control-Request-Headers"
-            )
-            exposedHeaders = listOf(
-                "Access-Control-Allow-Origin",
-                "Access-Control-Allow-Credentials",
-                "Authorization"
-            )
-            allowCredentials = true
-            maxAge = 3600L
-        }
-        return UrlBasedCorsConfigurationSource().apply {
-            registerCorsConfiguration("/**", configuration)
-        }
-    }
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
