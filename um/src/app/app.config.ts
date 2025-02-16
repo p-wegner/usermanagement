@@ -6,10 +6,6 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import {
   KeycloakService,
-  provideKeycloak,
-  withAutoRefreshToken,
-  AutoRefreshTokenService,
-  UserActivityService,
   createInterceptorCondition,
   IncludeBearerTokenCondition,
   INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
@@ -17,7 +13,6 @@ import {
 } from 'keycloak-angular';
 
 import { routes } from './app.routes';
-import { AuthConfigService, keycloakInitOptions } from './core/auth/auth.config';
 
 const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
@@ -28,7 +23,6 @@ const keycloakService = new KeycloakService();
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    AuthConfigService,
     {
       provide: KeycloakService,
       useValue: keycloakService
@@ -55,11 +49,6 @@ export const appConfig: ApplicationConfig = {
         horizontalPosition: 'end',
         verticalPosition: 'bottom'
       }
-    },
-    provideKeycloak({
-      enableBearerInterceptor: true,
-      bearerPrefix: 'Bearer',
-      bearerExcludedUrls: ['/assets']
-    })
+    }
   ]
 };

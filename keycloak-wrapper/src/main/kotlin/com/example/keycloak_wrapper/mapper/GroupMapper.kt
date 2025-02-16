@@ -3,7 +3,10 @@ package com.example.keycloak_wrapper.mapper
 import com.example.keycloak_wrapper.dto.GroupDto
 import com.example.keycloak_wrapper.dto.GroupCreateDto
 import com.example.keycloak_wrapper.dto.GroupUpdateDto
+import com.example.keycloak_wrapper.dto.RoleDto
+import org.keycloak.admin.client.Keycloak
 import org.keycloak.representations.idm.GroupRepresentation
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component

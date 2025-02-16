@@ -5,7 +5,7 @@ data class GroupDto(
     val name: String,
     val path: String? = null,
     val subGroups: List<GroupDto> = emptyList(),
-    val realmRoles: List<String> = emptyList()
+    val realmRoles: List<RoleDto> = emptyList()
 )
 
 data class GroupCreateDto(

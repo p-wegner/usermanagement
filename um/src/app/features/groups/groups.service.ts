@@ -1,12 +1,11 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable, map, of, throwError} from 'rxjs';
-import { Permission, PermissionGroup } from '../../shared/interfaces/permission.interface';
-import { GroupControllerService } from '../../api/com/example/api/groupController.service';
-import { RoleControllerService } from '../../api/com/example/api/roleController.service';
-import { GroupCreateDto } from '../../api/com/example/model/groupCreateDto';
-import { GroupUpdateDto } from '../../api/com/example/model/groupUpdateDto';
-import { GroupDto } from '../../api/com/example/model/groupDto';
-import {group} from '@angular/animations';
+import {Permission, PermissionGroup} from '../../shared/interfaces/permission.interface';
+import {GroupControllerService} from '../../api/com/example/api/groupController.service';
+import {RoleControllerService} from '../../api/com/example/api/roleController.service';
+import {GroupCreateDto} from '../../api/com/example/model/groupCreateDto';
+import {GroupUpdateDto} from '../../api/com/example/model/groupUpdateDto';
+import {GroupDto} from '../../api/com/example/model/groupDto';
 import {RoleDto} from '../../api/com/example';
 
 @Injectable({
@@ -16,7 +15,8 @@ export class GroupsService {
   constructor(
     private groupControllerService: GroupControllerService,
     private roleControllerService: RoleControllerService
-  ) {}
+  ) {
+  }
 
   getGroups(page: number = 0, size: number = 20, search?: string): Observable<PermissionGroup[]> {
     return this.groupControllerService.getGroups(page, size, search).pipe(
@@ -88,7 +88,7 @@ export class GroupsService {
         if (!response.success || !response.data) {
           throw new Error(response.error || 'Failed to fetch roles');
         }
-        return response.data.map((role:RoleDto) => ({
+        return response.data.map((role: RoleDto) => ({
           id: role.id || '',
           name: role.name,
           description: role.description || '',
@@ -117,12 +117,11 @@ export class GroupsService {
       name: dto.name,
       path: dto.path || '',
       permissions: dto.realmRoles?.map(role => ({
-        // TODO pieed 2025-02-16: implement properly once api returns it
-        id: '',
-        name: '',
-        description: '',
-        composite: false,
-        clientRole: false
+        id: role.id,
+        name: role.name,
+        description: role.description || '',
+        composite: role.composite,
+        clientRole: role.clientRole
       })) || [],
       subGroups: dto.subGroups.map(this.mapToPermissionGroup)
     };

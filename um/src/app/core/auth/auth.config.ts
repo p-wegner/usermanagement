@@ -1,10 +1,3 @@
-import { KeycloakConfig } from 'keycloak-js';
-
-export const defaultKeycloakConfig: KeycloakConfig = {
-  url: 'http://localhost:8081/',
-  realm: 'master',
-  clientId: 'keycloak-wrapper-client'
-};
 
 export const keycloakInitOptions = {
   enableBearerInterceptor: true,
