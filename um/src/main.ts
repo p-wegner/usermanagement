@@ -15,7 +15,9 @@ async function initializeApp() {
     const keycloakConfig = {
       url: result.data.authServerUrl,
       realm: result.data.realm,
-      clientId: result.data.clientId
+      clientId: result.data.clientId,
+      'auth-server-url': result.data.authServerUrl,
+      'realm-url': `${result.data.authServerUrl}/realms/${result.data.realm}`
     };
 
     const finalConfig = {
