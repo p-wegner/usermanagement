@@ -52,10 +52,13 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [KeycloakService, AuthConfigService],
     },
-    provideKeycloak(() => ({
+    provideKeycloak({
       config: inject(AuthConfigService).getInitialConfig(),
       initOptions: keycloakInitOptions,
-    })),
+      enableBearerInterceptor: true,
+      bearerPrefix: 'Bearer',
+      bearerExcludedUrls: []
+    }),
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
