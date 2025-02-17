@@ -1,9 +1,8 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import {createKeycloakProvider, fetchAuthConfig} from './app/keycloak-setup';
-
-
+import { createKeycloakProvider, fetchAuthConfig } from './app/keycloak-setup';
+import { Router } from '@angular/router';
 
 async function initializeApp() {
   try {

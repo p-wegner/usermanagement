@@ -15,7 +15,9 @@ export function createKeycloakProvider(authConfig: any) {
     },
     initOptions: {
       onLoad: 'check-sso',
-      silentCheckSsoRedirectUri:  window.location.origin + '/silent-check-sso.html',
+      silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+      redirectUri: window.location.origin,
+      checkLoginIframe: false
     },
     features: [
       withAutoRefreshToken({
