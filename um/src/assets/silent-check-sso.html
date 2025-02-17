@@ -8,9 +8,7 @@
 </head>
 <body>
     <script>
-        if (window.parent && window.parent !== window) {
-            window.parent.postMessage(location.href, location.origin);
-        }
+        parent.postMessage(location.href, location.origin);
     </script>
 </body>
 </html>

@@ -7,7 +7,11 @@ export const urlCondition = createInterceptorCondition<IncludeBearerTokenConditi
   bearerPrefix: 'Bearer'
 });
 
-export async function fetchAuthConfig() {
+export async function fetchAuthConfig(): Promise<{
+  authServerUrl: string;
+  realm: string;
+  clientId: string;
+}> {
   try {
     const response = await fetch('http://localhost:8080/api/auth/config');
     if (!response.ok) {

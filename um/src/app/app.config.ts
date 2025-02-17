@@ -53,9 +53,10 @@ export function appConfig(authConfig: {
         },
         initOptions: {
           onLoad: 'check-sso',
-          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
-          redirectUri: window.location.origin,
-          checkLoginIframe: false
+          silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+          redirectUri: window.location.origin + window.location.pathname,
+          checkLoginIframe: false,
+          enableLogging: true
         },
         features: [
           withAutoRefreshToken({
