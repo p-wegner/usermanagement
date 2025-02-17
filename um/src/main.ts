@@ -2,15 +2,15 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { 
-  provideKeycloak, 
-  withAutoRefreshToken, 
-  AutoRefreshTokenService, 
+import {
+  provideKeycloak,
+  withAutoRefreshToken,
+  AutoRefreshTokenService,
   UserActivityService,
   includeBearerTokenInterceptor,
   createInterceptorCondition,
   IncludeBearerTokenCondition,
-  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG 
+  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG
 } from 'keycloak-angular';
 const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
   urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
@@ -46,22 +46,17 @@ function createKeycloakProvider(authConfig: any) {
       clientId: authConfig.clientId,
     },
     initOptions: {
-      onLoad: 'login-required',
-      silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-      checkLoginIframe: false,
-      pkceMethod: 'S256',
-      redirectUri: window.location.origin,
-      flow: 'standard',
-      enableLogging: true
+      onLoad: 'check-sso',
+      silentCheckSsoRedirectUri:  window.location.origin + '/silent-check-sso.html',
     },
     features: [
       withAutoRefreshToken({
         onInactivityTimeout: 'logout',
-        sessionTimeout: 300000
+        sessionTimeout: 60000
       })
     ],
     providers: [
-      AutoRefreshTokenService, 
+      AutoRefreshTokenService,
       UserActivityService,
       {
         provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
