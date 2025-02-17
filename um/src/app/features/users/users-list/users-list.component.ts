@@ -28,7 +28,6 @@ export class UsersListComponent implements OnInit {
     private router: Router,
     private usersService: UsersService,
     private dialog: MatDialog,
-    private loadingService: LoadingService,
     private errorHandling: ErrorHandlingService
   ) {}
 
