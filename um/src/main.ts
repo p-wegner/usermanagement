@@ -1,66 +1,9 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import {
-  provideKeycloak,
-  withAutoRefreshToken,
-  AutoRefreshTokenService,
-  UserActivityService,
-  includeBearerTokenInterceptor,
-  createInterceptorCondition,
-  IncludeBearerTokenCondition,
-  INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG
-} from 'keycloak-angular';
-const urlCondition = createInterceptorCondition<IncludeBearerTokenCondition>({
-  urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
-  bearerPrefix: 'Bearer'
-});
+import {createKeycloakProvider, fetchAuthConfig} from './app/keycloak-setup';
 
-async function fetchAuthConfig() {
-  try {
-    const response = await fetch('http://localhost:8080/api/auth/config');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const result = await response.json();
-    if (!result || !result.data) {
-      throw new Error('Failed to load auth config');
-    }
-    return result.data as {
-      authServerUrl: string;
-      realm: string;
-      clientId: string;
-    };
-  } catch (error) {
-    console.error('Failed to fetch auth config:', error);
-    throw error;
-  }
-}
 
-function createKeycloakProvider(authConfig: any) {
-  return provideKeycloak({
-    config: {
-      url: authConfig.authServerUrl,
-      realm: authConfig.realm,
-      clientId: authConfig.clientId,
-    },
-    initOptions: {
-      onLoad: 'check-sso',
-      silentCheckSsoRedirectUri:  window.location.origin + '/silent-check-sso.html',
-    },
-    features: [
-      withAutoRefreshToken({
-        onInactivityTimeout: 'logout',
-        sessionTimeout: 60000
-      })
-    ],
-    providers: [
-      AutoRefreshTokenService,
-      UserActivityService
-    ]
-  });
-}
 
 async function initializeApp() {
   try {

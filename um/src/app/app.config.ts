@@ -7,12 +7,10 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { includeBearerTokenInterceptor, INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG } from 'keycloak-angular';
 
 import { routes } from './app.routes';
+import {urlCondition} from './keycloak-setup';
 
 
-const urlCondition = {
-  urlPattern: /^(http:\/\/localhost:8080)(\/.*)?$/i,
-  bearerPrefix: 'Bearer'
-};
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
