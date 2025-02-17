@@ -44,7 +44,7 @@ export const appConfig: ApplicationConfig = {
         {
           basePath: 'http://localhost:8080',
           // basePath: environment.apiUrl,
-          accessToken: authService.getAccessToken.bind(authService)
+          accessToken:()=> authService.getAccessToken()
         }
       ),
       deps: [AuthService],
