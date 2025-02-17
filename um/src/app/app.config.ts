@@ -8,6 +8,8 @@ import { includeBearerTokenInterceptor, INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG 
 
 import { routes } from './app.routes';
 import {urlCondition} from './keycloak-setup';
+import { Configuration } from './api/com/example/configuration';
+import {AuthService} from './core/auth/auth.service';
 
 
 
@@ -35,6 +37,18 @@ export const appConfig: ApplicationConfig = {
     {
       provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
       useValue: [urlCondition]
+    },
+    {
+      provide: Configuration,
+      useFactory: (authService: AuthService) => new Configuration(
+        {
+          basePath: 'http://localhost:8080',
+          // basePath: environment.apiUrl,
+          accessToken: authService.getAccessToken.bind(authService)
+        }
+      ),
+      deps: [AuthService],
+      multi: false
     },
     provideHttpClient(withInterceptors([includeBearerTokenInterceptor]))
   ]

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
-import { KeycloakProfile, KeycloakTokenParsed } from 'keycloak-js';
+import Keycloak, { KeycloakProfile, KeycloakTokenParsed } from 'keycloak-js';
 import { Router } from '@angular/router';
 import { KEYCLOAK_EVENT_SIGNAL } from 'keycloak-angular';
 import { HttpClient } from '@angular/common/http';
@@ -12,9 +12,8 @@ import { HttpClient } from '@angular/common/http';
 export class AuthService {
   private userProfileSubject = new BehaviorSubject<KeycloakProfile | null>(null);
   private savedUrl: string | null = null;
-
   constructor(
-    private keycloak: KeycloakService,
+    private keycloak: Keycloak,
     private router: Router,
   ) {
     this.init();
@@ -22,7 +21,7 @@ export class AuthService {
 
   private async init() {
     try {
-      if (await this.keycloak.isLoggedIn()) {
+      if (this.keycloak.authenticated) {
         const profile = await this.keycloak.loadUserProfile();
         this.userProfileSubject.next(profile);
       }
@@ -32,15 +31,19 @@ export class AuthService {
   }
 
   isAuthenticated(): Observable<boolean> {
-    return from(Promise.resolve(this.keycloak.isLoggedIn()));
+    return from(Promise.resolve(this.keycloak.authenticated || false));
   }
+
+  getAccessToken(){
+    return this.keycloak.token || ''
+  };
 
   getUserProfile(): Observable<KeycloakProfile | null> {
     return this.userProfileSubject.asObservable();
   }
 
   getTokenParsed(): KeycloakTokenParsed | undefined {
-    return this.keycloak.getKeycloakInstance().tokenParsed;
+    return this.keycloak.tokenParsed;
   }
 
   async login(redirectUri?: string): Promise<void> {
@@ -63,7 +66,7 @@ export class AuthService {
 
   async logout(redirectUri?: string): Promise<void> {
     try {
-      await this.keycloak.logout(redirectUri || window.location.origin);
+      await this.keycloak.logout({redirectUri:redirectUri || window.location.origin});
       this.userProfileSubject.next(null);
     } catch (error) {
       console.error('Logout failed:', error);
@@ -72,16 +75,19 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    return this.keycloak.isUserInRole(role);
+    return true;
+    // return this.keycloak.isUserInRole(role);
   }
 
 
   getRoles(): string[] {
-    return this.keycloak.getKeycloakInstance().realmAccess?.roles || [];
+    return []
+    // return this.keycloak.getKeycloakInstance().realmAccess?.roles || [];
   }
 
   getUsername(): string {
-    return this.keycloak.getKeycloakInstance().tokenParsed?.['preferred_username'] || '';
+    return ''
+    // return this.keycloak.getKeycloakInstance().tokenParsed?.['preferred_username'] || '';
   }
 
   async loadUserProfile(): Promise<KeycloakProfile> {
