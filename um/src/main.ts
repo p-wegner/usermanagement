@@ -57,12 +57,7 @@ function createKeycloakProvider(authConfig: any) {
     ],
     providers: [
       AutoRefreshTokenService,
-      UserActivityService,
-      {
-        provide: INCLUDE_BEARER_TOKEN_INTERCEPTOR_CONFIG,
-        useValue: [urlCondition]
-      },
-      provideHttpClient(withInterceptors([includeBearerTokenInterceptor]))
+      UserActivityService
     ]
   });
 }
