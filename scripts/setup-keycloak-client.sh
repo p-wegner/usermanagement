@@ -3,7 +3,8 @@
 # Keycloak settings
 KEYCLOAK_URL="http://localhost:8081"
 REALM="master"
-CLIENT_ID="keycloak-wrapper-client"
+FRONTEND_CLIENT_ID="keycloak-wrapper-frontend"
+BACKEND_CLIENT_ID="keycloak-wrapper-backend"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="admin"
 
@@ -22,59 +23,79 @@ if [ -z "$ADMIN_TOKEN" ]; then
   exit 1
 fi
 
-# Create client
-echo "Creating client..."
-CLIENT_RESPONSE=$(curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM}/clients" \
+# Create frontend client (public)
+echo "Creating frontend client..."
+curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM}/clients" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
-    "clientId": "'$CLIENT_ID'",
+    "clientId": "'$FRONTEND_CLIENT_ID'",
+    "enabled": true,
+    "protocol": "openid-connect",
+    "publicClient": true,
+    "standardFlowEnabled": true,
+    "implicitFlowEnabled": false,
+    "directAccessGrantsEnabled": true,
+    "serviceAccountsEnabled": false,
+    "authorizationServicesEnabled": false,
+    "redirectUris": [
+      "http://localhost:4200/*"
+    ],
+    "webOrigins": [
+      "http://localhost:4200",
+      "+"
+    ]
+  }'
+
+# Create backend client (confidential)
+echo "Creating backend client..."
+curl -s -X POST "${KEYCLOAK_URL}/admin/realms/${REALM}/clients" \
+  -H "Authorization: Bearer ${ADMIN_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clientId": "'$BACKEND_CLIENT_ID'",
     "enabled": true,
     "protocol": "openid-connect",
     "publicClient": false,
-    "standardFlowEnabled": true,
+    "standardFlowEnabled": false,
+    "implicitFlowEnabled": false,
+    "directAccessGrantsEnabled": false,
     "serviceAccountsEnabled": true,
     "authorizationServicesEnabled": true,
-    "directAccessGrantsEnabled": true,
-    "clientAuthenticatorType": "client-secret",
-    "redirectUris": [
-      "http://localhost:8080/*",
-      "http://localhost:8080/swagger-ui/oauth2-redirect.html"
-    ],
-    "webOrigins": [
-      "http://localhost:8080",
-      "+"
-    ]
-  }')
+    "clientAuthenticatorType": "client-secret"
+  }'
 
-# Get client ID
-echo "Getting client details..."
-CLIENT_UUID=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM}/clients" \
+# Get backend client UUID
+echo "Getting backend client details..."
+BACKEND_CLIENT_UUID=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM}/clients" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
-  | grep -o '"id":"[^"]*","clientId":"'$CLIENT_ID'"' | cut -d'"' -f4)
+  | grep -o '"id":"[^"]*","clientId":"'$BACKEND_CLIENT_ID'"' | cut -d'"' -f4)
 
-if [ -z "$CLIENT_UUID" ]; then
-  echo "Failed to get client UUID"
+if [ -z "$BACKEND_CLIENT_UUID" ]; then
+  echo "Failed to get backend client UUID"
   exit 1
 fi
 
-# Get client secret
-echo "Getting client secret..."
-CLIENT_SECRET=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM}/clients/${CLIENT_UUID}/client-secret" \
+# Get backend client secret
+echo "Getting backend client secret..."
+BACKEND_CLIENT_SECRET=$(curl -s -X GET "${KEYCLOAK_URL}/admin/realms/${REALM}/clients/${BACKEND_CLIENT_UUID}/client-secret" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
   | grep -o '"value":"[^"]*"' | cut -d'"' -f4)
 
-if [ -z "$CLIENT_SECRET" ]; then
-  echo "Failed to get client secret"
+if [ -z "$BACKEND_CLIENT_SECRET" ]; then
+  echo "Failed to get backend client secret"
   exit 1
 fi
 
-echo "Client created successfully!"
-echo "Client ID: ${CLIENT_ID}"
-echo "Client Secret: ${CLIENT_SECRET}"
+echo "Clients created successfully!"
+echo "Frontend Client ID: ${FRONTEND_CLIENT_ID}"
+echo "Backend Client ID: ${BACKEND_CLIENT_ID}"
+echo "Backend Client Secret: ${BACKEND_CLIENT_SECRET}"
 
 # Update application.properties
 echo "Updating application.properties..."
-sed -i "s/your-client-secret/${CLIENT_SECRET}/g" ../keycloak-wrapper/src/main/resources/application.properties
+sed -i "s/keycloak.resource=.*/keycloak.resource=${FRONTEND_CLIENT_ID}/" ../keycloak-wrapper/src/main/resources/application.properties
+sed -i "s/keycloak.service-client.id=.*/keycloak.service-client.id=${BACKEND_CLIENT_ID}/" ../keycloak-wrapper/src/main/resources/application.properties
+sed -i "s/keycloak.service-client.secret=.*/keycloak.service-client.secret=${BACKEND_CLIENT_SECRET}/" ../keycloak-wrapper/src/main/resources/application.properties
 
 echo "Setup complete!"
