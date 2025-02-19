@@ -29,7 +29,10 @@ class KeycloakConfig {
             .realm(realm)
             .clientId(serviceClientId)
             .clientSecret(serviceClientSecret)
-            .grantType("client_credentials")
+            .username("admin")
+            .password("admin")
+            .grantType("password")
+//            .grantType("client_credentials")
             .resteasyClient(
                 org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl()
                     .connectionPoolSize(10)
