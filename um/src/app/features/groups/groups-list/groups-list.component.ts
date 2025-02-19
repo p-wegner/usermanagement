@@ -51,9 +51,9 @@ export class GroupsListComponent implements OnInit {
       },
       complete: () => this.loading = false
     });
-    
+
     // Trigger groups loading
-    this.groupsService.getGroups();
+    this.groupsService.loadGroups();
   }
 
   onAddGroup(): void {
