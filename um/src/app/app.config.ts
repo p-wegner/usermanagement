@@ -52,11 +52,12 @@ export function appConfig(authConfig: {
           clientId: authConfig.clientId,
         },
         initOptions: {
-          onLoad: 'check-sso',
+          onLoad: 'login-required',
           silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
-          redirectUri: window.location.origin + window.location.pathname,
-          checkLoginIframe: false,
-          enableLogging: true
+          redirectUri: window.location.origin,
+          checkLoginIframe: true,
+          enableLogging: true,
+          pkceMethod: 'S256'
         },
         features: [
           withAutoRefreshToken({
