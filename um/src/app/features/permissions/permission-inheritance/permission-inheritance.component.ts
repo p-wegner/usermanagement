@@ -29,11 +29,12 @@ export class PermissionInheritanceComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.groupsService.loadGroups();
     this.buildInheritanceTree();
   }
 
   private buildInheritanceTree(): void {
-    this.groupsService.getGroups().subscribe(groups => {
+    this.groupsService.groups$.subscribe(groups => {
       const relatedGroups = groups.filter(group =>
         group.permissions.some(p => p.id === this.permission.id)
       );

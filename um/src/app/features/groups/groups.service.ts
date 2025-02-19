@@ -12,15 +12,25 @@ import {RoleDto} from '../../api/com/example';
   providedIn: 'root'
 })
 export class GroupsService {
-  private groupsSubject = new BehaviorSubject<PermissionGroup[]>([]);
-  public groups$ = this.groupsSubject.asObservable();
+  private readonly groupsSubject = new BehaviorSubject<PermissionGroup[]>([]);
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
+  
+  readonly groups$ = this.groupsSubject.asObservable();
+  readonly loading$ = this.loadingSubject.asObservable();
+
   constructor(
     private groupControllerService: GroupControllerService,
     private roleControllerService: RoleControllerService
   ) {
+    this.loadInitialGroups();
   }
 
-  getGroups(page: number = 0, size: number = 20, search?: string): void {
+  private loadInitialGroups(): void {
+    this.loadGroups();
+  }
+
+  loadGroups(page: number = 0, size: number = 20, search?: string): void {
+    this.loadingSubject.next(true);
     this.groupControllerService.getGroups(page, size, search).pipe(
       map(response => {
         if (!response.success || !response.data) {
@@ -29,10 +39,14 @@ export class GroupsService {
         return response.data.map(this.mapToPermissionGroup);
       })
     ).subscribe({
-      next: (groups) => this.groupsSubject.next(groups),
+      next: (groups) => {
+        this.groupsSubject.next(groups);
+        this.loadingSubject.next(false);
+      },
       error: (error) => {
         console.error('Error fetching groups:', error);
         this.groupsSubject.next([]);
+        this.loadingSubject.next(false);
       }
     });
   }
