@@ -40,7 +40,7 @@ export class GroupsListComponent implements OnInit {
 
   private loadGroups(): void {
     this.loading = true;
-    this.groupsService.getGroups().subscribe({
+    this.groupsService.groups$.subscribe({
       next: (groups) => {
         this.groups = groups;
         this.loading = false;
@@ -50,6 +50,7 @@ export class GroupsListComponent implements OnInit {
         this.loading = false;
       }
     });
+    this.groupsService.getGroups();
   }
 
   onAddGroup(): void {

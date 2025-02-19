@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, map, of, throwError} from 'rxjs';
+import {BehaviorSubject, Observable, map, throwError} from 'rxjs';
 import {Permission, PermissionGroup} from '../../shared/interfaces/permission.interface';
 import {GroupControllerService} from '../../api/com/example/api/groupController.service';
 import {RoleControllerService} from '../../api/com/example/api/roleController.service';
@@ -12,6 +12,8 @@ import {RoleDto} from '../../api/com/example';
   providedIn: 'root'
 })
 export class GroupsService {
+  private groupsSubject = new BehaviorSubject<PermissionGroup[]>([]);
+  public groups$ = this.groupsSubject.asObservable();
   constructor(
     private groupControllerService: GroupControllerService,
     private roleControllerService: RoleControllerService
@@ -19,14 +21,18 @@ export class GroupsService {
   }
 
   getGroups(page: number = 0, size: number = 20, search?: string): Observable<PermissionGroup[]> {
-    return this.groupControllerService.getGroups(page, size, search).pipe(
+    this.groupControllerService.getGroups(page, size, search).pipe(
       map(response => {
         if (!response.success || !response.data) {
           throw new Error(response.error || 'Failed to fetch groups');
         }
-        return response.data.map(this.mapToPermissionGroup);
+        const groups = response.data.map(this.mapToPermissionGroup);
+        this.groupsSubject.next(groups);
+        return groups;
       })
-    );
+    ).subscribe();
+    
+    return this.groups$;
   }
 
   getGroup(id: string): Observable<PermissionGroup> {
@@ -52,7 +58,10 @@ export class GroupsService {
         if (!response.success || !response.data) {
           throw new Error(response.error || 'Failed to create group');
         }
-        return this.mapToPermissionGroup(response.data);
+        const newGroup = this.mapToPermissionGroup(response.data);
+        const currentGroups = this.groupsSubject.value;
+        this.groupsSubject.next([...currentGroups, newGroup]);
+        return newGroup;
       })
     );
   }
@@ -78,6 +87,8 @@ export class GroupsService {
         if (!response.success) {
           throw new Error(response.error || 'Failed to delete group');
         }
+        const currentGroups = this.groupsSubject.value;
+        this.groupsSubject.next(currentGroups.filter(group => group.id !== id));
       })
     );
   }
