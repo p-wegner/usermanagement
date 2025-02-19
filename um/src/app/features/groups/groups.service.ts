@@ -14,7 +14,7 @@ import {RoleDto} from '../../api/com/example';
 export class GroupsService {
   private readonly groupsSubject = new BehaviorSubject<PermissionGroup[]>([]);
   private readonly loadingSubject = new BehaviorSubject<boolean>(false);
-  
+
   readonly groups$ = this.groupsSubject.asObservable();
   readonly loading$ = this.loadingSubject.asObservable();
 
@@ -33,6 +33,7 @@ export class GroupsService {
     this.loadingSubject.next(true);
     this.groupControllerService.getGroups(page, size, search).pipe(
       map(response => {
+        // TODO: here response is a Blob with type application/json, further deserialization needed
         if (!response.success || !response.data) {
           throw new Error(response.error || 'Failed to fetch groups');
         }
