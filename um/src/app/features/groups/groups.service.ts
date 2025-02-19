@@ -33,7 +33,6 @@ export class GroupsService {
     this.loadingSubject.next(true);
     this.groupControllerService.getGroups(page, size, search).pipe(
       map(response => {
-        // TODO: here response is a Blob (bug in generator?) with type application/json, further deserialization needed
         if (!response.success || !response.data) {
           throw new Error(response.error || 'Failed to fetch groups');
         }
