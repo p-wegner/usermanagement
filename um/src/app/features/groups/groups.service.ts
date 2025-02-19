@@ -20,19 +20,21 @@ export class GroupsService {
   ) {
   }
 
-  getGroups(page: number = 0, size: number = 20, search?: string): Observable<PermissionGroup[]> {
+  getGroups(page: number = 0, size: number = 20, search?: string): void {
     this.groupControllerService.getGroups(page, size, search).pipe(
       map(response => {
         if (!response.success || !response.data) {
           throw new Error(response.error || 'Failed to fetch groups');
         }
-        const groups = response.data.map(this.mapToPermissionGroup);
-        this.groupsSubject.next(groups);
-        return groups;
+        return response.data.map(this.mapToPermissionGroup);
       })
-    ).subscribe();
-    
-    return this.groups$;
+    ).subscribe({
+      next: (groups) => this.groupsSubject.next(groups),
+      error: (error) => {
+        console.error('Error fetching groups:', error);
+        this.groupsSubject.next([]);
+      }
+    });
   }
 
   getGroup(id: string): Observable<PermissionGroup> {

@@ -107,12 +107,29 @@ export class GroupDetailComponent implements OnInit {
 
   private loadGroup(id: string): void {
     this.loadingService.startLoading();
-    this.groupsService.getGroup(id).subscribe({
+    // First check if the group is in the current list
+    this.groupsService.groups$.pipe(
+      map(groups => groups.find(g => g.id === id))
+    ).subscribe({
       next: (group) => {
         if (group) {
           this.groupForm.patchValue(group);
+          this.loadingService.stopLoading();
+        } else {
+          // If not found in current list, fetch individually
+          this.groupsService.getGroup(id).subscribe({
+            next: (group) => {
+              if (group) {
+                this.groupForm.patchValue(group);
+              }
+              this.loadingService.stopLoading();
+            },
+            error: (error) => {
+              this.errorHandling.handleError(error);
+              this.loadingService.stopLoading();
+            }
+          });
         }
-        this.loadingService.stopLoading();
       },
       error: (error) => {
         this.errorHandling.handleError(error);

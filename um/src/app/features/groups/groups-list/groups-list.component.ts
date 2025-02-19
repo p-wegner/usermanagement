@@ -48,8 +48,11 @@ export class GroupsListComponent implements OnInit {
       error: (error) => {
         this.errorHandling.handleError(error);
         this.loading = false;
-      }
+      },
+      complete: () => this.loading = false
     });
+    
+    // Trigger groups loading
     this.groupsService.getGroups();
   }
 
