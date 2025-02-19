@@ -8,18 +8,21 @@ import {
 import {ErrorHandlingService} from '../../../shared/services/error-handling.service';
 import {Group} from '../../../shared/interfaces/group.interface';
 import {ListColumn, ListComponent} from '../../../shared/components/list/list.component';
-import { MatIcon } from '@angular/material/icon';
+import {MatIcon} from '@angular/material/icon';
 import {MatFabButton} from '@angular/material/button';
+import {Observable} from 'rxjs';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-groups-list',
   templateUrl: './groups-list.component.html',
   styleUrls: ['./groups-list.component.css'],
-  imports: [ListComponent, MatIcon, MatFabButton]
+  imports: [ListComponent, MatIcon, MatFabButton, AsyncPipe],
+  standalone: true
 })
 export class GroupsListComponent implements OnInit {
-  groups: Group[] = [];
-  loading = false;
+  groups$: Observable<Group[]>;
+  loading$: Observable<boolean>;
 
   columns: ListColumn[] = [
     {key: 'name', label: 'Name'},
@@ -32,27 +35,11 @@ export class GroupsListComponent implements OnInit {
     private dialog: MatDialog,
     private errorHandling: ErrorHandlingService
   ) {
+    this.groups$ = this.groupsService.groups$;
+    this.loading$ = this.groupsService.loading$;
   }
 
   ngOnInit(): void {
-    this.loadGroups();
-  }
-
-  private loadGroups(): void {
-    this.loading = true;
-    this.groupsService.groups$.subscribe({
-      next: (groups) => {
-        this.groups = groups;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.errorHandling.handleError(error);
-        this.loading = false;
-      },
-      complete: () => this.loading = false
-    });
-
-    // Trigger groups loading
     this.groupsService.loadGroups();
   }
 
@@ -76,15 +63,8 @@ export class GroupsListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loading = true;
         this.groupsService.deleteGroup(id).subscribe({
-          next: () => {
-            this.loadGroups();
-          },
-          error: (error) => {
-            this.errorHandling.handleError(error);
-            this.loading = false;
-          }
+          error: (error) => this.errorHandling.handleError(error)
         });
       }
     });
