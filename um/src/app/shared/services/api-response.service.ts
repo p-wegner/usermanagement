@@ -11,14 +11,15 @@ export interface ApiResponse<T> {
   providedIn: 'root'
 })
 export class ApiResponseService {
-  
+
   handleResponse<T, R>(
-    response$: Observable<ApiResponse<T>>, 
+    response$: Observable<ApiResponse<T>>,
     mapper: (data: T) => R,
     errorMessage: string = 'Operation failed'
   ): Observable<R> {
     return response$.pipe(
       map(response => {
+        // @ts-ignore
         if (!response.success || !response.data) {
           throw new Error(response.error || errorMessage);
         }

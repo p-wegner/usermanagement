@@ -40,25 +40,28 @@ export class GroupsService {
   loadGroups(page: number = 0, size: number = 20, search?: string): void {
     this.loadingSubject.next(true);
     this.apiResponseService.handleListResponse(
-      this.groupControllerService.getGroups({page, size, search}).pipe(tap(it=>console.log(it))),
-        this.mapToPermissionGroup,
-        'Failed to fetch groups'
-      ).subscribe({
-        next: (groups) => {
-          this.groupsSubject.next(groups);
-          this.loadingSubject.next(false);
-        },
-        error: (error) => {
-          console.error('Error fetching groups:', error);
-          this.groupsSubject.next([]);
-          this.loadingSubject.next(false);
-        }
-      });
+      this.groupControllerService.getGroups({page, size, search})
+        .pipe(switchMap(async (response: any) => await this.blobToJson(response)))
+      ,
+      this.mapToPermissionGroup,
+      'Failed to fetch groups'
+    ).subscribe({
+      next: (groups) => {
+        this.groupsSubject.next(groups);
+        this.loadingSubject.next(false);
+      },
+      error: (error) => {
+        console.error('Error fetching groups:', error);
+        this.groupsSubject.next([]);
+        this.loadingSubject.next(false);
+      }
+    });
   }
 
   getGroup(id: string): Observable<PermissionGroup> {
     return this.apiResponseService.handleResponse(
-      this.groupControllerService.getGroup({id}),
+      this.groupControllerService.getGroup({id})
+        .pipe(switchMap(async (response: any) => await this.blobToJson(response))),
       this.mapToPermissionGroup,
       'Failed to fetch group'
     );
@@ -72,7 +75,8 @@ export class GroupsService {
     };
 
     return this.apiResponseService.handleResponse(
-      this.groupControllerService.createGroup({groupCreateDto}),
+      this.groupControllerService.createGroup({groupCreateDto})
+        .pipe(switchMap(async (response: any) => await this.blobToJson(response))),
       this.mapToPermissionGroup,
       'Failed to create group'
     ).pipe(
@@ -90,7 +94,8 @@ export class GroupsService {
     };
 
     return this.apiResponseService.handleResponse(
-      this.groupControllerService.updateGroup({id, groupUpdateDto:dto}),
+      this.groupControllerService.updateGroup({id, groupUpdateDto: dto})
+        .pipe(switchMap(async (response: any) => await this.blobToJson(response))),
       this.mapToPermissionGroup,
       'Failed to update group'
     );

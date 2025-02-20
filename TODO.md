@@ -1,6 +1,7 @@
-- [ ] connect keycloak + login  
-- [ ] secure endpoints 
-- [ ] connect frontend to backend
+- [x] connect keycloak + login  
+- [x] secure endpoints 
+- [x] connect frontend to backend
+- [ ] Bug: backend client Auth flow config missing, password currently used
 - [ ] serve frontend from backend
 - [ ] docker build
 - [ ] azure deployment

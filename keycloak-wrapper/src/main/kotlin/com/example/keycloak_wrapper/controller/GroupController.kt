@@ -2,6 +2,7 @@ package com.example.keycloak_wrapper.controller
 
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.service.GroupService
+import jakarta.annotation.security.RolesAllowed
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -48,9 +49,6 @@ class GroupController(
         return updatedGroup.responseEntity()
     }
 
-    private fun GroupDto.responseEntity() =
-        ResponseEntity.ok(ApiResponse(success = true, data = this))
-
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     fun deleteGroup(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
@@ -84,4 +82,7 @@ class GroupController(
         val roles = groupService.getGroupRoles(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }
+
+    private fun GroupDto.responseEntity() =
+        ResponseEntity.ok(ApiResponse(success = true, data = this))
 }

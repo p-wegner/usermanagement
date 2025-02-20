@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import {Observable,  from, switchMap, BehaviorSubject} from 'rxjs';
-import { User } from '../../shared/interfaces/user.interface';
-import { UsersService as ApiUsersService } from '../../api/com/example/api/users.service';
+import {Injectable} from '@angular/core';
+import {Observable, from, switchMap, BehaviorSubject} from 'rxjs';
+import {User} from '../../shared/interfaces/user.interface';
+import {UsersService as ApiUsersService} from '../../api/com/example/api/users.service';
 import {ApiResponseService} from "../../shared/services/api-response.service";
 import {UserCreateDto, UserDto, UserUpdateDto} from '../../api/com/example';
 
@@ -41,9 +41,9 @@ export class UsersService {
         if (!jsonResponse.success || !jsonResponse.data) {
           throw new Error(jsonResponse.error || 'Failed to fetch users');
         }
-        const data = jsonResponse.data as { users: UserDto[], total: number };
+        const data = jsonResponse.data as { items: UserDto[], total: number };
         return {
-          users: data.users.map(this.mapToUser),
+          users: (data.items ?? []).map(it => this.mapToUser(it)),
           total: data.total
         };
       })
@@ -85,7 +85,7 @@ export class UsersService {
       enabled: true
     };
 
-    return from(this.apiUsersService.createUser({userCreateDto:dto}).pipe(
+    return from(this.apiUsersService.createUser({userCreateDto: dto}).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {
@@ -107,7 +107,7 @@ export class UsersService {
       enabled: user.enabled
     };
 
-    return from(this.apiUsersService.updateUser({id, userUpdateDto:dto}).pipe(
+    return from(this.apiUsersService.updateUser({id, userUpdateDto: dto}).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {
