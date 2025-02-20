@@ -1,6 +1,6 @@
 <app-list
   [title]="'Users'"
-  [items]="users$ | async "
+  [items]="(users$ | async) ?? []"
   [columns]="columns"
   [loading]="(loading$ | async)!!"
   (edit)="onEditUser($event.id)"
