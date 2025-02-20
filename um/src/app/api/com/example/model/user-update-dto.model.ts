@@ -7,12 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AuthConfigDto } from './authConfigDto';
 
 
-export interface ApiResponseAuthConfigDto { 
-    success: boolean;
-    data?: AuthConfigDto;
-    error?: string;
+export interface UserUpdateDto { 
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    enabled?: boolean;
+    realmRoles?: Array<string>;
 }
 

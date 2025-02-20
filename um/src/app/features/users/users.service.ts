@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import {Observable, map, from, switchMap, BehaviorSubject} from 'rxjs';
+import {Observable,  from, switchMap, BehaviorSubject} from 'rxjs';
 import { User } from '../../shared/interfaces/user.interface';
 import { UsersService as ApiUsersService } from '../../api/com/example/api/users.service';
-import { UserCreateDto } from '../../api/com/example/model/userCreateDto';
-import { UserUpdateDto } from '../../api/com/example/model/userUpdateDto';
-import { UserDto } from '../../api/com/example/model/userDto';
 import {ApiResponseService} from "../../shared/services/api-response.service";
+import {UserCreateDto, UserDto, UserUpdateDto} from '../../api/com/example';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +35,7 @@ export class UsersService {
 
   loadUsers(page: number = 0, size: number = 20, search?: string): void {
     this.loadingSubject.next(true);
-    from(this.apiUsersService.getUsers(page, size, search).pipe(
+    from(this.apiUsersService.getUsers({page, size, search}).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {
@@ -65,7 +63,7 @@ export class UsersService {
   }
 
   getUser(id: string): Observable<User> {
-    return from(this.apiUsersService.getUser(id).pipe(
+    return from(this.apiUsersService.getUser({id}).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {
@@ -87,7 +85,7 @@ export class UsersService {
       enabled: true
     };
 
-    return from(this.apiUsersService.createUser(dto).pipe(
+    return from(this.apiUsersService.createUser({userCreateDto:dto}).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {
@@ -109,7 +107,7 @@ export class UsersService {
       enabled: user.enabled
     };
 
-    return from(this.apiUsersService.updateUser(id, dto).pipe(
+    return from(this.apiUsersService.updateUser({id, userUpdateDto:dto}).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {
@@ -125,7 +123,7 @@ export class UsersService {
   }
 
   deleteUser(id: string): Observable<void> {
-    return from(this.apiUsersService.deleteUser(id).pipe(
+    return from(this.apiUsersService.deleteUser({id}).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success) {

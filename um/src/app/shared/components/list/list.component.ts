@@ -40,7 +40,7 @@ export interface ListColumn {
 })
 export class ListComponent<T> implements OnInit {
   @Input() items: T[] = [];
-  @Input() loading = false;
+  @Input() loading: boolean | null = false;
   @Input() columns: ListColumn[] = [];
   @Input() totalItems = 0;
   @Input() pageSize = 10;

@@ -17,7 +17,7 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { ApiResponseAuthConfigDto } from '../com.example.model/apiResponseAuthConfigDto';
+import { ApiResponseAuthConfigDto } from '../com.example.model/api-response-auth-config-dto.model';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';

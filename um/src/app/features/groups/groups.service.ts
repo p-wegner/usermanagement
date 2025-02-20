@@ -1,13 +1,14 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, map, throwError, switchMap} from 'rxjs';
+import {BehaviorSubject, Observable, map, throwError, switchMap, tap} from 'rxjs';
 import {ApiResponseService} from '../../shared/services/api-response.service';
 import {Permission, PermissionGroup} from '../../shared/interfaces/permission.interface';
-import {GroupControllerService} from '../../api/com/example/api/groupController.service';
-import {RoleControllerService} from '../../api/com/example/api/roleController.service';
-import {GroupCreateDto} from '../../api/com/example/model/groupCreateDto';
-import {GroupUpdateDto} from '../../api/com/example/model/groupUpdateDto';
-import {GroupDto} from '../../api/com/example/model/groupDto';
-import {RoleDto} from '../../api/com/example';
+import {
+  GroupControllerService,
+  GroupCreateDto, GroupDto,
+  GroupUpdateDto,
+  RoleControllerService,
+  RoleDto
+} from '../../api/com/example';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +40,7 @@ export class GroupsService {
   loadGroups(page: number = 0, size: number = 20, search?: string): void {
     this.loadingSubject.next(true);
     this.apiResponseService.handleListResponse(
-      this.groupControllerService.getGroups(page, size, search),
+      this.groupControllerService.getGroups({page, size, search}).pipe(tap(it=>console.log(it))),
         this.mapToPermissionGroup,
         'Failed to fetch groups'
       ).subscribe({
@@ -57,21 +58,21 @@ export class GroupsService {
 
   getGroup(id: string): Observable<PermissionGroup> {
     return this.apiResponseService.handleResponse(
-      this.groupControllerService.getGroup(id),
+      this.groupControllerService.getGroup({id}),
       this.mapToPermissionGroup,
       'Failed to fetch group'
     );
   }
 
   createGroup(group: Omit<PermissionGroup, 'id'>): Observable<PermissionGroup> {
-    const dto: GroupCreateDto = {
+    const groupCreateDto: GroupCreateDto = {
       realmRoles: [],
       name: group.name,
       parentGroupId: group.parentGroupId
     };
 
     return this.apiResponseService.handleResponse(
-      this.groupControllerService.createGroup(dto),
+      this.groupControllerService.createGroup({groupCreateDto}),
       this.mapToPermissionGroup,
       'Failed to create group'
     ).pipe(
@@ -89,7 +90,7 @@ export class GroupsService {
     };
 
     return this.apiResponseService.handleResponse(
-      this.groupControllerService.updateGroup(id, dto),
+      this.groupControllerService.updateGroup({id, groupUpdateDto:dto}),
       this.mapToPermissionGroup,
       'Failed to update group'
     );
@@ -97,7 +98,7 @@ export class GroupsService {
 
   deleteGroup(id: string): Observable<void> {
     return this.apiResponseService.handleResponse(
-      this.groupControllerService.deleteGroup(id),
+      this.groupControllerService.deleteGroup({id}),
       () => undefined,
       'Failed to delete group'
     ).pipe(

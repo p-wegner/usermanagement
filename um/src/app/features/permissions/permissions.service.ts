@@ -1,11 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Observable, map, of} from 'rxjs';
 import {Permission} from '../../shared/interfaces/permission.interface';
-import {RoleControllerService} from '../../api/com/example/api/roleController.service';
-import {RoleCreateDto} from '../../api/com/example/model/roleCreateDto';
-import {RoleUpdateDto} from '../../api/com/example/model/roleUpdateDto';
 import {AuthService} from '../../core/auth/auth.service';
-import {RoleDto} from '../../api/com/example';
+import {RoleControllerService, RoleCreateDto, RoleDto, RoleUpdateDto} from '../../api/com/example';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +32,7 @@ export class PermissionsService {
   }
 
   getPermission(name: string): Observable<Permission | undefined> {
-    return this.roleController.getRole(name).pipe(
+    return this.roleController.getRole({name}).pipe(
       map(response => {
         if (!response.success || !response.data) {
           return undefined;
@@ -60,7 +57,7 @@ export class PermissionsService {
       composite: permission.composite
     };
 
-    return this.roleController.createRole(roleCreate).pipe(
+    return this.roleController.createRole({roleCreateDto: roleCreate}).pipe(
       map(response => {
         if (!response.success || !response.data) {
           throw new Error('Failed to create permission');
@@ -84,7 +81,7 @@ export class PermissionsService {
       composite: permission.composite
     };
 
-    return this.roleController.updateRole(name, roleUpdate).pipe(
+    return this.roleController.updateRole({name, roleUpdateDto: roleUpdate}).pipe(
       map(response => {
         if (!response.success || !response.data) {
           throw new Error('Failed to update permission');
@@ -102,7 +99,7 @@ export class PermissionsService {
   }
 
   deletePermission(name: string): Observable<void> {
-    return this.roleController.deleteRole(name).pipe(
+    return this.roleController.deleteRole({id: name}).pipe(
       map(response => {
         if (!response.success) {
           throw new Error('Failed to delete permission');
