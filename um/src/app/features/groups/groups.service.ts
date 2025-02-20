@@ -66,13 +66,12 @@ export class GroupsService {
       parentGroupId: group.parentGroupId
     };
 
-    return this.groupControllerService.createGroup(dto).pipe(
-      switchMap(async (response: any) => {
-        const jsonResponse = await this.blobToJson(response);
-        if (!jsonResponse.success || !jsonResponse.data) {
-          throw new Error(jsonResponse.error || 'Failed to create group');
-        }
-        const newGroup = this.mapToPermissionGroup(jsonResponse.data);
+    return this.apiResponseService.handleResponse(
+      this.groupControllerService.createGroup(dto),
+      this.mapToPermissionGroup,
+      'Failed to create group'
+    ).pipe(
+      map(newGroup => {
         const currentGroups = this.groupsSubject.value;
         this.groupsSubject.next([...currentGroups, newGroup]);
         return newGroup;
@@ -85,24 +84,20 @@ export class GroupsService {
       name: group.name
     };
 
-    return this.groupControllerService.updateGroup(id, dto).pipe(
-      switchMap(async (response: any) => {
-        const jsonResponse = await this.blobToJson(response);
-        if (!jsonResponse.success || !jsonResponse.data) {
-          throw new Error(jsonResponse.error || 'Failed to update group');
-        }
-        return this.mapToPermissionGroup(jsonResponse.data);
-      })
+    return this.apiResponseService.handleResponse(
+      this.groupControllerService.updateGroup(id, dto),
+      this.mapToPermissionGroup,
+      'Failed to update group'
     );
   }
 
   deleteGroup(id: string): Observable<void> {
-    return this.groupControllerService.deleteGroup(id).pipe(
-      switchMap(async (response: any) => {
-        const jsonResponse = await this.blobToJson(response);
-        if (!jsonResponse.success) {
-          throw new Error(jsonResponse.error || 'Failed to delete group');
-        }
+    return this.apiResponseService.handleResponse(
+      this.groupControllerService.deleteGroup(id),
+      () => undefined,
+      'Failed to delete group'
+    ).pipe(
+      map(() => {
         const currentGroups = this.groupsSubject.value;
         this.groupsSubject.next(currentGroups.filter(group => group.id !== id));
       })
