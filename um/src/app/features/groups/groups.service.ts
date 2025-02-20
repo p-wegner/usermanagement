@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, map, throwError} from 'rxjs';
+import {BehaviorSubject, Observable, map, throwError, switchMap} from 'rxjs';
 import {ApiResponseService} from '../../shared/services/api-response.service';
 import {Permission, PermissionGroup} from '../../shared/interfaces/permission.interface';
 import {GroupControllerService} from '../../api/com/example/api/groupController.service';
@@ -31,7 +31,10 @@ export class GroupsService {
     this.loadGroups();
   }
 
-
+  private async blobToJson(blob: Blob): Promise<any> {
+    const text = await blob.text();
+    return JSON.parse(text);
+  }
   loadGroups(page: number = 0, size: number = 20, search?: string): void {
     this.loadingSubject.next(true);
     this.apiResponseService.handleListResponse(
@@ -107,6 +110,7 @@ export class GroupsService {
   getAvailablePermissions(): Observable<Permission[]> {
     return this.roleControllerService.getRoles().pipe(
       switchMap(async (response: any) => {
+        // TODO pieed 2025-02-20: fix this
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {
           throw new Error(jsonResponse.error || 'Failed to fetch roles');
