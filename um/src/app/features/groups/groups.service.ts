@@ -29,20 +29,20 @@ export class GroupsService {
     this.loadGroups();
   }
 
+  private async blobToJson(blob: Blob): Promise<any> {
+    const text = await blob.text();
+    return JSON.parse(text);
+  }
+
   loadGroups(page: number = 0, size: number = 20, search?: string): void {
     this.loadingSubject.next(true);
     this.groupControllerService.getGroups(page, size, search).pipe(
-      map(response => {
-        // TODO: here response is a Blob (bug in generator?) with type application/json, further deserialization needed
-        let response1 = response as Blob;
-        response1.text()
-        // this has the proper data now
-          .then(data => {console.log(data)})
-        let s = JSON.stringify(response1);
-        if (!response.success || !response.data) {
-          throw new Error(response.error || 'Failed to fetch groups');
+      map(async (response: any) => {
+        const jsonResponse = await this.blobToJson(response);
+        if (!jsonResponse.success || !jsonResponse.data) {
+          throw new Error(jsonResponse.error || 'Failed to fetch groups');
         }
-        return response.data.map(this.mapToPermissionGroup);
+        return jsonResponse.data.map(this.mapToPermissionGroup);
       })
     ).subscribe({
       next: (groups) => {
@@ -59,11 +59,12 @@ export class GroupsService {
 
   getGroup(id: string): Observable<PermissionGroup> {
     return this.groupControllerService.getGroup(id).pipe(
-      map(response => {
-        if (!response.success || !response.data) {
-          throw new Error(response.error || 'Failed to fetch group');
+      map(async (response: any) => {
+        const jsonResponse = await this.blobToJson(response);
+        if (!jsonResponse.success || !jsonResponse.data) {
+          throw new Error(jsonResponse.error || 'Failed to fetch group');
         }
-        return this.mapToPermissionGroup(response.data);
+        return this.mapToPermissionGroup(jsonResponse.data);
       })
     );
   }
@@ -76,11 +77,12 @@ export class GroupsService {
     };
 
     return this.groupControllerService.createGroup(dto).pipe(
-      map(response => {
-        if (!response.success || !response.data) {
-          throw new Error(response.error || 'Failed to create group');
+      map(async (response: any) => {
+        const jsonResponse = await this.blobToJson(response);
+        if (!jsonResponse.success || !jsonResponse.data) {
+          throw new Error(jsonResponse.error || 'Failed to create group');
         }
-        const newGroup = this.mapToPermissionGroup(response.data);
+        const newGroup = this.mapToPermissionGroup(jsonResponse.data);
         const currentGroups = this.groupsSubject.value;
         this.groupsSubject.next([...currentGroups, newGroup]);
         return newGroup;
@@ -94,20 +96,22 @@ export class GroupsService {
     };
 
     return this.groupControllerService.updateGroup(id, dto).pipe(
-      map(response => {
-        if (!response.success || !response.data) {
-          throw new Error(response.error || 'Failed to update group');
+      map(async (response: any) => {
+        const jsonResponse = await this.blobToJson(response);
+        if (!jsonResponse.success || !jsonResponse.data) {
+          throw new Error(jsonResponse.error || 'Failed to update group');
         }
-        return this.mapToPermissionGroup(response.data);
+        return this.mapToPermissionGroup(jsonResponse.data);
       })
     );
   }
 
   deleteGroup(id: string): Observable<void> {
     return this.groupControllerService.deleteGroup(id).pipe(
-      map(response => {
-        if (!response.success) {
-          throw new Error(response.error || 'Failed to delete group');
+      map(async (response: any) => {
+        const jsonResponse = await this.blobToJson(response);
+        if (!jsonResponse.success) {
+          throw new Error(jsonResponse.error || 'Failed to delete group');
         }
         const currentGroups = this.groupsSubject.value;
         this.groupsSubject.next(currentGroups.filter(group => group.id !== id));
@@ -117,11 +121,12 @@ export class GroupsService {
 
   getAvailablePermissions(): Observable<Permission[]> {
     return this.roleControllerService.getRoles().pipe(
-      map(response => {
-        if (!response.success || !response.data) {
-          throw new Error(response.error || 'Failed to fetch roles');
+      map(async (response: any) => {
+        const jsonResponse = await this.blobToJson(response);
+        if (!jsonResponse.success || !jsonResponse.data) {
+          throw new Error(jsonResponse.error || 'Failed to fetch roles');
         }
-        return response.data.map((role: RoleDto) => ({
+        return jsonResponse.data.map((role: RoleDto) => ({
           id: role.id || '',
           name: role.name,
           description: role.description || '',
