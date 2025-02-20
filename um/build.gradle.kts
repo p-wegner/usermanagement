@@ -25,6 +25,20 @@ openApiGenerate {
   apiPackage.set("com.example.api")
   modelPackage.set("com.example.model")
   invokerPackage.set("com.example.invoker")
+  configOptions.set(mapOf(
+    "ngVersion" to "17.0.0",
+    "supportsES6" to "true",
+    "nullSafeAdditionalProps" to "true",
+    "fileNaming" to "kebab-case",
+    "enumNameSuffix" to "Enum",
+    "stringEnums" to "true",
+    "enumPropertyNaming" to "UPPERCASE",
+    "serviceSuffix" to "Service",
+    "serviceFileSuffix" to ".service",
+    "modelFileSuffix" to ".model",
+    "apiModulePrefix" to "Api",
+    "useSingleRequestParameter" to "true"
+  ))
 }
 
 
