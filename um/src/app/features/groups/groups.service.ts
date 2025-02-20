@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, map, throwError, flatMap, switchMap} from 'rxjs';
+import {BehaviorSubject, Observable, map, throwError} from 'rxjs';
+import {ApiResponseService} from '../../shared/services/api-response.service';
 import {Permission, PermissionGroup} from '../../shared/interfaces/permission.interface';
 import {GroupControllerService} from '../../api/com/example/api/groupController.service';
 import {RoleControllerService} from '../../api/com/example/api/roleController.service';
@@ -20,7 +21,8 @@ export class GroupsService {
 
   constructor(
     private groupControllerService: GroupControllerService,
-    private roleControllerService: RoleControllerService
+    private roleControllerService: RoleControllerService,
+    private apiResponseService: ApiResponseService
   ) {
     this.loadInitialGroups();
   }
@@ -29,21 +31,13 @@ export class GroupsService {
     this.loadGroups();
   }
 
-  private async blobToJson(blob: Blob): Promise<any> {
-    const text = await blob.text();
-    return JSON.parse(text);
-  }
 
   loadGroups(page: number = 0, size: number = 20, search?: string): void {
     this.loadingSubject.next(true);
-    this.groupControllerService.getGroups(page, size, search).pipe(
-      switchMap(async (response: any) => {
-        const jsonResponse = await this.blobToJson(response);
-        if (!jsonResponse.success || !jsonResponse.data) {
-          throw new Error(jsonResponse.error || 'Failed to fetch groups');
-        }
-        return jsonResponse.data.map(this.mapToPermissionGroup);
-      })
+    this.apiResponseService.handleListResponse(
+      this.groupControllerService.getGroups(page, size, search),
+      this.mapToPermissionGroup,
+      'Failed to fetch groups'
     ).subscribe({
       next: (groups) => {
         this.groupsSubject.next(groups);
@@ -58,14 +52,10 @@ export class GroupsService {
   }
 
   getGroup(id: string): Observable<PermissionGroup> {
-    return this.groupControllerService.getGroup(id).pipe(
-      switchMap(async (response: any) => {
-        const jsonResponse = await this.blobToJson(response);
-        if (!jsonResponse.success || !jsonResponse.data) {
-          throw new Error(jsonResponse.error || 'Failed to fetch group');
-        }
-        return this.mapToPermissionGroup(jsonResponse.data);
-      })
+    return this.apiResponseService.handleResponse(
+      this.groupControllerService.getGroup(id),
+      this.mapToPermissionGroup,
+      'Failed to fetch group'
     );
   }
 
