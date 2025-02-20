@@ -4,9 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../shared/interfaces/user.interface';
 import { UsersService } from '../users.service';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
-import { LoadingService } from '../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
 import { ListColumn } from '../../../shared/components/list/list.component';
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-users-list',
@@ -15,8 +15,8 @@ import { ListColumn } from '../../../shared/components/list/list.component';
   standalone: false,
 })
 export class UsersListComponent implements OnInit {
-  users: User[] = [];
-  loading = false;
+  users$: Observable<User[]>;
+  loading$: Observable<boolean>;
 
   columns: ListColumn[] = [
     { key: 'username', label: 'Username' },
@@ -29,24 +29,13 @@ export class UsersListComponent implements OnInit {
     private usersService: UsersService,
     private dialog: MatDialog,
     private errorHandling: ErrorHandlingService
-  ) {}
-
-  ngOnInit(): void {
-    this.loadUsers();
+  ) {
+    this.users$ = this.usersService.users$;
+    this.loading$ = this.usersService.loading$;
   }
 
-  private loadUsers(): void {
-    this.loading = true;
-    this.usersService.getUsers().subscribe({
-      next: (users) => {
-        this.users = users.users;
-        this.loading = false;
-      },
-      error: (error) => {
-        this.errorHandling.handleError(error);
-        this.loading = false;
-      }
-    });
+  ngOnInit(): void {
+    this.usersService.loadUsers();
   }
 
   onAddUser(): void {
@@ -69,15 +58,8 @@ export class UsersListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loading = true;
         this.usersService.deleteUser(id).subscribe({
-          next: () => {
-            this.loadUsers();
-          },
-          error: (error) => {
-            this.errorHandling.handleError(error);
-            this.loading = false;
-          }
+          error: (error) => this.errorHandling.handleError(error)
         });
       }
     });

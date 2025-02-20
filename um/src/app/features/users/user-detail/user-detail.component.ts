@@ -6,6 +6,7 @@ import { User } from '../../../shared/interfaces/user.interface';
 import { UsersService } from '../users.service';
 import { LoadingService } from '../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
+import {map} from "rxjs";
 
 @Component({
   selector: 'app-user-detail',
@@ -43,11 +44,28 @@ export class UserDetailComponent implements OnInit {
   }
 
   private loadUser(id: string): void {
-    this.loadingService.startLoading();;
-    this.usersService.getUser(id).subscribe({
+    this.loadingService.startLoading();
+    // First check if the user is in the current list
+    this.usersService.users$.pipe(
+      map(users => users.find(u => u.id === id))
+    ).subscribe({
       next: (user) => {
-        this.userForm.patchValue(user);
-        this.loadingService.stopLoading();
+        if (user) {
+          this.userForm.patchValue(user);
+          this.loadingService.stopLoading();
+        } else {
+          // If not found in current list, fetch individually
+          this.usersService.getUser(id).subscribe({
+            next: (user) => {
+              this.userForm.patchValue(user);
+              this.loadingService.stopLoading();
+            },
+            error: (error) => {
+              this.errorHandling.handleError(error);
+              this.loadingService.stopLoading();
+            }
+          });
+        }
       },
       error: (error) => {
         this.errorHandling.handleError(error);
@@ -58,7 +76,7 @@ export class UserDetailComponent implements OnInit {
 
   onSubmit(): void {
     if (this.userForm.valid) {
-      this.loadingService.startLoading();;
+      this.loadingService.startLoading();
       const userData: User = this.userForm.value;
 
       const request = this.isNewUser ?

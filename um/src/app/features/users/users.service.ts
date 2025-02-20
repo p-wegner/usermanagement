@@ -1,24 +1,43 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, from } from 'rxjs';
+import {Observable, map, from, switchMap, BehaviorSubject} from 'rxjs';
 import { User } from '../../shared/interfaces/user.interface';
 import { UsersService as ApiUsersService } from '../../api/com/example/api/users.service';
 import { UserCreateDto } from '../../api/com/example/model/userCreateDto';
 import { UserUpdateDto } from '../../api/com/example/model/userUpdateDto';
 import { UserDto } from '../../api/com/example/model/userDto';
+import {ApiResponseService} from "../../shared/services/api-response.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  constructor(private apiUsersService: ApiUsersService) {}
+  private readonly usersSubject = new BehaviorSubject<User[]>([]);
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
+  private readonly totalUsersSubject = new BehaviorSubject<number>(0);
+
+  readonly users$ = this.usersSubject.asObservable();
+  readonly loading$ = this.loadingSubject.asObservable();
+  readonly total$ = this.totalUsersSubject.asObservable();
+
+  constructor(
+    private apiUsersService: ApiUsersService,
+    private apiResponseService: ApiResponseService
+  ) {
+    this.loadInitialUsers();
+  }
+
+  private loadInitialUsers(): void {
+    this.loadUsers();
+  }
 
   private async blobToJson(blob: Blob): Promise<any> {
     const text = await blob.text();
     return JSON.parse(text);
   }
 
-  getUsers(page: number = 0, size: number = 20, search?: string): Observable<{ users: User[], total: number }> {
-    return from(this.apiUsersService.getUsers(page, size, search).pipe(
+  loadUsers(page: number = 0, size: number = 20, search?: string): void {
+    this.loadingSubject.next(true);
+    from(this.apiUsersService.getUsers(page, size, search).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {
@@ -30,7 +49,19 @@ export class UsersService {
           total: data.total
         };
       })
-    ));
+    )).subscribe({
+      next: (data) => {
+        this.usersSubject.next(data.users);
+        this.totalUsersSubject.next(data.total);
+        this.loadingSubject.next(false);
+      },
+      error: (error) => {
+        console.error('Error fetching users:', error);
+        this.usersSubject.next([]);
+        this.totalUsersSubject.next(0);
+        this.loadingSubject.next(false);
+      }
+    });
   }
 
   getUser(id: string): Observable<User> {
@@ -62,7 +93,10 @@ export class UsersService {
         if (!jsonResponse.success || !jsonResponse.data) {
           throw new Error(jsonResponse.error || 'Failed to create user');
         }
-        return this.mapToUser(jsonResponse.data);
+        const newUser = this.mapToUser(jsonResponse.data);
+        const currentUsers = this.usersSubject.value;
+        this.usersSubject.next([...currentUsers, newUser]);
+        return newUser;
       })
     ));
   }
@@ -81,7 +115,11 @@ export class UsersService {
         if (!jsonResponse.success || !jsonResponse.data) {
           throw new Error(jsonResponse.error || 'Failed to update user');
         }
-        return this.mapToUser(jsonResponse.data);
+        const updatedUser = this.mapToUser(jsonResponse.data);
+        const currentUsers = this.usersSubject.value;
+        const updatedUsers = currentUsers.map(u => u.id === id ? updatedUser : u);
+        this.usersSubject.next(updatedUsers);
+        return updatedUser;
       })
     ));
   }
@@ -93,6 +131,8 @@ export class UsersService {
         if (!jsonResponse.success) {
           throw new Error(jsonResponse.error || 'Failed to delete user');
         }
+        const currentUsers = this.usersSubject.value;
+        this.usersSubject.next(currentUsers.filter(user => user.id !== id));
       })
     ));
   }

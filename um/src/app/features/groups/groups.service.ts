@@ -35,23 +35,24 @@ export class GroupsService {
     const text = await blob.text();
     return JSON.parse(text);
   }
+
   loadGroups(page: number = 0, size: number = 20, search?: string): void {
     this.loadingSubject.next(true);
     this.apiResponseService.handleListResponse(
       this.groupControllerService.getGroups(page, size, search),
-      this.mapToPermissionGroup,
-      'Failed to fetch groups'
-    ).subscribe({
-      next: (groups) => {
-        this.groupsSubject.next(groups);
-        this.loadingSubject.next(false);
-      },
-      error: (error) => {
-        console.error('Error fetching groups:', error);
-        this.groupsSubject.next([]);
-        this.loadingSubject.next(false);
-      }
-    });
+        this.mapToPermissionGroup,
+        'Failed to fetch groups'
+      ).subscribe({
+        next: (groups) => {
+          this.groupsSubject.next(groups);
+          this.loadingSubject.next(false);
+        },
+        error: (error) => {
+          console.error('Error fetching groups:', error);
+          this.groupsSubject.next([]);
+          this.loadingSubject.next(false);
+        }
+      });
   }
 
   getGroup(id: string): Observable<PermissionGroup> {
@@ -150,7 +151,7 @@ export class GroupsService {
         composite: role.composite,
         clientRole: role.clientRole
       })) || [],
-      subGroups: dto.subGroups.map(it=>this.mapToPermissionGroup(it))
+      subGroups: dto.subGroups.map(it => this.mapToPermissionGroup(it))
     };
   }
 }
