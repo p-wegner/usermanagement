@@ -19,6 +19,7 @@ import {NgIf} from '@angular/common';
 import {MatInput} from '@angular/material/input';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatButton} from '@angular/material/button';
+import {map} from 'rxjs';
 
 @Component({
   selector: 'app-group-detail',
