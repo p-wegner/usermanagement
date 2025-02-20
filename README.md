@@ -9,8 +9,10 @@ A Gradle multimodule project that provides a user management interface for Keycl
 - User Management: Create, edit, delete, and search users with pagination
 - Group Management: Create, edit, delete, and search groups with pagination
 - Role Management: Create, edit, delete, and search roles (including composite roles) with pagination
-- Role Assignment: Assign Roles to users and groups 
 - Access Control: Assign roles to users and groups
+
+## Not yet implemented
+- Role Assignment: Assign Roles to users and groups
 
 ## Prerequisites
 
