@@ -2,7 +2,7 @@
   [title]="'Users'"
   [items]="(users$ | async) ?? []"
   [columns]="columns"
-  [loading]="(loading$ | async) ?? false"
+  [loading]="(loading$ | async)!"
   (edit)="onEditUser($event.id)"
   (delete)="onDeleteUser($event.id)">
   <button mat-fab color="primary" class="add-button" (click)="onAddUser()">
