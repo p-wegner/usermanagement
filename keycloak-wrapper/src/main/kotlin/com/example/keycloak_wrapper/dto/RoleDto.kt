@@ -5,7 +5,7 @@ data class RoleDto(
     val name: String,
     val description: String? = null,
     val composite: Boolean = false,
-    // TODO 23/02/2025 PWegner:
+    // TODO 23/02/2025 PWegner: could be a clientId field instead of boolean
     val clientRole: Boolean = false,
     val compositeRoles: List<RoleDto> = emptyList()
 )

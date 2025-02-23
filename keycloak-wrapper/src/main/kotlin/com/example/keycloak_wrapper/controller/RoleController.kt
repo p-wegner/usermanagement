@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*
 class RoleController(
     private val roleService: RoleService
 ) {
+    // TODO 23/02/2025 PWegner: should also include clientroles
     @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
     @GetMapping
     fun getRoles(
