@@ -92,6 +92,8 @@ npm test
 
 ## Docker Commands
 
+### Basic Docker Compose Operations
+
 - Start all services:
 ```shell
 docker-compose up -d
@@ -106,6 +108,23 @@ docker-compose down
 ```shell
 docker-compose logs -f
 ```
+
+### Building Docker Images
+
+Build the backend Docker image using Jib:
+```shell
+cd keycloak-wrapper
+./gradlew jibDockerBuild
+```
+
+This will create a Docker image named `keycloak-wrapper:latest` locally.
+
+To push to a remote registry (requires configuration):
+```shell
+./gradlew jib
+```
+
+You can customize the image name and registry in `build.gradle.kts` under the `jib` configuration.
 
 ## Useful Resources
 

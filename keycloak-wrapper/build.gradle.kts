@@ -5,6 +5,24 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
     id("com.avast.gradle.docker-compose") version "0.17.6"
+    id("com.google.cloud.tools.jib") version "3.4.1"
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:21-jre-alpine"
+    }
+    to {
+        image = "keycloak-wrapper"
+        tags = setOf("latest", version.toString())
+    }
+    container {
+        jvmFlags = listOf("-Xms512m", "-Xmx512m")
+        ports = listOf("8080")
+        environment = mapOf(
+            "SPRING_PROFILES_ACTIVE" to "prod"
+        )
+    }
 }
 
 openApi {
