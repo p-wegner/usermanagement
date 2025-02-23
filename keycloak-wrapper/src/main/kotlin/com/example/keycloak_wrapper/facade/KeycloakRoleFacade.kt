@@ -97,8 +97,20 @@ class KeycloakRoleFacade(
         }
     }
 
-    fun getClientRoles(clientId: String?, search: String?, first: Int, max: Int): Any {
-        // TODO: implement
-        TODO()
+    fun getClientRoles(clientId: String?, search: String?, first: Int, max: Int): List<RoleRepresentation> {
+        return try {
+            if (clientId == null) {
+                return emptyList()
+            }
+            
+            val clientResource = keycloak.realm(realm).clients().get(clientId)
+            if (search.isNullOrBlank()) {
+                clientResource.roles().list(first, max)
+            } else {
+                clientResource.roles().list(search, first, max)
+            }
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to fetch client roles for clientId: $clientId", e)
+        }
     }
 }
