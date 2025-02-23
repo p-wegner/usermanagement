@@ -6,6 +6,7 @@ plugins {
     id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
     id("com.avast.gradle.docker-compose") version "0.17.6"
     id("com.google.cloud.tools.jib") version "3.4.1"
+    id("com.github.node-gradle.node") version "3.5.1"
 }
 
 jib {
@@ -23,6 +24,24 @@ jib {
             "SPRING_PROFILES_ACTIVE" to "prod"
         )
     }
+    // Include frontend build output in Docker image
+    extraDirectories {
+        paths {
+            path {
+                from("src/main/resources/static")
+                into("/app/resources/static")
+            }
+        }
+    }
+}
+
+// Configure Jib to include frontend
+tasks.named("jib") {
+    dependsOn("copyFrontendToBackend")
+}
+
+tasks.named("jibDockerBuild") {
+    dependsOn("copyFrontendToBackend")
 }
 
 openApi {
@@ -50,8 +69,32 @@ tasks.register<Copy>("generateOpenApiJson") {
     dependsOn("bootRun")
     finalizedBy("openApiGenerate")
 }
+// Task to copy frontend build output to backend resources
+tasks.register<Copy>("copyFrontendToBackend") {
+    from("${project(":um").projectDir}/dist/um")
+    into("$projectDir/src/main/resources/static")
+    dependsOn(":um:buildFrontend")
+}
+
+// Regular bootRun without frontend
 tasks.bootRun {
     dependsOn("processResources")
+}
+
+// Special bootRun that includes frontend
+tasks.register<org.springframework.boot.gradle.tasks.run.BootRun>("bootRunWithFrontend") {
+    classpath = tasks.bootRun.get().classpath
+    mainClass.set(tasks.bootRun.get().mainClass)
+    dependsOn("copyFrontendToBackend")
+}
+
+// Include frontend in bootJar when specifically requested
+tasks.register<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJarWithFrontend") {
+    classifier = "with-frontend"
+    mainClass.set(tasks.bootJar.get().mainClass)
+    classpath = tasks.bootJar.get().classpath
+    dependsOn("copyFrontendToBackend")
+    from("src/main/resources")
 }
 val apispec by configurations.creating
 artifacts {
