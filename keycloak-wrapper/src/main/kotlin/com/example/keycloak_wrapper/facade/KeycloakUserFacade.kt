@@ -57,18 +57,54 @@ class KeycloakUserFacade(
         }
     }
 
-    fun updateUserRoles(id: String, roles: List<String>) {
+    fun updateUserRoles(id: String, roleAssignment: RoleAssignmentDto) {
         try {
             val userResource = keycloak.realm(realm).users().get(id)
-            val roleRepresentations = roles.map { 
+            
+            // Update realm roles
+            val realmRoleReps = roleAssignment.realmRoleIds.map { 
                 keycloak.realm(realm).roles().get(it).toRepresentation() 
             }
             userResource.roles().realmLevel().remove(userResource.roles().realmLevel().listAll())
-            if (roleRepresentations.isNotEmpty()) {
-                userResource.roles().realmLevel().add(roleRepresentations)
+            if (realmRoleReps.isNotEmpty()) {
+                userResource.roles().realmLevel().add(realmRoleReps)
+            }
+
+            // Update client roles
+            roleAssignment.clientRoleIds.forEach { (clientId, roleIds) ->
+                val client = keycloak.realm(realm).clients().get(clientId)
+                val clientRoleReps = roleIds.map { 
+                    client.roles().get(it).toRepresentation() 
+                }
+                userResource.roles().clientLevel(clientId).remove(userResource.roles().clientLevel(clientId).listAll())
+                if (clientRoleReps.isNotEmpty()) {
+                    userResource.roles().clientLevel(clientId).add(clientRoleReps)
+                }
             }
         } catch (e: Exception) {
             throw KeycloakException("Failed to update roles for user with id: $id", e)
+        }
+    }
+
+    fun getUserRoles(id: String): RoleAssignmentDto {
+        try {
+            val userResource = keycloak.realm(realm).users().get(id)
+            
+            val realmRoleIds = userResource.roles().realmLevel().listAll()
+                .map { it.id }
+
+            val clientRoleIds = mutableMapOf<String, List<String>>()
+            keycloak.realm(realm).clients().findAll().forEach { client ->
+                val roleIds = userResource.roles().clientLevel(client.id).listAll()
+                    .map { it.id }
+                if (roleIds.isNotEmpty()) {
+                    clientRoleIds[client.id] = roleIds
+                }
+            }
+
+            return RoleAssignmentDto(realmRoleIds, clientRoleIds)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to get roles for user with id: $id", e)
         }
     }
 

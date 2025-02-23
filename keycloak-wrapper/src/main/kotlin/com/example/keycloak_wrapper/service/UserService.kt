@@ -41,7 +41,11 @@ class UserService(
         keycloakUserFacade.deleteUser(id)
     }
 
-    fun updateUserRoles(id: String, roles: List<String>) {
-        keycloakUserFacade.updateUserRoles(id, roles)
+    fun updateUserRoles(id: String, roleAssignment: RoleAssignmentDto) {
+        keycloakUserFacade.updateUserRoles(id, roleAssignment)
+    }
+
+    fun getUserRoles(id: String): RoleAssignmentDto {
+        return keycloakUserFacade.getUserRoles(id)
     }
 }

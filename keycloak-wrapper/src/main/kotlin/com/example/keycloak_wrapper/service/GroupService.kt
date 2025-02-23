@@ -45,24 +45,12 @@ class GroupService(
         keycloakGroupFacade.deleteGroup(id)
     }
 
-    fun addGroupRoles(id: String, roles: List<String>): GroupDto {
-        val group = keycloakGroupFacade.getGroup(id)
-        val currentRoles = group.realmRoles?.toMutableList() ?: mutableListOf()
-        currentRoles.addAll(roles)
-        keycloakGroupFacade.updateGroupRoles(id, currentRoles.distinct())
+    fun updateGroupRoles(id: String, roleAssignment: RoleAssignmentDto): GroupDto {
+        keycloakGroupFacade.updateGroupRoles(id, roleAssignment)
         return getGroup(id)
     }
 
-    fun removeGroupRoles(id: String, roles: List<String>): GroupDto {
-        val group = keycloakGroupFacade.getGroup(id)
-        val currentRoles = group.realmRoles?.toMutableList() ?: mutableListOf()
-        currentRoles.removeAll(roles.toSet())
-        keycloakGroupFacade.updateGroupRoles(id, currentRoles)
-        return getGroup(id)
-    }
-
-    fun getGroupRoles(id: String): List<String> {
-        val group = keycloakGroupFacade.getGroup(id)
-        return group.realmRoles ?: emptyList()
+    fun getGroupRoles(id: String): RoleAssignmentDto {
+        return keycloakGroupFacade.getGroupRoles(id)
     }
 }

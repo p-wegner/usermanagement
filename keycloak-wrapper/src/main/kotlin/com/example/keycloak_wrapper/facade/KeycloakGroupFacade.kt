@@ -71,18 +71,54 @@ class KeycloakGroupFacade(
         }
     }
 
-    fun updateGroupRoles(id: String, roles: List<String>) {
+    fun updateGroupRoles(id: String, roleAssignment: RoleAssignmentDto) {
         try {
             val groupResource = keycloak.realm(realm).groups().group(id)
-            val roleRepresentations = roles.map { 
+            
+            // Update realm roles
+            val realmRoleReps = roleAssignment.realmRoleIds.map { 
                 keycloak.realm(realm).roles().get(it).toRepresentation() 
             }
             groupResource.roles().realmLevel().remove(groupResource.roles().realmLevel().listAll())
-            if (roleRepresentations.isNotEmpty()) {
-                groupResource.roles().realmLevel().add(roleRepresentations)
+            if (realmRoleReps.isNotEmpty()) {
+                groupResource.roles().realmLevel().add(realmRoleReps)
+            }
+
+            // Update client roles
+            roleAssignment.clientRoleIds.forEach { (clientId, roleIds) ->
+                val client = keycloak.realm(realm).clients().get(clientId)
+                val clientRoleReps = roleIds.map { 
+                    client.roles().get(it).toRepresentation() 
+                }
+                groupResource.roles().clientLevel(clientId).remove(groupResource.roles().clientLevel(clientId).listAll())
+                if (clientRoleReps.isNotEmpty()) {
+                    groupResource.roles().clientLevel(clientId).add(clientRoleReps)
+                }
             }
         } catch (e: Exception) {
             throw KeycloakException("Failed to update roles for group with id: $id", e)
+        }
+    }
+
+    fun getGroupRoles(id: String): RoleAssignmentDto {
+        try {
+            val groupResource = keycloak.realm(realm).groups().group(id)
+            
+            val realmRoleIds = groupResource.roles().realmLevel().listAll()
+                .map { it.id }
+
+            val clientRoleIds = mutableMapOf<String, List<String>>()
+            keycloak.realm(realm).clients().findAll().forEach { client ->
+                val roleIds = groupResource.roles().clientLevel(client.id).listAll()
+                    .map { it.id }
+                if (roleIds.isNotEmpty()) {
+                    clientRoleIds[client.id] = roleIds
+                }
+            }
+
+            return RoleAssignmentDto(realmRoleIds, clientRoleIds)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to get roles for group with id: $id", e)
         }
     }
 

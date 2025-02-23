@@ -71,17 +71,17 @@ class UserController(
     @PutMapping("/{id}/roles")
     fun updateUserRoles(
         @PathVariable id: String,
-        @RequestBody roles: List<String>
+        @RequestBody roleAssignment: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<UserDto>> {
-        userService.updateUserRoles(id, roles)
+        userService.updateUserRoles(id, roleAssignment)
         val updatedUser = userService.getUser(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedUser))
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER', 'USER_VIEWER')")
     @GetMapping("/{id}/roles")
-    fun getUserRoles(@PathVariable id: String): ResponseEntity<ApiResponse<List<String>>> {
-        val user = userService.getUser(id)
-        return ResponseEntity.ok(ApiResponse(success = true, data = user.realmRoles))
+    fun getUserRoles(@PathVariable id: String): ResponseEntity<ApiResponse<RoleAssignmentDto>> {
+        val roles = userService.getUserRoles(id)
+        return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }
 }
