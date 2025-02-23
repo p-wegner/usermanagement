@@ -4,8 +4,8 @@ plugins {
 }
 
 node {
-  version.set("18.0.0")
-  npmVersion.set("8.0.0")
+  version.set("23.7.0")
+  npmVersion.set("10.9.2")
   download.set(true)
 }
 
@@ -41,13 +41,12 @@ openApiGenerate {
   ))
 }
 
-// TODO: use gradle node plugin task here since npm doesnt need to be installed
 tasks.register("buildFrontend") {
-  dependsOn("npmInstall", "openApiGenerate")
-  doLast {
-    exec {
-      commandLine("npm", "run", "build")
-    }
-  }
+  dependsOn("npm_install", "openApiGenerate")
+  finalizedBy("npm_run_build")
+}
+
+tasks.named("npm_run_build") {
+  dependsOn("npm_install")
 }
 

@@ -28,8 +28,8 @@ jib {
     extraDirectories {
         paths {
             path {
-                from("src/main/resources/static")
-                into("/app/resources/static")
+                setFrom("src/main/resources/static")
+                into = "/app/resources/static"
             }
         }
     }
@@ -90,7 +90,6 @@ tasks.register<org.springframework.boot.gradle.tasks.run.BootRun>("bootRunWithFr
 
 // Include frontend in bootJar when specifically requested
 tasks.register<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJarWithFrontend") {
-    classifier = "with-frontend"
     mainClass.set(tasks.bootJar.get().mainClass)
     classpath = tasks.bootJar.get().classpath
     dependsOn("copyFrontendToBackend")
