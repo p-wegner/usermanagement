@@ -46,6 +46,7 @@ tasks.register("buildFrontend") {
   dependsOn("npmInstall", "openApiGenerate")
   doLast {
     exec {
+      // TODO: use scripts from package json here
       commandLine("npm", "run", "build")
     }
   }
