@@ -1,0 +1,14 @@
+---
+files:
+- path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/UserController.kt
+  readOnly: false
+- path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/UserService.kt
+  readOnly: false
+- path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/GroupController.kt
+  readOnly: false
+- path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/GroupService.kt
+  readOnly: false
+- path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/facade/KeycloakUserFacade.kt
+  readOnly: false
+- path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/facade/KeycloakGroupFacade.kt
+  readOnly: false
