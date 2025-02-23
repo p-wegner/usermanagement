@@ -105,19 +105,41 @@ class KeycloakGroupFacade(
         try {
             val groupResource = keycloak.realm(realm).groups().group(id)
             
-            val realmRoleIds = groupResource.roles().realmLevel().listAll()
-                .map { it.id }
+            // Get realm roles with full details
+            val realmRoles = groupResource.roles().realmLevel().listAll()
+                .map { role ->
+                    RoleDto(
+                        id = role.id,
+                        name = role.name,
+                        description = role.description,
+                        composite = role.isComposite,
+                        clientRole = role.clientRole
+                    )
+                }
 
-            val clientRoleIds = mutableMapOf<String, List<String>>()
-            keycloak.realm(realm).clients().findAll().forEach { client ->
-                val roleIds = groupResource.roles().clientLevel(client.id).listAll()
-                    .map { it.id }
-                if (roleIds.isNotEmpty()) {
-                    clientRoleIds[client.id] = roleIds
+            // Get client roles with full details
+            val clientRoles = keycloak.realm(realm).clients().findAll().mapNotNull { client ->
+                val roles = groupResource.roles().clientLevel(client.id).listAll()
+                if (roles.isNotEmpty()) {
+                    ClientRoleDto(
+                        clientId = client.id,
+                        clientName = client.clientId,
+                        roles = roles.map { role ->
+                            RoleDto(
+                                id = role.id,
+                                name = role.name,
+                                description = role.description,
+                                composite = role.isComposite,
+                                clientRole = role.clientRole
+                            )
+                        }
+                    )
+                } else {
+                    null
                 }
             }
 
-            return RoleAssignmentDto(realmRoleIds, clientRoleIds)
+            return RoleAssignmentDto(realmRoles, clientRoles)
         } catch (e: Exception) {
             throw KeycloakException("Failed to get roles for group with id: $id", e)
         }
