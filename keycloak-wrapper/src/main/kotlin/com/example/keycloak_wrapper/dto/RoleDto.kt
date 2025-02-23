@@ -29,6 +29,3 @@ data class RoleSearchDto(
     val search: String? = null
 )
 
-data class RoleAssignmentDto(
-    val roleIds: List<String>
-)

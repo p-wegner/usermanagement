@@ -1,5 +1,6 @@
 package com.example.keycloak_wrapper.facade
 
+import com.example.keycloak_wrapper.dto.RoleAssignmentDto
 import com.example.keycloak_wrapper.exception.KeycloakException
 import jakarta.ws.rs.core.Response
 import org.keycloak.admin.client.Keycloak
