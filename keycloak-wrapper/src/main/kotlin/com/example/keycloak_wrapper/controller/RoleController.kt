@@ -61,7 +61,7 @@ class RoleController(
         @PathVariable roleId: String,
         @RequestBody compositeRoles: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<RoleDto>> {
-        val updatedRole = roleService.addCompositeRoles(roleId, compositeRoles.roleIds)
+        val updatedRole = roleService.addCompositeRoles(roleId, compositeRoles.allRoleIds)
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
     }
 
@@ -71,7 +71,7 @@ class RoleController(
         @PathVariable roleId: String,
         @RequestBody compositeRoles: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<RoleDto>> {
-        val updatedRole = roleService.removeCompositeRoles(roleId, compositeRoles.roleIds)
+        val updatedRole = roleService.removeCompositeRoles(roleId, compositeRoles.allRoleIds)
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
     }
 

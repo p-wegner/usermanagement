@@ -1,6 +1,8 @@
 package com.example.keycloak_wrapper.facade
 
+import com.example.keycloak_wrapper.dto.ClientRoleDto
 import com.example.keycloak_wrapper.dto.RoleAssignmentDto
+import com.example.keycloak_wrapper.dto.RoleDto
 import com.example.keycloak_wrapper.exception.KeycloakException
 import jakarta.ws.rs.core.Response
 import org.keycloak.admin.client.Keycloak
@@ -37,7 +39,7 @@ class KeycloakGroupFacade(
                 val errorBody = response.readEntity(String::class.java)
                 throw KeycloakException("Failed to create group: ${response.status} - $errorBody")
             }
-            
+
             val locationHeader = response.location.toString()
             val groupId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1)
             return getGroup(groupId)
@@ -53,7 +55,7 @@ class KeycloakGroupFacade(
                 val errorBody = response.readEntity(String::class.java)
                 throw KeycloakException("Failed to create subgroup: ${response.status} - $errorBody")
             }
-            
+
             val locationHeader = response.location.toString()
             val groupId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1)
             return getGroup(groupId)
@@ -75,10 +77,10 @@ class KeycloakGroupFacade(
     fun updateGroupRoles(id: String, roleAssignment: RoleAssignmentDto) {
         try {
             val groupResource = keycloak.realm(realm).groups().group(id)
-            
+
             // Update realm roles
-            val realmRoleReps = roleAssignment.realmRoleIds.map { 
-                keycloak.realm(realm).roles().get(it).toRepresentation() 
+            val realmRoleReps = roleAssignment.realmRoles.map {
+                keycloak.realm(realm).roles().get(it.id).toRepresentation()
             }
             groupResource.roles().realmLevel().remove(groupResource.roles().realmLevel().listAll())
             if (realmRoleReps.isNotEmpty()) {
@@ -86,16 +88,19 @@ class KeycloakGroupFacade(
             }
 
             // Update client roles
-            roleAssignment.clientRoleIds.forEach { (clientId, roleIds) ->
-                val client = keycloak.realm(realm).clients().get(clientId)
-                val clientRoleReps = roleIds.map { 
-                    client.roles().get(it).toRepresentation() 
+            roleAssignment.clientRoles
+                .forEach {
+                    val clientId = it.clientId
+                    val client = keycloak.realm(realm).clients().get(clientId)
+                    val clientRoleReps = it.roles.map { role ->
+                        client.roles().get(role.id).toRepresentation()
+                    }
+                    groupResource.roles().clientLevel(clientId)
+                        .remove(groupResource.roles().clientLevel(clientId).listAll())
+                    if (clientRoleReps.isNotEmpty()) {
+                        groupResource.roles().clientLevel(clientId).add(clientRoleReps)
+                    }
                 }
-                groupResource.roles().clientLevel(clientId).remove(groupResource.roles().clientLevel(clientId).listAll())
-                if (clientRoleReps.isNotEmpty()) {
-                    groupResource.roles().clientLevel(clientId).add(clientRoleReps)
-                }
-            }
         } catch (e: Exception) {
             throw KeycloakException("Failed to update roles for group with id: $id", e)
         }
@@ -104,7 +109,7 @@ class KeycloakGroupFacade(
     fun getGroupRoles(id: String): RoleAssignmentDto {
         try {
             val groupResource = keycloak.realm(realm).groups().group(id)
-            
+
             // Get realm roles with full details
             val realmRoles = groupResource.roles().realmLevel().listAll()
                 .map { role ->

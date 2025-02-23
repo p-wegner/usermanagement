@@ -1,6 +1,8 @@
 package com.example.keycloak_wrapper.facade
 
+import com.example.keycloak_wrapper.dto.ClientRoleDto
 import com.example.keycloak_wrapper.dto.RoleAssignmentDto
+import com.example.keycloak_wrapper.dto.RoleDto
 import com.example.keycloak_wrapper.exception.KeycloakException
 import jakarta.ws.rs.core.Response
 import org.keycloak.admin.client.Keycloak
@@ -39,7 +41,7 @@ class KeycloakUserFacade(
                 val errorBody = response.readEntity(String::class.java)
                 throw KeycloakException("Failed to create user: ${response.status} - $errorBody")
             }
-            
+
             val locationHeader = response.location.toString()
             val userId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1)
             return getUser(userId)
@@ -61,10 +63,10 @@ class KeycloakUserFacade(
     fun updateUserRoles(id: String, roleAssignment: RoleAssignmentDto) {
         try {
             val userResource = keycloak.realm(realm).users().get(id)
-            
+
             // Update realm roles
-            val realmRoleReps = roleAssignment.realmRoleIds.map { 
-                keycloak.realm(realm).roles().get(it).toRepresentation() 
+            val realmRoleReps = roleAssignment.realmRoles.map {
+                keycloak.realm(realm).roles().get(it.id).toRepresentation()
             }
             userResource.roles().realmLevel().remove(userResource.roles().realmLevel().listAll())
             if (realmRoleReps.isNotEmpty()) {
@@ -72,10 +74,10 @@ class KeycloakUserFacade(
             }
 
             // Update client roles
-            roleAssignment.clientRoleIds.forEach { (clientId, roleIds) ->
+            roleAssignment.clientRoles.forEach { (clientId, _, roleIds) ->
                 val client = keycloak.realm(realm).clients().get(clientId)
-                val clientRoleReps = roleIds.map { 
-                    client.roles().get(it).toRepresentation() 
+                val clientRoleReps = roleIds.map { role ->
+                    client.roles().get(role.id).toRepresentation()
                 }
                 userResource.roles().clientLevel(clientId).remove(userResource.roles().clientLevel(clientId).listAll())
                 if (clientRoleReps.isNotEmpty()) {
@@ -90,7 +92,7 @@ class KeycloakUserFacade(
     fun getUserRoles(id: String): RoleAssignmentDto {
         try {
             val userResource = keycloak.realm(realm).users().get(id)
-            
+
             // Get realm roles with full details
             val realmRoles = userResource.roles().realmLevel().listAll()
                 .map { role ->
