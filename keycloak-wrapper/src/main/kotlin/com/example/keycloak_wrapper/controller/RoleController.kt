@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.*
 class RoleController(
     private val roleService: RoleService
 ) {
-    // TODO 23/02/2025 PWegner: should also include clientroles
     @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
     @GetMapping
     fun getRoles(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(required = false) search: String?
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) clientId: String?
     ): ResponseEntity<ApiResponse<List<RoleDto>>> {
-        val searchDto = RoleSearchDto(page, size, search)
+        val searchDto = RoleSearchDto(page, size, search, clientId)
         val roles = roleService.getRoles(searchDto)
         return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }

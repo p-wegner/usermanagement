@@ -27,6 +27,7 @@ data class RoleUpdateDto(
 data class RoleSearchDto(
     val page: Int = 0,
     val size: Int = 20,
-    val search: String? = null
+    val search: String? = null,
+    val clientId: String? = null
 )
 
