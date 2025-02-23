@@ -12,3 +12,9 @@
 - [x] Add role assignment endpoints in GroupController
   - [x] PUT /api/groups/{id}/roles endpoint
   - [x] GET /api/groups/{id}/roles endpoint
+
+## Role Search Enhancement
+- [x] Extend role search endpoint to include client roles
+  - [x] Add includeRealmRoles and includeClientRoles query params
+  - [x] Update RoleSearchDto with new fields
+  - [x] Modify RoleService to handle both realm and client roles

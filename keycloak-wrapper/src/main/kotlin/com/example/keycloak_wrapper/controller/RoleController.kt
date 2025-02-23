@@ -18,9 +18,18 @@ class RoleController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(required = false) search: String?,
-        @RequestParam(required = false) clientId: String?
+        @RequestParam(required = false) clientId: String?,
+        @RequestParam(required = false) includeRealmRoles: Boolean = true,
+        @RequestParam(required = false) includeClientRoles: Boolean = true
     ): ResponseEntity<ApiResponse<List<RoleDto>>> {
-        val searchDto = RoleSearchDto(page, size, search, clientId)
+        val searchDto = RoleSearchDto(
+            page = page,
+            size = size,
+            search = search,
+            clientId = clientId,
+            includeRealmRoles = includeRealmRoles,
+            includeClientRoles = includeClientRoles
+        )
         val roles = roleService.getRoles(searchDto)
         return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }

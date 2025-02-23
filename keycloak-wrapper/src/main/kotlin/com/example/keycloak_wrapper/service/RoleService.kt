@@ -11,12 +11,28 @@ class RoleService(
     private val roleMapper: RoleMapper
 ) {
     fun getRoles(searchDto: RoleSearchDto): List<RoleDto> {
-        val roles = keycloakRoleFacade.getRoles(
-            search = searchDto.search,
-            first = searchDto.page * searchDto.size,
-            max = searchDto.size
-        )
-        return roles.map { roleMapper.toDto(it) }
+        val roles = mutableListOf<RoleDto>()
+        
+        if (searchDto.includeRealmRoles) {
+            val realmRoles = keycloakRoleFacade.getRoles(
+                search = searchDto.search,
+                first = searchDto.page * searchDto.size,
+                max = searchDto.size
+            )
+            roles.addAll(realmRoles.map { roleMapper.toDto(it) })
+        }
+
+        if (searchDto.includeClientRoles) {
+            val clientRoles = keycloakRoleFacade.getClientRoles(
+                clientId = searchDto.clientId,
+                search = searchDto.search,
+                first = searchDto.page * searchDto.size,
+                max = searchDto.size
+            )
+            roles.addAll(clientRoles.map { roleMapper.toDto(it) })
+        }
+
+        return roles
     }
 
     fun getRole(name: String): RoleDto {
