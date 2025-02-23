@@ -41,7 +41,7 @@ openApiGenerate {
   ))
 }
 
-
+// TODO: use gradle node plugin task here since npm doesnt need to be installed
 tasks.register("buildFrontend") {
   dependsOn("npmInstall", "openApiGenerate")
   doLast {
