@@ -96,4 +96,9 @@ class KeycloakRoleFacade(
             throw KeycloakException("Failed to get composite roles for role with id: $roleId", e)
         }
     }
+
+    fun getClientRoles(clientId: String?, search: String?, first: Int, max: Int): Any {
+        // TODO: implement
+        TODO()
+    }
 }
