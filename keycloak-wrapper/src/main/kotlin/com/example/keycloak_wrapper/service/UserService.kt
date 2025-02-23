@@ -42,6 +42,6 @@ class UserService(
     }
 
     fun updateUserRoles(id: String, roles: List<String>) {
-        // TODO: implement
+        keycloakUserFacade.updateUserRoles(id, roles)
     }
 }

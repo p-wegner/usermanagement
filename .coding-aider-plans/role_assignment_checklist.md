@@ -3,12 +3,12 @@
 # Role Assignment Implementation Checklist
 
 ## User Role Assignment
-- [ ] Implement updateUserRoles method in UserService
-- [ ] Add role assignment endpoints in UserController
-  - [ ] PUT /api/users/{id}/roles endpoint
-  - [ ] GET /api/users/{id}/roles endpoint
+- [x] Implement updateUserRoles method in UserService
+- [x] Add role assignment endpoints in UserController
+  - [x] PUT /api/users/{id}/roles endpoint
+  - [x] GET /api/users/{id}/roles endpoint
 
 ## Group Role Assignment
-- [ ] Add role assignment endpoints in GroupController
-  - [ ] PUT /api/groups/{id}/roles endpoint
-  - [ ] GET /api/groups/{id}/roles endpoint
+- [x] Add role assignment endpoints in GroupController
+  - [x] PUT /api/groups/{id}/roles endpoint
+  - [x] GET /api/groups/{id}/roles endpoint
