@@ -33,8 +33,8 @@ export class PermissionsService {
       );
   }
 
-  getPermission(name: string): Observable<Permission | undefined> {
-    return this.roleController.getRole({name})
+  getPermission(id: string): Observable<Permission | undefined> {
+    return this.roleController.getRole({id})
       .pipe(switchMap(async (response: any) => await this.blobToJson(response)))
       .pipe(
         map(response => {
@@ -84,14 +84,14 @@ export class PermissionsService {
     return JSON.parse(text);
   }
 
-  updatePermission(name: string, permission: Partial<Permission>): Observable<Permission> {
+  updatePermission(id: string, permission: Partial<Permission>): Observable<Permission> {
     const roleUpdate: RoleUpdateDto = {
       name: permission.name,
       description: permission.description,
       composite: permission.composite
     };
 
-    return this.roleController.updateRole({name, roleUpdateDto: roleUpdate}).pipe(
+    return this.roleController.updateRole({id, roleUpdateDto: roleUpdate}).pipe(
       switchMap(async (response: any) => {
         const jsonResponse = await this.blobToJson(response);
         if (!jsonResponse.success || !jsonResponse.data) {

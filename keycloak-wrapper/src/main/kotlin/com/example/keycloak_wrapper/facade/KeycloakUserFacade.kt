@@ -6,6 +6,7 @@ import com.example.keycloak_wrapper.dto.RoleDto
 import com.example.keycloak_wrapper.exception.KeycloakException
 import jakarta.ws.rs.core.Response
 import org.keycloak.admin.client.Keycloak
+import org.keycloak.admin.client.resource.UserResource
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -64,74 +65,86 @@ class KeycloakUserFacade(
         try {
             val userResource = keycloak.realm(realm).users().get(id)
 
-            // Update realm roles
-            val realmRoleReps = roleAssignment.realmRoles.map {
-                keycloak.realm(realm).roles().get(it.id).toRepresentation()
-            }
-            userResource.roles().realmLevel().remove(userResource.roles().realmLevel().listAll())
-            if (realmRoleReps.isNotEmpty()) {
-                userResource.roles().realmLevel().add(realmRoleReps)
-            }
-
-            // Update client roles
-            roleAssignment.clientRoles.forEach { (clientId, _, roleIds) ->
-                val client = keycloak.realm(realm).clients().get(clientId)
-                val clientRoleReps = roleIds.map { role ->
-                    client.roles().get(role.id).toRepresentation()
-                }
-                userResource.roles().clientLevel(clientId).remove(userResource.roles().clientLevel(clientId).listAll())
-                if (clientRoleReps.isNotEmpty()) {
-                    userResource.roles().clientLevel(clientId).add(clientRoleReps)
-                }
-            }
+            updateRealmRoles(roleAssignment, userResource)
+            updateClientRoles(roleAssignment, userResource)
         } catch (e: Exception) {
             throw KeycloakException("Failed to update roles for user with id: $id", e)
+        }
+    }
+
+    private fun updateClientRoles(
+        roleAssignment: RoleAssignmentDto,
+        userResource: UserResource
+    ) {
+        roleAssignment.clientRoles.forEach { (clientId, _, roleIds) ->
+            val client = keycloak.realm(realm).clients().get(clientId)
+            val clientRoleReps = roleIds.map { role ->
+                client.roles().get(role.id).toRepresentation()
+            }
+            userResource.roles().clientLevel(clientId).remove(userResource.roles().clientLevel(clientId).listAll())
+            if (clientRoleReps.isNotEmpty()) {
+                userResource.roles().clientLevel(clientId).add(clientRoleReps)
+            }
+        }
+    }
+
+    private fun updateRealmRoles(
+        roleAssignment: RoleAssignmentDto,
+        userResource: UserResource
+    ) {
+        val realmRoleReps = roleAssignment.realmRoles.map {
+            keycloak.realm(realm).roles().get(it.id).toRepresentation()
+        }
+        userResource.roles().realmLevel().remove(userResource.roles().realmLevel().listAll())
+        if (realmRoleReps.isNotEmpty()) {
+            userResource.roles().realmLevel().add(realmRoleReps)
         }
     }
 
     fun getUserRoles(id: String): RoleAssignmentDto {
         try {
             val userResource = keycloak.realm(realm).users().get(id)
-
-            // Get realm roles with full details
-            val realmRoles = userResource.roles().realmLevel().listAll()
-                .map { role ->
-                    RoleDto(
-                        id = role.id,
-                        name = role.name,
-                        description = role.description,
-                        composite = role.isComposite,
-                        clientRole = role.clientRole
-                    )
-                }
-
-            // Get client roles with full details
-            val clientRoles = keycloak.realm(realm).clients().findAll().mapNotNull { client ->
-                val roles = userResource.roles().clientLevel(client.id).listAll()
-                if (roles.isNotEmpty()) {
-                    ClientRoleDto(
-                        clientId = client.id,
-                        clientName = client.clientId,
-                        roles = roles.map { role ->
-                            RoleDto(
-                                id = role.id,
-                                name = role.name,
-                                description = role.description,
-                                composite = role.isComposite,
-                                clientRole = role.clientRole
-                            )
-                        }
-                    )
-                } else {
-                    null
-                }
-            }
-
+            val realmRoles = getRealmRoles(userResource)
+            val clientRoles = getClientRoles(userResource)
             return RoleAssignmentDto(realmRoles, clientRoles)
         } catch (e: Exception) {
             throw KeycloakException("Failed to get roles for user with id: $id", e)
         }
     }
+
+    private fun getRealmRoles(userResource: UserResource) =
+        userResource.roles().realmLevel().listAll()
+            .map { role ->
+                RoleDto(
+                    id = role.id,
+                    name = role.name,
+                    description = role.description,
+                    composite = role.isComposite,
+                    clientRole = role.clientRole
+                )
+            }
+
+    private fun getClientRoles(userResource: UserResource) =
+        keycloak.realm(realm).clients().findAll().mapNotNull { client ->
+            val roles = userResource.roles().clientLevel(client.id).listAll()
+            if (roles.isNotEmpty()) {
+                ClientRoleDto(
+                    clientId = client.id,
+                    clientName = client.clientId,
+                    roles = roles.map { role ->
+                        RoleDto(
+                            id = role.id,
+                            name = role.name,
+                            description = role.description,
+                            composite = role.isComposite,
+                            clientRole = role.clientRole
+                        )
+                    }
+                )
+            } else {
+                null
+            }
+        }
 
     fun updatePassword(id: String, password: String) {
         try {

@@ -35,8 +35,8 @@ class RoleService(
         return roles
     }
 
-    fun getRole(name: String): RoleDto {
-        val role = keycloakRoleFacade.getRole(name)
+    fun getRole(id: String): RoleDto {
+        val role = keycloakRoleFacade.getRole(id)
         return roleMapper.toDto(role)
     }
 
@@ -46,15 +46,15 @@ class RoleService(
         return roleMapper.toDto(createdRole)
     }
 
-    fun updateRole(name: String, roleDto: RoleUpdateDto): RoleDto {
-        val existingRole = keycloakRoleFacade.getRole(name)
+    fun updateRole(id: String, roleDto: RoleUpdateDto): RoleDto {
+        val existingRole = keycloakRoleFacade.getRole(id)
         val updatedRepresentation = roleMapper.updateRepresentation(existingRole, roleDto)
-        val updatedRole = keycloakRoleFacade.updateRole(name, updatedRepresentation)
+        val updatedRole = keycloakRoleFacade.updateRole(id, updatedRepresentation)
         return roleMapper.toDto(updatedRole)
     }
 
-    fun deleteRole(name: String) {
-        keycloakRoleFacade.deleteRole(name)
+    fun deleteRole(id: String) {
+        keycloakRoleFacade.deleteRole(id)
     }
 
     fun addCompositeRoles(roleId: String, compositeRoleIds: List<String>): RoleDto {

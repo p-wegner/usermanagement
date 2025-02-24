@@ -7,9 +7,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { RoleDto } from './role-dto.model';
+import { ClientRoleDto } from './client-role-dto.model';
 
 
 export interface RoleAssignmentDto { 
-    roleIds: Array<string>;
+    realmRoles: Array<RoleDto>;
+    clientRoles: Array<ClientRoleDto>;
+    allRoleIds: Array<string>;
 }
 

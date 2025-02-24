@@ -15,6 +15,5 @@ export interface RoleDto {
     description?: string;
     composite: boolean;
     clientRole: boolean;
-    compositeRoles: Array<RoleDto>;
 }
 

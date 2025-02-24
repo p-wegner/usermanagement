@@ -52,13 +52,16 @@ export interface GetCompositeRolesRequestParams {
 }
 
 export interface GetRoleRequestParams {
-    name: string;
+    id: string;
 }
 
 export interface GetRolesRequestParams {
     page?: number;
     size?: number;
     search?: string;
+    clientId?: string;
+    includeRealmRoles?: boolean;
+    includeClientRoles?: boolean;
 }
 
 export interface RemoveCompositeRolesRequestParams {
@@ -67,7 +70,7 @@ export interface RemoveCompositeRolesRequestParams {
 }
 
 export interface UpdateRoleRequestParams {
-    name: string;
+    id: string;
     roleUpdateDto: RoleUpdateDto;
 }
 
@@ -454,9 +457,9 @@ export class RoleControllerService {
     public getRole(requestParameters: GetRoleRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseRoleDto>>;
     public getRole(requestParameters: GetRoleRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseRoleDto>>;
     public getRole(requestParameters: GetRoleRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const name = requestParameters?.name;
-        if (name === null || name === undefined) {
-            throw new Error('Required parameter name was null or undefined when calling getRole.');
+        const id = requestParameters?.id;
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling getRole.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -502,7 +505,7 @@ export class RoleControllerService {
             }
         }
 
-        let localVarPath = `/api/roles/${this.configuration.encodeParam({name: "name", value: name, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/api/roles/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<ApiResponseRoleDto>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -528,6 +531,9 @@ export class RoleControllerService {
         const page = requestParameters?.page;
         const size = requestParameters?.size;
         const search = requestParameters?.search;
+        const clientId = requestParameters?.clientId;
+        const includeRealmRoles = requestParameters?.includeRealmRoles;
+        const includeClientRoles = requestParameters?.includeClientRoles;
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         if (page !== undefined && page !== null) {
@@ -541,6 +547,18 @@ export class RoleControllerService {
         if (search !== undefined && search !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
             <any>search, 'search');
+        }
+        if (clientId !== undefined && clientId !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>clientId, 'clientId');
+        }
+        if (includeRealmRoles !== undefined && includeRealmRoles !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>includeRealmRoles, 'includeRealmRoles');
+        }
+        if (includeClientRoles !== undefined && includeClientRoles !== null) {
+          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+            <any>includeClientRoles, 'includeClientRoles');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -695,9 +713,9 @@ export class RoleControllerService {
     public updateRole(requestParameters: UpdateRoleRequestParams, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseRoleDto>>;
     public updateRole(requestParameters: UpdateRoleRequestParams, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseRoleDto>>;
     public updateRole(requestParameters: UpdateRoleRequestParams, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        const name = requestParameters?.name;
-        if (name === null || name === undefined) {
-            throw new Error('Required parameter name was null or undefined when calling updateRole.');
+        const id = requestParameters?.id;
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling updateRole.');
         }
         const roleUpdateDto = requestParameters?.roleUpdateDto;
         if (roleUpdateDto === null || roleUpdateDto === undefined) {
@@ -756,7 +774,7 @@ export class RoleControllerService {
             }
         }
 
-        let localVarPath = `/api/roles/${this.configuration.encodeParam({name: "name", value: name, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/api/roles/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<ApiResponseRoleDto>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

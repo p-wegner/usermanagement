@@ -35,9 +35,9 @@ class RoleController(
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
-    @GetMapping("/{name}")
-    fun getRole(@PathVariable name: String): ResponseEntity<ApiResponse<RoleDto>> {
-        val role = roleService.getRole(name)
+    @GetMapping("/{id}")
+    fun getRole(@PathVariable id: String): ResponseEntity<ApiResponse<RoleDto>> {
+        val role = roleService.getRole(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = role))
     }
 
@@ -49,12 +49,12 @@ class RoleController(
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{name}")
+    @PutMapping("/{id}")
     fun updateRole(
-        @PathVariable name: String,
+        @PathVariable id: String,
         @RequestBody role: RoleUpdateDto
     ): ResponseEntity<ApiResponse<RoleDto>> {
-        val updatedRole = roleService.updateRole(name, role)
+        val updatedRole = roleService.updateRole(id, role)
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
     }
 
