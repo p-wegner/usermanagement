@@ -9,6 +9,7 @@ import { LoadingService } from '../../../../shared/services/loading.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
 import { UsersService } from '../../users.service';
 import { RoleService } from '../../../roles/role.service';
+import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
   selector: 'app-user-roles',
@@ -22,16 +23,20 @@ export class UserRolesComponent implements OnInit {
   availableRoles: RoleDto[] = [];
   assignedRoleIds: string[] = [];
   isLoading = false;
+  isAdmin = false;
 
   constructor(
     private fb: FormBuilder,
     private usersService: UsersService,
     private roleService: RoleService,
-    private loadingService: LoadingService,
+    public loadingService: LoadingService,
     private errorHandling: ErrorHandlingService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
   ) {
     this.rolesForm = this.fb.group({});
+    // Check if user has admin role
+    this.isAdmin = this.authService.getRoles().includes('ADMIN');
   }
 
   ngOnInit(): void {
@@ -82,6 +87,11 @@ export class UserRolesComponent implements OnInit {
   }
 
   saveRoles(): void {
+    if (!this.isAdmin) {
+      this.snackBar.open('You do not have permission to modify roles', 'Close', { duration: 3000 });
+      return;
+    }
+    
     this.loadingService.startLoading();
     this.isLoading = true;
     
@@ -113,5 +123,22 @@ export class UserRolesComponent implements OnInit {
           this.errorHandling.handleError(error);
         }
       });
+  }
+  
+  cancelChanges(): void {
+    // Reset to original state by reloading roles
+    this.loadRoles();
+  }
+  
+  getRealmRoles(): RoleDto[] {
+    return this.availableRoles.filter(role => !role.clientRole);
+  }
+  
+  getClientRoles(): RoleDto[] {
+    return this.availableRoles.filter(role => role.clientRole);
+  }
+  
+  isRoleAssigned(roleId: string): boolean {
+    return this.assignedRoleIds.includes(roleId);
   }
 }

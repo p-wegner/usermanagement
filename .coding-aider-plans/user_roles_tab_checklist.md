@@ -17,21 +17,24 @@
 - [x] Add save functionality to update role assignments
 - [x] Implement proper loading states
 - [x] Add error handling for API calls
+- [x] Add role filtering by type (realm vs client)
 
 ## Service Layer
 - [x] Add method to UsersService to get user roles
 - [x] Add method to UsersService to update user roles
 - [x] Create helper methods for transforming role data between API and UI formats
+- [x] Enhance RoleService to handle both realm and client roles
 
 ## Testing
-- [ ] Test role display functionality
-- [ ] Test role selection/deselection
-- [ ] Test saving role changes
-- [ ] Test error handling
-- [ ] Test authorization checks
+-  [ ] Test role display functionality
+-  [ ] Test role selection/deselection
+-  [ ] Test saving role changes
+-  [ ] Test error handling
+-  [x] Implement authorization checks
 
 ## UI/UX
 - [x] Ensure consistent styling with the rest of the application
 - [x] Add appropriate loading indicators
 - [x] Implement user-friendly error messages
-- [ ] Add confirmation for role changes if needed
+- [x] Add cancel button for role changes
+- [x] Organize roles by type (realm vs client)

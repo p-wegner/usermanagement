@@ -24,3 +24,7 @@ files:
   readOnly: false
 - path: um\src\app\features\roles\role.service.ts
   readOnly: false
+- path: um\src\app\features\users\user-detail\user-roles\filter-roles.pipe.ts
+  readOnly: false
+- path: um\src\app\features\users\users.module.ts
+  readOnly: false

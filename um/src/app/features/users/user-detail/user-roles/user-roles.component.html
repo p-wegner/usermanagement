@@ -1,13 +1,11 @@
 <div class="roles-container">
-  <h3>User Roles</h3>
-  
   <div *ngIf="isLoading" class="loading-container">
     <mat-spinner diameter="40"></mat-spinner>
     <p>Loading roles...</p>
   </div>
 
   <div *ngIf="!isLoading">
-    <form [formGroup]="rolesForm" (ngSubmit)="saveRoles()">
+    <form [formGroup]="rolesForm">
       <div class="roles-list">
         <mat-card *ngIf="availableRoles.length === 0" class="no-roles-card">
           <mat-card-content>
@@ -15,24 +13,62 @@
           </mat-card-content>
         </mat-card>
 
-        <mat-card *ngIf="availableRoles.length > 0">
-          <mat-card-content>
-            <mat-selection-list>
-              <mat-list-item *ngFor="let role of availableRoles">
-                <mat-checkbox [formControlName]="role.id">
-                  {{ role.name }}
+        <ng-container *ngIf="availableRoles.length > 0">
+          <!-- Realm Roles Section -->
+          <h4 class="role-section-title">Realm Roles</h4>
+          <mat-card *ngIf="getRealmRoles().length > 0">
+            <mat-card-content>
+              <div class="role-item" *ngFor="let role of getRealmRoles()">
+                <mat-checkbox 
+                  [formControlName]="role.id"
+                  [disabled]="!isAdmin">
+                  <div class="role-info">
+                    <span class="role-name">{{ role.name }}</span>
+                    <span class="role-description" *ngIf="role.description">
+                      {{ role.description }}
+                    </span>
+                  </div>
                 </mat-checkbox>
-                <span class="role-description" *ngIf="role.description">
-                  {{ role.description }}
-                </span>
-              </mat-list-item>
-            </mat-selection-list>
-          </mat-card-content>
-        </mat-card>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card *ngIf="getRealmRoles().length === 0" class="no-roles-card">
+            <mat-card-content>
+              <p>No realm roles available.</p>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Client Roles Section -->
+          <h4 class="role-section-title" *ngIf="getClientRoles().length > 0">Client Roles</h4>
+          <mat-card *ngIf="getClientRoles().length > 0">
+            <mat-card-content>
+              <div class="role-item" *ngFor="let role of getClientRoles()">
+                <mat-checkbox 
+                  [formControlName]="role.id"
+                  [disabled]="!isAdmin">
+                  <div class="role-info">
+                    <span class="role-name">{{ role.name }}</span>
+                    <span class="role-description" *ngIf="role.description">
+                      {{ role.description }}
+                    </span>
+                  </div>
+                </mat-checkbox>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </ng-container>
       </div>
 
       <div class="actions-container">
-        <button mat-raised-button color="primary" type="submit" [disabled]="isLoading">
+        <button mat-button type="button" (click)="cancelChanges()">
+          Cancel
+        </button>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="button" 
+          (click)="saveRoles()" 
+          [disabled]="isLoading || !isAdmin">
           Save Changes
         </button>
       </div>
