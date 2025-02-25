@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,6 +19,7 @@ export class UserDetailComponent implements OnInit {
   userForm: FormGroup;
   isNewUser = true;
   private userId: string | null = null;
+  selectedTabIndex = 0;
 
   constructor(
     private fb: FormBuilder,

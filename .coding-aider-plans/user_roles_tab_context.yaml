@@ -16,3 +16,9 @@ files:
   readOnly: false
 - path: um\src\app\api\com\example\api\role-controller.service.ts
   readOnly: false
+- path: um\src\app\features\users\user-detail\user-roles\user-roles.component.ts
+  readOnly: false
+- path: um\src\app\features\users\user-detail\user-roles\user-roles.component.html
+  readOnly: false
+- path: um\src\app\features\users\user-detail\user-roles\user-roles.component.css
+  readOnly: false
