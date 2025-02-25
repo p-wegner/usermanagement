@@ -3,7 +3,7 @@
     <mat-card-title>{{ isNewUser ? 'Create User' : 'Edit User' }}</mat-card-title>
   </mat-card-header>
 
-  <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event)">
     <mat-tab label="Basic Info">
       <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
     <mat-card-content>

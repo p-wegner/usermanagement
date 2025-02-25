@@ -6,7 +6,7 @@
 - [x] Modify user-detail component to use a tab layout
 - [x] Create a "Basic Info" tab for existing user information
 - [x] Add a "Roles" tab that will contain the role management UI
-- [ ] Ensure proper routing and state management between tabs
+- [x] Ensure proper routing and state management between tabs
 
 ## User Roles Component
 - [ ] Create a new user-roles component

@@ -22,6 +22,8 @@ export class UserDetailComponent implements OnInit {
   selectedTabIndex = 0;
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
@@ -43,6 +45,25 @@ export class UserDetailComponent implements OnInit {
       this.isNewUser = false;
       this.loadUser(this.userId);
     }
+
+    // Handle tab changes
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      if (tab === 'roles') {
+        this.selectedTabIndex = 1;
+      } else {
+        this.selectedTabIndex = 0;
+      }
+    });
+  }
+
+  onTabChange(event: MatTabChangeEvent): void {
+    const tabName = event.index === 1 ? 'roles' : 'info';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tabName },
+      queryParamsHandling: 'merge'
+    });
   }
 
   private loadUser(id: string): void {
