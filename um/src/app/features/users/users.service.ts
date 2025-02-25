@@ -4,6 +4,7 @@ import {User} from '../../shared/interfaces/user.interface';
 import {UsersService as ApiUsersService} from '../../api/com/example/api/users.service';
 import {ApiResponseService} from "../../shared/services/api-response.service";
 import {UserCreateDto, UserDto, UserUpdateDto} from '../../api/com/example';
+import {RoleAssignmentDto} from '../../api/com/example/model/role-assignment-dto.model';
 
 @Injectable({
   providedIn: 'root'
@@ -131,6 +132,34 @@ export class UsersService {
         }
         const currentUsers = this.usersSubject.value;
         this.usersSubject.next(currentUsers.filter(user => user.id !== id));
+      })
+    ));
+  }
+
+  getUserRoles(userId: string): Observable<{ roleAssignment: RoleAssignmentDto }> {
+    return from(this.apiUsersService.getUserRoles({id: userId}).pipe(
+      switchMap(async (response: any) => {
+        const jsonResponse = await this.blobToJson(response);
+        if (!jsonResponse.success || !jsonResponse.data) {
+          throw new Error(jsonResponse.error || 'Failed to fetch user roles');
+        }
+        return { roleAssignment: jsonResponse.data };
+      })
+    ));
+  }
+
+  updateUserRoles(userId: string, roleAssignment: RoleAssignmentDto): Observable<User> {
+    return from(this.apiUsersService.updateUserRoles({id: userId, roleAssignmentDto: roleAssignment}).pipe(
+      switchMap(async (response: any) => {
+        const jsonResponse = await this.blobToJson(response);
+        if (!jsonResponse.success || !jsonResponse.data) {
+          throw new Error(jsonResponse.error || 'Failed to update user roles');
+        }
+        const updatedUser = this.mapToUser(jsonResponse.data);
+        const currentUsers = this.usersSubject.value;
+        const updatedUsers = currentUsers.map(u => u.id === userId ? updatedUser : u);
+        this.usersSubject.next(updatedUsers);
+        return updatedUser;
       })
     ));
   }

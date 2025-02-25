@@ -25,8 +25,6 @@ export class UserDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
     private usersService: UsersService,
     private loadingService: LoadingService,
     private errorHandling: ErrorHandlingService,

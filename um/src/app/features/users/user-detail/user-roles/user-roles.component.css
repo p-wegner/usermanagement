@@ -1,0 +1,37 @@
+.roles-container {
+  padding: 20px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.roles-list {
+  margin-bottom: 20px;
+}
+
+.actions-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+mat-list-item {
+  height: auto !important;
+  margin-bottom: 8px;
+}
+
+.role-description {
+  margin-left: 8px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 14px;
+}
+
+.no-roles-card {
+  text-align: center;
+  padding: 20px;
+}
