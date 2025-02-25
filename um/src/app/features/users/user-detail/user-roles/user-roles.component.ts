@@ -14,11 +14,12 @@ import { AuthService } from '../../../../core/auth/auth.service';
 @Component({
   selector: 'app-user-roles',
   templateUrl: './user-roles.component.html',
-  styleUrls: ['./user-roles.component.css']
+  styleUrls: ['./user-roles.component.css'],
+  standalone: false
 })
 export class UserRolesComponent implements OnInit {
   @Input() userId!: string;
-  
+
   rolesForm: FormGroup;
   availableRoles: RoleDto[] = [];
   assignedRoleIds: string[] = [];
@@ -69,7 +70,7 @@ export class UserRolesComponent implements OnInit {
     ).subscribe(result => {
       this.availableRoles = result.allRoles.roles || [];
       this.assignedRoleIds = result.userRoles.roleAssignment?.allRoleIds || [];
-      
+
       // Create form controls for each role
       this.createRoleFormControls();
     });
@@ -78,7 +79,7 @@ export class UserRolesComponent implements OnInit {
   createRoleFormControls(): void {
     // Reset the form
     this.rolesForm = this.fb.group({});
-    
+
     // Create a form control for each role
     this.availableRoles.forEach(role => {
       const isAssigned = this.assignedRoleIds.includes(role.id);
@@ -91,21 +92,21 @@ export class UserRolesComponent implements OnInit {
       this.snackBar.open('You do not have permission to modify roles', 'Close', { duration: 3000 });
       return;
     }
-    
+
     this.loadingService.startLoading();
     this.isLoading = true;
-    
+
     // Get selected role IDs from form
     const selectedRoleIds = Object.keys(this.rolesForm.value)
       .filter(roleId => this.rolesForm.value[roleId]);
-    
+
     // Create role assignment DTO
     const roleAssignment: RoleAssignmentDto = {
       realmRoles: this.availableRoles.filter(role => selectedRoleIds.includes(role.id)),
       clientRoles: [],
       allRoleIds: selectedRoleIds
     };
-    
+
     this.usersService.updateUserRoles(this.userId, roleAssignment)
       .pipe(
         finalize(() => {
@@ -124,20 +125,20 @@ export class UserRolesComponent implements OnInit {
         }
       });
   }
-  
+
   cancelChanges(): void {
     // Reset to original state by reloading roles
     this.loadRoles();
   }
-  
+
   getRealmRoles(): RoleDto[] {
     return this.availableRoles.filter(role => !role.clientRole);
   }
-  
+
   getClientRoles(): RoleDto[] {
     return this.availableRoles.filter(role => role.clientRole);
   }
-  
+
   isRoleAssigned(roleId: string): boolean {
     return this.assignedRoleIds.includes(roleId);
   }
