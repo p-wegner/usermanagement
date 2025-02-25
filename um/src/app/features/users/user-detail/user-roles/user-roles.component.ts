@@ -23,8 +23,10 @@ export class UserRolesComponent implements OnInit {
   rolesForm: FormGroup;
   availableRoles: RoleDto[] = [];
   assignedRoleIds: string[] = [];
+  originalRoleIds: string[] = [];
   isLoading = false;
   isAdmin = false;
+  hasChanges = false;
 
   constructor(
     private fb: FormBuilder,
@@ -70,6 +72,8 @@ export class UserRolesComponent implements OnInit {
     ).subscribe(result => {
       this.availableRoles = result.allRoles.roles || [];
       this.assignedRoleIds = result.userRoles.roleAssignment?.allRoleIds || [];
+      // Store original role IDs to detect changes
+      this.originalRoleIds = [...this.assignedRoleIds];
 
       // Create form controls for each role
       this.createRoleFormControls();
@@ -85,11 +89,33 @@ export class UserRolesComponent implements OnInit {
       const isAssigned = this.assignedRoleIds.includes(role.id);
       this.rolesForm.addControl(role.id, this.fb.control(isAssigned));
     });
+
+    // Subscribe to form value changes to detect when roles are modified
+    this.rolesForm.valueChanges.subscribe(() => {
+      this.checkForChanges();
+    });
+  }
+
+  checkForChanges(): void {
+    // Get current selected role IDs
+    const currentSelectedRoleIds = Object.keys(this.rolesForm.value)
+      .filter(roleId => this.rolesForm.value[roleId]);
+    
+    // Compare with original role IDs
+    const hasAdded = currentSelectedRoleIds.some(id => !this.originalRoleIds.includes(id));
+    const hasRemoved = this.originalRoleIds.some(id => !currentSelectedRoleIds.includes(id));
+    
+    this.hasChanges = hasAdded || hasRemoved;
   }
 
   saveRoles(): void {
     if (!this.isAdmin) {
       this.snackBar.open('You do not have permission to modify roles', 'Close', { duration: 3000 });
+      return;
+    }
+
+    if (!this.hasChanges) {
+      this.snackBar.open('No changes to save', 'Close', { duration: 3000 });
       return;
     }
 
@@ -117,6 +143,7 @@ export class UserRolesComponent implements OnInit {
       .subscribe({
         next: () => {
           this.snackBar.open('User roles updated successfully', 'Close', { duration: 3000 });
+          this.hasChanges = false;
           // Refresh the roles
           this.loadRoles();
         },

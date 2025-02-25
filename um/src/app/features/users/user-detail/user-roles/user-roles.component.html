@@ -68,7 +68,7 @@
           color="primary" 
           type="button" 
           (click)="saveRoles()" 
-          [disabled]="isLoading || !isAdmin">
+          [disabled]="isLoading || !isAdmin || !hasChanges">
           Save Changes
         </button>
       </div>
