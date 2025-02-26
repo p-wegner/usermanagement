@@ -18,7 +18,7 @@ import {map} from "rxjs";
 export class UserDetailComponent implements OnInit {
   userForm: FormGroup;
   isNewUser = true;
-  private userId: string | null = null;
+  userId: string | null = null;
   selectedTabIndex = 0;
 
   constructor(
