@@ -75,7 +75,7 @@ class KeycloakGroupFacade(
         }
     }
 
-    fun updateGroupRoles(id: String, roleAssignment: RoleAssignmentDto) {
+    fun updateGroupRoles(id: String, roleAssignment: RoleAssignmentDto): GroupRepresentation {
         try {
             val groupResource = keycloak.realm(realm).groups().group(id)
             updateRealmRoles(roleAssignment, groupResource)
