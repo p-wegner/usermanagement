@@ -90,7 +90,7 @@ class KeycloakGroupFacade(
         groupResource: GroupResource
     ) {
         val realmRoleReps = roleAssignment.realmRoles.map {
-            keycloak.realm(realm).roles().get(it.id).toRepresentation()
+            keycloak.realm(realm).roles().get(it.name).toRepresentation()
         }
         groupResource.roles().realmLevel().remove(groupResource.roles().realmLevel().listAll())
         if (realmRoleReps.isNotEmpty()) {
@@ -162,7 +162,7 @@ class KeycloakGroupFacade(
                 val clientId = it.clientId
                 val client = keycloak.realm(realm).clients().get(clientId)
                 val clientRoleReps = it.roles.map { role ->
-                    client.roles().get(role.id).toRepresentation()
+                    client.roles().get(role.name).toRepresentation()
                 }
                 groupResource.roles().clientLevel(clientId)
                     .remove(groupResource.roles().clientLevel(clientId).listAll())
