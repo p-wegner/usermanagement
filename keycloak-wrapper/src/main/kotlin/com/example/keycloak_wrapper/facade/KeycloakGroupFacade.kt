@@ -80,6 +80,7 @@ class KeycloakGroupFacade(
             val groupResource = keycloak.realm(realm).groups().group(id)
             updateRealmRoles(roleAssignment, groupResource)
             updateClientRoles(roleAssignment, groupResource)
+            return getGroup(id)
         } catch (e: Exception) {
             throw KeycloakException("Failed to update roles for group with id: $id", e)
         }

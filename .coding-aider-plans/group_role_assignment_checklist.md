@@ -8,9 +8,9 @@
   - [x] Implement service methods in GroupService
   - [x] Update or create necessary DTOs
   - [x] Implement Keycloak facade methods
-- [ ] Test the implementation
-  - [ ] Test assigning roles to groups
-  - [ ] Test removing roles from groups
-  - [ ] Test retrieving roles assigned to a group
+- [x] Test the implementation
+  - [x] Test assigning roles to groups
+  - [x] Test removing roles from groups
+  - [x] Test retrieving roles assigned to a group
 - [x] Ensure proper error handling
 - [x] Verify security constraints
