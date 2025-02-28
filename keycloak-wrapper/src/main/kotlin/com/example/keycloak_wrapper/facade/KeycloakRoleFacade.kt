@@ -111,4 +111,60 @@ class KeycloakRoleFacade(
             throw KeycloakException("Failed to fetch client roles for clientId: $clientId", e)
         }
     }
+    
+    // Group role management methods
+    
+    fun getGroupRoles(groupId: String): List<RoleRepresentation> {
+        try {
+            return keycloak.realm(realm).groups().group(groupId).roles().realmLevel().listAll()
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to get roles for group with id: $groupId", e)
+        }
+    }
+    
+    fun addRolesToGroup(groupId: String, roleIds: List<String>) {
+        try {
+            val roles = roleIds.map { keycloak.realm(realm).rolesById().getRole(it) }
+            keycloak.realm(realm).groups().group(groupId).roles().realmLevel().add(roles)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to add roles to group with id: $groupId", e)
+        }
+    }
+    
+    fun removeRolesFromGroup(groupId: String, roleIds: List<String>) {
+        try {
+            val roles = roleIds.map { keycloak.realm(realm).rolesById().getRole(it) }
+            keycloak.realm(realm).groups().group(groupId).roles().realmLevel().remove(roles)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to remove roles from group with id: $groupId", e)
+        }
+    }
+    
+    fun getGroupClientRoles(groupId: String, clientId: String): List<RoleRepresentation> {
+        try {
+            return keycloak.realm(realm).groups().group(groupId).roles().clientLevel(clientId).listAll()
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to get client roles for group with id: $groupId and client id: $clientId", e)
+        }
+    }
+    
+    fun addClientRolesToGroup(groupId: String, clientId: String, roleIds: List<String>) {
+        try {
+            val clientResource = keycloak.realm(realm).clients().get(clientId)
+            val roles = roleIds.map { clientResource.roles().get(it).toRepresentation() }
+            keycloak.realm(realm).groups().group(groupId).roles().clientLevel(clientId).add(roles)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to add client roles to group with id: $groupId and client id: $clientId", e)
+        }
+    }
+    
+    fun removeClientRolesFromGroup(groupId: String, clientId: String, roleIds: List<String>) {
+        try {
+            val clientResource = keycloak.realm(realm).clients().get(clientId)
+            val roles = roleIds.map { clientResource.roles().get(it).toRepresentation() }
+            keycloak.realm(realm).groups().group(groupId).roles().clientLevel(clientId).remove(roles)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to remove client roles from group with id: $groupId and client id: $clientId", e)
+        }
+    }
 }

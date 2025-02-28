@@ -71,5 +71,33 @@ class RoleService(
         val roles = keycloakRoleFacade.getCompositeRoles(roleId)
         return roles.map { roleMapper.toDto(it) }
     }
+    
+    // Group role management methods
+    
+    fun getGroupRoles(groupId: String): List<RoleDto> {
+        val roles = keycloakRoleFacade.getGroupRoles(groupId)
+        return roles.map { roleMapper.toDto(it) }
+    }
+    
+    fun addRolesToGroup(groupId: String, roleIds: List<String>) {
+        keycloakRoleFacade.addRolesToGroup(groupId, roleIds)
+    }
+    
+    fun removeRolesFromGroup(groupId: String, roleIds: List<String>) {
+        keycloakRoleFacade.removeRolesFromGroup(groupId, roleIds)
+    }
+    
+    fun getGroupClientRoles(groupId: String, clientId: String): List<RoleDto> {
+        val roles = keycloakRoleFacade.getGroupClientRoles(groupId, clientId)
+        return roles.map { roleMapper.toDto(it) }
+    }
+    
+    fun addClientRolesToGroup(groupId: String, clientId: String, roleIds: List<String>) {
+        keycloakRoleFacade.addClientRolesToGroup(groupId, clientId, roleIds)
+    }
+    
+    fun removeClientRolesToGroup(groupId: String, clientId: String, roleIds: List<String>) {
+        keycloakRoleFacade.removeClientRolesFromGroup(groupId, clientId, roleIds)
+    }
 }
 

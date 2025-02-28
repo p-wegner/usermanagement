@@ -91,4 +91,65 @@ class RoleController(
         val compositeRoles = roleService.getCompositeRoles(roleId)
         return ResponseEntity.ok(ApiResponse(success = true, data = compositeRoles))
     }
+    
+    // Group role management endpoints
+    
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
+    @GetMapping("/groups/{groupId}")
+    fun getGroupRoles(@PathVariable groupId: String): ResponseEntity<ApiResponse<List<RoleDto>>> {
+        val roles = roleService.getGroupRoles(groupId)
+        return ResponseEntity.ok(ApiResponse(success = true, data = roles))
+    }
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/groups/{groupId}")
+    fun addRolesToGroup(
+        @PathVariable groupId: String,
+        @RequestBody roleAssignment: RoleAssignmentDto
+    ): ResponseEntity<ApiResponse<Unit>> {
+        roleService.addRolesToGroup(groupId, roleAssignment.allRoleIds)
+        return ResponseEntity.ok(ApiResponse(success = true))
+    }
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/groups/{groupId}")
+    fun removeRolesFromGroup(
+        @PathVariable groupId: String,
+        @RequestBody roleAssignment: RoleAssignmentDto
+    ): ResponseEntity<ApiResponse<Unit>> {
+        roleService.removeRolesFromGroup(groupId, roleAssignment.allRoleIds)
+        return ResponseEntity.ok(ApiResponse(success = true))
+    }
+    
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
+    @GetMapping("/groups/{groupId}/clients/{clientId}")
+    fun getGroupClientRoles(
+        @PathVariable groupId: String,
+        @PathVariable clientId: String
+    ): ResponseEntity<ApiResponse<List<RoleDto>>> {
+        val roles = roleService.getGroupClientRoles(groupId, clientId)
+        return ResponseEntity.ok(ApiResponse(success = true, data = roles))
+    }
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/groups/{groupId}/clients/{clientId}")
+    fun addClientRolesToGroup(
+        @PathVariable groupId: String,
+        @PathVariable clientId: String,
+        @RequestBody roleAssignment: RoleAssignmentDto
+    ): ResponseEntity<ApiResponse<Unit>> {
+        roleService.addClientRolesToGroup(groupId, clientId, roleAssignment.allRoleIds)
+        return ResponseEntity.ok(ApiResponse(success = true))
+    }
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/groups/{groupId}/clients/{clientId}")
+    fun removeClientRolesFromGroup(
+        @PathVariable groupId: String,
+        @PathVariable clientId: String,
+        @RequestBody roleAssignment: RoleAssignmentDto
+    ): ResponseEntity<ApiResponse<Unit>> {
+        roleService.removeClientRolesToGroup(groupId, clientId, roleAssignment.allRoleIds)
+        return ResponseEntity.ok(ApiResponse(success = true))
+    }
 }
