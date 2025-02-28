@@ -76,10 +76,26 @@ class KeycloakUserFacade(
         roleAssignment: RoleAssignmentDto,
         userResource: UserResource
     ) {
-        roleAssignment.clientRoles.forEach { (clientId, _, roleIds) ->
+        // Get all clients to handle removal of roles from clients not in the assignment
+        val allClients = keycloak.realm(realm).clients().findAll()
+        val clientsInAssignment = roleAssignment.clientRoles.map { it.clientId }.toSet()
+        
+        // Remove roles from clients not in the assignment
+        allClients.forEach { client ->
+            if (!clientsInAssignment.contains(client.id)) {
+                val currentRoles = userResource.roles().clientLevel(client.id).listAll()
+                if (currentRoles.isNotEmpty()) {
+                    userResource.roles().clientLevel(client.id).remove(currentRoles)
+                }
+            }
+        }
+        
+        // Update roles for clients in the assignment
+        roleAssignment.clientRoles.forEach { clientRoleDto ->
+            val clientId = clientRoleDto.clientId
             val client = keycloak.realm(realm).clients().get(clientId)
-            val clientRoleReps = roleIds.map { role ->
-                client.roles().get(role.id).toRepresentation()
+            val clientRoleReps = clientRoleDto.roles.map { role ->
+                client.roles().get(role.name).toRepresentation()
             }
             userResource.roles().clientLevel(clientId).remove(userResource.roles().clientLevel(clientId).listAll())
             if (clientRoleReps.isNotEmpty()) {

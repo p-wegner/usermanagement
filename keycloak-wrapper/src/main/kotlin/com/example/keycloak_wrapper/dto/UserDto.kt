@@ -7,7 +7,8 @@ data class UserDto(
     val lastName: String? = null,
     val email: String,
     val enabled: Boolean = true,
-    val realmRoles: List<String> = emptyList()
+    val realmRoles: List<String> = emptyList(),
+    val clientRoles: Map<String, List<String>> = emptyMap()
 )
 
 data class UserCreateDto(
