@@ -133,10 +133,37 @@ export class GroupsService {
     );
   }
 
-  assignPermissionsToGroup(groupId: string, permissions: Permission[]): Observable<void> {
-    // Note: This would need a backend API endpoint to assign roles to groups
-    // For now, we'll throw an error
-    return throwError(() => new Error('API endpoint for assigning permissions to groups is not yet available'));
+  assignPermissionsToGroup(groupId: string, permissions: Permission[]): Observable<PermissionGroup> {
+    const roleAssignment: RoleAssignmentDto = {
+      realmRoles: permissions.map(p => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        composite: p.composite,
+        clientRole: p.clientRole
+      })),
+      clientRoles: []
+    };
+    
+    return this.updateGroupRoles(groupId, roleAssignment);
+  }
+
+  getGroupRoles(id: string): Observable<RoleAssignmentDto> {
+    return this.apiResponseService.handleResponse(
+      this.groupControllerService.getGroupRoles({id})
+        .pipe(switchMap(async (response: any) => await this.blobToJson(response))),
+      (data) => data,
+      'Failed to fetch group roles'
+    );
+  }
+
+  updateGroupRoles(id: string, roleAssignment: RoleAssignmentDto): Observable<PermissionGroup> {
+    return this.apiResponseService.handleResponse(
+      this.groupControllerService.updateGroupRoles({id, roleAssignmentDto: roleAssignment})
+        .pipe(switchMap(async (response: any) => await this.blobToJson(response))),
+      this.mapToPermissionGroup,
+      'Failed to update group roles'
+    );
   }
 
   getInheritedPermissions(groupId: string): Observable<Permission[]> {
