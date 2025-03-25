@@ -38,7 +38,7 @@ class GroupController(
         val createdGroup = groupService.createGroup(group)
         return createdGroup.responseEntity()
     }
-
+// TODO 25/03/2025 PWegner: create an endpoint to create tenants AI!
     @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER')")
     @PutMapping("/{id}")
     fun updateGroup(
