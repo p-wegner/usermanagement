@@ -8,3 +8,4 @@
 /um/src/app/api/*
 /um/.gradle/nodejs/*
 /um/.gradle/npm/*
+.qodo
