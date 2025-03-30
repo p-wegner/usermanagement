@@ -8,7 +8,9 @@ data class UserDto(
     val email: String,
     val enabled: Boolean = true,
     val realmRoles: List<String> = emptyList(),
-    val clientRoles: Map<String, List<String>> = emptyMap()
+    val clientRoles: Map<String, List<String>> = emptyMap(),
+    val isTenantAdmin: Boolean = false,
+    val managedTenants: List<String> = emptyList()
 )
 
 data class UserCreateDto(

@@ -1,5 +1,6 @@
 package com.example.keycloak_wrapper.service
 
+import com.example.keycloak_wrapper.config.RoleConstants
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.facade.KeycloakUserFacade
 import com.example.keycloak_wrapper.mapper.UserMapper
@@ -8,7 +9,8 @@ import org.springframework.stereotype.Service
 @Service
 class UserService(
     private val keycloakUserFacade: KeycloakUserFacade,
-    private val userMapper: UserMapper
+    private val userMapper: UserMapper,
+    private val tenantService: TenantService? = null // Circular dependency prevention
 ) {
     fun getUsers(searchDto: UserSearchDto): Pair<List<UserDto>, Int> {
         val (users, total) = keycloakUserFacade.getUsers(
@@ -21,7 +23,23 @@ class UserService(
 
     fun getUser(id: String): UserDto {
         val user = keycloakUserFacade.getUser(id)
-        return userMapper.toDto(user)
+        val userDto = userMapper.toDto(user)
+        
+        // Check if user is a tenant admin
+        val userRoles = keycloakUserFacade.getUserRoles(id)
+        val isTenantAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        
+        if (isTenantAdmin && tenantService != null) {
+            // Get the tenants this user is an admin for
+            val managedTenants = tenantService.getUserTenants(id).tenants.map { it.id }
+            
+            return userDto.copy(
+                isTenantAdmin = true,
+                managedTenants = managedTenants
+            )
+        }
+        
+        return userDto
     }
 
     fun createUser(userDto: UserCreateDto): UserDto {

@@ -1,20 +1,27 @@
 package com.example.keycloak_wrapper.service
 
+import com.example.keycloak_wrapper.config.RoleConstants
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.facade.KeycloakGroupFacade
 import com.example.keycloak_wrapper.facade.KeycloakRoleFacade
+import com.example.keycloak_wrapper.facade.KeycloakUserFacade
 import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class TenantService(
     private val keycloakGroupFacade: KeycloakGroupFacade,
     private val keycloakRoleFacade: KeycloakRoleFacade,
+    private val keycloakUserFacade: KeycloakUserFacade,
     private val roleService: RoleService,
     private val groupService: GroupService
 ) {
+    // Cache of tenant admin assignments (userId -> list of tenantIds)
+    private val tenantAdminCache = ConcurrentHashMap<String, MutableList<String>>()
 
     companion object {
         const val TENANT_PREFIX = "tenant_"
+        const val TENANT_ADMIN_GROUP_SUFFIX = "_admins"
     }
 
     /**
@@ -152,9 +159,235 @@ class TenantService(
 
         // Remove subgroups for deleted roles
         tenant.subGroups.forEach { subgroup ->
-            if (!roleNames.contains(subgroup.name)) {
+            if (!roleNames.contains(subgroup.name) && !subgroup.name.endsWith(TENANT_ADMIN_GROUP_SUFFIX)) {
                 groupService.deleteGroup(subgroup.id!!)
             }
         }
+    }
+    
+    /**
+     * Assigns a user as an admin for a specific tenant.
+     * 
+     * @param assignment The tenant admin assignment data
+     * @return The created tenant admin assignment
+     */
+    fun assignTenantAdmin(assignment: TenantAdminAssignmentDto): TenantAdminDto {
+        val tenant = getTenant(assignment.tenantId)
+        val user = keycloakUserFacade.getUser(assignment.userId)
+        
+        // Ensure the tenant admin group exists
+        val adminGroupName = "${tenant.name}${TENANT_ADMIN_GROUP_SUFFIX}"
+        val adminGroup = tenant.subGroups.find { it.name == adminGroupName }
+        val adminGroupId = if (adminGroup != null) {
+            adminGroup.id!!
+        } else {
+            // Create the admin group if it doesn't exist
+            val adminGroupDto = GroupCreateDto(
+                name = adminGroupName,
+                parentGroupId = tenant.id
+            )
+            val createdGroup = groupService.createGroup(adminGroupDto)
+            createdGroup.id!!
+        }
+        
+        // Add the TENANT_ADMIN role to the user if they don't have it
+        val userRoles = keycloakUserFacade.getUserRoles(assignment.userId)
+        val hasTenantAdminRole = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        if (!hasTenantAdminRole) {
+            val tenantAdminRoleId = keycloakRoleFacade.getRoles(RoleConstants.ROLE_TENANT_ADMIN, 0, 1)
+                .firstOrNull()?.id
+                ?: throw IllegalStateException("TENANT_ADMIN role not found")
+            
+            keycloakRoleFacade.addRolesToUser(assignment.userId, listOf(tenantAdminRoleId))
+        }
+        
+        // Add the user to the tenant admin group
+        keycloakUserFacade.addUserToGroup(assignment.userId, adminGroupId)
+        
+        // Update the cache
+        tenantAdminCache.computeIfAbsent(assignment.userId) { mutableListOf() }
+            .add(assignment.tenantId)
+        
+        return TenantAdminDto(
+            userId = assignment.userId,
+            username = user.username,
+            tenantId = assignment.tenantId,
+            tenantName = tenant.name
+        )
+    }
+    
+    /**
+     * Removes a user as an admin for a specific tenant.
+     * 
+     * @param userId The ID of the user
+     * @param tenantId The ID of the tenant
+     */
+    fun removeTenantAdmin(userId: String, tenantId: String) {
+        val tenant = getTenant(tenantId)
+        
+        // Find the tenant admin group
+        val adminGroupName = "${tenant.name}${TENANT_ADMIN_GROUP_SUFFIX}"
+        val adminGroup = tenant.subGroups.find { it.name == adminGroupName }
+            ?: return // No admin group, nothing to do
+        
+        // Remove the user from the tenant admin group
+        keycloakUserFacade.removeUserFromGroup(userId, adminGroup.id!!)
+        
+        // Update the cache
+        tenantAdminCache[userId]?.remove(tenantId)
+        
+        // Check if the user is still an admin for any tenant
+        val userGroups = keycloakUserFacade.getUserGroups(userId)
+        val isStillTenantAdmin = userGroups.any { group ->
+            group.name.endsWith(TENANT_ADMIN_GROUP_SUFFIX)
+        }
+        
+        // If not, remove the TENANT_ADMIN role
+        if (!isStillTenantAdmin) {
+            val tenantAdminRoleId = keycloakRoleFacade.getRoles(RoleConstants.ROLE_TENANT_ADMIN, 0, 1)
+                .firstOrNull()?.id
+                ?: return
+            
+            keycloakRoleFacade.removeRolesFromUser(userId, listOf(tenantAdminRoleId))
+        }
+    }
+    
+    /**
+     * Gets all tenant admins for a specific tenant.
+     * 
+     * @param tenantId The ID of the tenant
+     * @return List of users who are admins for the tenant
+     */
+    fun getTenantAdmins(tenantId: String): TenantAdminsResponseDto {
+        val tenant = getTenant(tenantId)
+        
+        // Find the tenant admin group
+        val adminGroupName = "${tenant.name}${TENANT_ADMIN_GROUP_SUFFIX}"
+        val adminGroup = tenant.subGroups.find { it.name == adminGroupName }
+        
+        val admins = if (adminGroup != null) {
+            keycloakGroupFacade.getGroupMembers(adminGroup.id!!)
+                .map { user ->
+                    UserDto(
+                        id = user.id,
+                        username = user.username,
+                        firstName = user.firstName,
+                        lastName = user.lastName,
+                        email = user.email,
+                        enabled = user.isEnabled,
+                        isTenantAdmin = true
+                    )
+                }
+        } else {
+            emptyList()
+        }
+        
+        return TenantAdminsResponseDto(
+            tenantId = tenantId,
+            tenantName = tenant.name,
+            admins = admins
+        )
+    }
+    
+    /**
+     * Gets all tenants for which a user is an admin.
+     * 
+     * @param userId The ID of the user
+     * @return List of tenants the user is an admin for
+     */
+    fun getUserTenants(userId: String): AdminTenantsResponseDto {
+        val user = keycloakUserFacade.getUser(userId)
+        val userGroups = keycloakUserFacade.getUserGroups(userId)
+        
+        // Find all admin groups the user belongs to
+        val adminGroups = userGroups.filter { group ->
+            group.name.endsWith(TENANT_ADMIN_GROUP_SUFFIX)
+        }
+        
+        // For each admin group, find the parent tenant
+        val tenants = adminGroups.mapNotNull { adminGroup ->
+            val tenantName = adminGroup.name.removeSuffix(TENANT_ADMIN_GROUP_SUFFIX)
+            val tenant = getTenants().find { it.name == tenantName }
+            
+            tenant?.let {
+                TenantDto(
+                    id = it.id!!,
+                    name = it.name,
+                    displayName = it.tenantName ?: it.name,
+                    permissionGroups = it.subGroups
+                )
+            }
+        }
+        
+        return AdminTenantsResponseDto(
+            userId = userId,
+            username = user.username,
+            tenants = tenants
+        )
+    }
+    
+    /**
+     * Checks if a user is an admin for a specific tenant.
+     * 
+     * @param userId The ID of the user
+     * @param tenantId The ID of the tenant
+     * @return true if the user is an admin for the tenant, false otherwise
+     */
+    fun isUserTenantAdmin(userId: String, tenantId: String): Boolean {
+        // Check the cache first
+        val cachedTenants = tenantAdminCache[userId]
+        if (cachedTenants != null) {
+            return cachedTenants.contains(tenantId)
+        }
+        
+        // Cache miss, check from Keycloak
+        val tenant = getTenant(tenantId)
+        val userGroups = keycloakUserFacade.getUserGroups(userId)
+        
+        val adminGroupName = "${tenant.name}${TENANT_ADMIN_GROUP_SUFFIX}"
+        val isAdmin = userGroups.any { it.name == adminGroupName }
+        
+        // Update the cache
+        if (isAdmin) {
+            tenantAdminCache.computeIfAbsent(userId) { mutableListOf() }
+                .add(tenantId)
+        }
+        
+        return isAdmin
+    }
+    
+    /**
+     * Gets all tenants that the current user has access to.
+     * For system admins, this returns all tenants.
+     * For tenant admins, this returns only the tenants they are admins for.
+     * 
+     * @param userId The ID of the current user
+     * @return List of accessible tenants
+     */
+    fun getAccessibleTenants(userId: String): List<GroupDto> {
+        val userRoles = keycloakUserFacade.getUserRoles(userId)
+        val isSystemAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+        
+        if (isSystemAdmin) {
+            return getTenants()
+        }
+        
+        val isTenantAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        if (isTenantAdmin) {
+            val userGroups = keycloakUserFacade.getUserGroups(userId)
+            
+            // Find all admin groups the user belongs to
+            val adminGroups = userGroups.filter { group ->
+                group.name.endsWith(TENANT_ADMIN_GROUP_SUFFIX)
+            }
+            
+            // For each admin group, find the parent tenant
+            return adminGroups.mapNotNull { adminGroup ->
+                val tenantName = adminGroup.name.removeSuffix(TENANT_ADMIN_GROUP_SUFFIX)
+                getTenants().find { it.name == tenantName }
+            }
+        }
+        
+        return emptyList()
     }
 }

@@ -1,5 +1,6 @@
 package com.example.keycloak_wrapper.util
 
+import com.example.keycloak_wrapper.config.RoleConstants
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.stereotype.Component
@@ -108,5 +109,34 @@ class SecurityContextHelper {
         } else {
             true
         }
+    }
+    
+    /**
+     * Checks if the current user is a tenant admin.
+     * 
+     * @return true if the user has the TENANT_ADMIN role, false otherwise
+     */
+    fun isTenantAdmin(): Boolean {
+        return hasRole(RoleConstants.ROLE_TENANT_ADMIN)
+    }
+    
+    /**
+     * Checks if the current user is a system admin.
+     * 
+     * @return true if the user has the ADMIN role, false otherwise
+     */
+    fun isSystemAdmin(): Boolean {
+        return hasRole(RoleConstants.ROLE_ADMIN)
+    }
+    
+    /**
+     * Gets the tenant context from the token claims.
+     * This can be used to determine which tenant the user is currently operating in.
+     * 
+     * @return The tenant ID if present, null otherwise
+     */
+    fun getCurrentTenantContext(): String? {
+        val claims = getTokenClaims()
+        return claims["tenant_id"] as? String
     }
 }
