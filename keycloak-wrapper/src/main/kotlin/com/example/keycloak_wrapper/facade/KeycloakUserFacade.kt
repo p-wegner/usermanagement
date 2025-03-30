@@ -190,4 +190,28 @@ class KeycloakUserFacade(
             throw KeycloakException("Failed to count users", e)
         }
     }
+
+    fun getUserGroups(userId: String): List<GroupRepresentation> {
+        return try {
+            keycloak.realm(realm).users().get(userId).groups()
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to get groups for user with id: $userId", e)
+        }
+    }
+
+    fun addUserToGroup(userId: String, groupId: String) {
+        try {
+            keycloak.realm(realm).users().get(userId).joinGroup(groupId)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to add user with id: $userId to group with id: $groupId", e)
+        }
+    }
+
+    fun removeUserFromGroup(userId: String, groupId: String) {
+        try {
+            keycloak.realm(realm).users().get(userId).leaveGroup(groupId)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to remove user with id: $userId from group with id: $groupId", e)
+        }
+    }
 }

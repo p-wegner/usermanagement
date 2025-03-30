@@ -239,4 +239,12 @@ class KeycloakGroupFacade(
                 }
             }
     }
+    
+    fun getGroupMembers(groupId: String): List<org.keycloak.representations.idm.UserRepresentation> {
+        try {
+            return keycloak.realm(realm).groups().group(groupId).members()
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to get members for group with id: $groupId", e)
+        }
+    }
 }

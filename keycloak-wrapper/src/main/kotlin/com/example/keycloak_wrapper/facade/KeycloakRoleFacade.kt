@@ -24,6 +24,15 @@ class KeycloakRoleFacade(
             throw KeycloakException("Failed to fetch roles", e)
         }
     }
+    
+    fun getRoles(name: String, first: Int, max: Int): List<RoleRepresentation> {
+        return try {
+            val roles = keycloak.realm(realm).roles()
+            roles.list(name, first, max)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to fetch roles with name: $name", e)
+        }
+    }
 
     fun getRole(id: String): RoleRepresentation {
         return try {
@@ -165,6 +174,24 @@ class KeycloakRoleFacade(
             keycloak.realm(realm).groups().group(groupId).roles().clientLevel(clientId).remove(roles)
         } catch (e: Exception) {
             throw KeycloakException("Failed to remove client roles from group with id: $groupId and client id: $clientId", e)
+        }
+    }
+    
+    fun addRolesToUser(userId: String, roleIds: List<String>) {
+        try {
+            val roles = roleIds.map { keycloak.realm(realm).rolesById().getRole(it) }
+            keycloak.realm(realm).users().get(userId).roles().realmLevel().add(roles)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to add roles to user with id: $userId", e)
+        }
+    }
+    
+    fun removeRolesFromUser(userId: String, roleIds: List<String>) {
+        try {
+            val roles = roleIds.map { keycloak.realm(realm).rolesById().getRole(it) }
+            keycloak.realm(realm).users().get(userId).roles().realmLevel().remove(roles)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to remove roles from user with id: $userId", e)
         }
     }
 }
