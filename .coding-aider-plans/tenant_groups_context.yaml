@@ -12,3 +12,7 @@ files:
   readOnly: false
 - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/facade/KeycloakRoleFacade.kt
   readOnly: false
+- path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/TenantService.kt
+  readOnly: false
+- path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/listener/RoleEventListener.kt
+  readOnly: false

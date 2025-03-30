@@ -2,13 +2,18 @@ package com.example.keycloak_wrapper.service
 
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.facade.KeycloakRoleFacade
+import com.example.keycloak_wrapper.listener.RoleCreatedEvent
+import com.example.keycloak_wrapper.listener.RoleDeletedEvent
+import com.example.keycloak_wrapper.listener.RoleUpdatedEvent
 import com.example.keycloak_wrapper.mapper.RoleMapper
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 
 @Service
 class RoleService(
     private val keycloakRoleFacade: KeycloakRoleFacade,
-    private val roleMapper: RoleMapper
+    private val roleMapper: RoleMapper,
+    private val applicationEventPublisher: ApplicationEventPublisher
 ) {
     fun getRoles(searchDto: RoleSearchDto): List<RoleDto> {
         val roles = mutableListOf<RoleDto>()
@@ -43,18 +48,36 @@ class RoleService(
     fun createRole(roleDto: RoleCreateDto): RoleDto {
         val roleRepresentation = roleMapper.toRepresentation(roleDto)
         val createdRole = keycloakRoleFacade.createRole(roleRepresentation)
-        return roleMapper.toDto(createdRole)
+        val roleDto = roleMapper.toDto(createdRole)
+        
+        // Publish role created event
+        applicationEventPublisher.publishEvent(RoleCreatedEvent(roleDto))
+        
+        return roleDto
     }
 
     fun updateRole(id: String, roleDto: RoleUpdateDto): RoleDto {
         val existingRole = keycloakRoleFacade.getRole(id)
+        val originalRoleDto = roleMapper.toDto(existingRole)
+        
         val updatedRepresentation = roleMapper.updateRepresentation(existingRole, roleDto)
         val updatedRole = keycloakRoleFacade.updateRole(id, updatedRepresentation)
-        return roleMapper.toDto(updatedRole)
+        val updatedRoleDto = roleMapper.toDto(updatedRole)
+        
+        // Publish role updated event
+        applicationEventPublisher.publishEvent(RoleUpdatedEvent(originalRoleDto, updatedRoleDto))
+        
+        return updatedRoleDto
     }
 
     fun deleteRole(id: String) {
+        val role = keycloakRoleFacade.getRole(id)
+        val roleDto = roleMapper.toDto(role)
+        
         keycloakRoleFacade.deleteRole(id)
+        
+        // Publish role deleted event
+        applicationEventPublisher.publishEvent(RoleDeletedEvent(roleDto))
     }
 
     fun addCompositeRoles(roleId: String, compositeRoleIds: List<String>): RoleDto {
