@@ -10,3 +10,4 @@
 /um/.gradle/npm/*
 .qodo
 clean-git-images.ps1
+.idea/jarRepositories.xml

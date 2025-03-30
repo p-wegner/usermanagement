@@ -1,19 +1,19 @@
 package com.example.keycloak_wrapper.controller
 
+import com.example.keycloak_wrapper.config.RoleConstants.ROLE_ADMIN
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.service.GroupService
 import jakarta.annotation.security.RolesAllowed
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/groups")
-@PreAuthorize("isAuthenticated()")
+@RolesAllowed("AUTHENTICATED")
 class GroupController(
     private val groupService: GroupService
 ) {
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER', 'GROUP_VIEWER')")
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping
     fun getGroups(
         @RequestParam(defaultValue = "0") page: Int,
@@ -25,28 +25,21 @@ class GroupController(
         return ResponseEntity.ok(ApiResponse(success = true, data = groups))
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER', 'GROUP_VIEWER')")
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{id}")
     fun getGroup(@PathVariable id: String): ResponseEntity<ApiResponse<GroupDto>> {
         val group = groupService.getGroup(id)
         return group.responseEntity()
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER')")
+    @RolesAllowed(ROLE_ADMIN)
     @PostMapping
     fun createGroup(@RequestBody group: GroupCreateDto): ResponseEntity<ApiResponse<GroupDto>> {
         val createdGroup = groupService.createGroup(group)
         return createdGroup.responseEntity()
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/tenants")
-    fun createTenant(@RequestBody group: GroupCreateDto): ResponseEntity<ApiResponse<GroupDto>> {
-        val createdTenant = groupService.createGroup(group)
-        return createdTenant.responseEntity()
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER')")
+    @RolesAllowed(ROLE_ADMIN)
     @PutMapping("/{id}")
     fun updateGroup(
         @PathVariable id: String,
@@ -56,14 +49,14 @@ class GroupController(
         return updatedGroup.responseEntity()
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @DeleteMapping("/{id}")
     fun deleteGroup(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
         groupService.deleteGroup(id)
         return ResponseEntity.ok(ApiResponse(success = true))
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER')")
+    @RolesAllowed(ROLE_ADMIN)
     @PutMapping("/{id}/roles")
     fun updateGroupRoles(
         @PathVariable id: String,
@@ -73,7 +66,7 @@ class GroupController(
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedGroup))
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'GROUP_MANAGER', 'GROUP_VIEWER')")
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{id}/roles")
     fun getGroupRoles(@PathVariable id: String): ResponseEntity<ApiResponse<RoleAssignmentDto>> {
         val roles = groupService.getGroupRoles(id)

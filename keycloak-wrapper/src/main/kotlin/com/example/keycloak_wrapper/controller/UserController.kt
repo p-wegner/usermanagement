@@ -1,9 +1,6 @@
 package com.example.keycloak_wrapper.controller
 
-import com.example.keycloak_wrapper.config.RoleConstants.AUTHENTICATED
 import com.example.keycloak_wrapper.config.RoleConstants.ROLE_ADMIN
-import com.example.keycloak_wrapper.config.RoleConstants.USER_MANAGEMENT_ROLES
-import com.example.keycloak_wrapper.config.RoleConstants.USER_EDIT_ROLES
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.service.UserService
 import io.swagger.v3.oas.annotations.Operation
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "Users", description = "User management endpoints")
-@RolesAllowed(*AUTHENTICATED)
 class UserController(
     private val userService: UserService
 ) {
@@ -24,7 +20,7 @@ class UserController(
         summary = "Get users",
         description = "Retrieve a paginated list of users with optional search"
     )
-    @RolesAllowed(*USER_MANAGEMENT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping
     fun getUsers(
         @RequestParam(defaultValue = "0") page: Int,
@@ -40,21 +36,21 @@ class UserController(
         return ResponseEntity.ok(ApiResponse(success = true, data = response))
     }
 
-    @RolesAllowed(*USER_MANAGEMENT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{id}")
     fun getUser(@PathVariable id: String): ResponseEntity<ApiResponse<UserDto>> {
         val user = userService.getUser(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = user))
     }
 
-    @RolesAllowed(*USER_EDIT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @PostMapping
     fun createUser(@RequestBody user: UserCreateDto): ResponseEntity<ApiResponse<UserDto>> {
         val createdUser = userService.createUser(user)
         return ResponseEntity.ok(ApiResponse(success = true, data = createdUser))
     }
 
-    @RolesAllowed(*USER_EDIT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @PutMapping("/{id}")
     fun updateUser(
         @PathVariable id: String,
@@ -71,7 +67,7 @@ class UserController(
         return ResponseEntity.ok(ApiResponse(success = true))
     }
 
-    @RolesAllowed(*USER_EDIT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @PutMapping("/{id}/roles")
     fun updateUserRoles(
         @PathVariable id: String,
@@ -82,7 +78,7 @@ class UserController(
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedUser))
     }
 
-    @RolesAllowed(*USER_MANAGEMENT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{id}/roles")
     fun getUserRoles(@PathVariable id: String): ResponseEntity<ApiResponse<RoleAssignmentDto>> {
         val roles = userService.getUserRoles(id)

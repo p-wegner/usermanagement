@@ -1,8 +1,6 @@
 package com.example.keycloak_wrapper.controller
 
-import com.example.keycloak_wrapper.config.RoleConstants.AUTHENTICATED
 import com.example.keycloak_wrapper.config.RoleConstants.ROLE_ADMIN
-import com.example.keycloak_wrapper.config.RoleConstants.ROLE_MANAGEMENT_ROLES
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.service.RoleService
 import jakarta.annotation.security.RolesAllowed
@@ -11,11 +9,10 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/roles")
-@RolesAllowed(*AUTHENTICATED)
 class RoleController(
     private val roleService: RoleService
 ) {
-    @RolesAllowed(*ROLE_MANAGEMENT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping
     fun getRoles(
         @RequestParam(defaultValue = "0") page: Int,
@@ -37,7 +34,7 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }
 
-    @RolesAllowed(*ROLE_MANAGEMENT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{id}")
     fun getRole(@PathVariable id: String): ResponseEntity<ApiResponse<RoleDto>> {
         val role = roleService.getRole(id)
@@ -97,7 +94,7 @@ class RoleController(
     
     // Group role management endpoints
     
-    @RolesAllowed(*ROLE_MANAGEMENT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/groups/{groupId}")
     fun getGroupRoles(@PathVariable groupId: String): ResponseEntity<ApiResponse<List<RoleDto>>> {
         val roles = roleService.getGroupRoles(groupId)
@@ -124,7 +121,7 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true))
     }
     
-    @RolesAllowed(*ROLE_MANAGEMENT_ROLES)
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/groups/{groupId}/clients/{clientId}")
     fun getGroupClientRoles(
         @PathVariable groupId: String,
