@@ -14,9 +14,49 @@ class GroupService(
         val groups = keycloakGroupFacade.getGroups(
             search = searchDto.search,
             first = searchDto.page * searchDto.size,
-            max = searchDto.size
+            max = searchDto.size,
+            tenantsOnly = searchDto.tenantsOnly
         )
         return groups.map { groupMapper.toDto(it) }
+    }
+
+    fun createTenant(tenantCreateDto: TenantCreateDto): TenantDto {
+        val tenantGroup = keycloakGroupFacade.createTenant(tenantCreateDto)
+        return mapToTenantDto(tenantGroup)
+    }
+
+    fun getTenants(searchDto: GroupSearchDto): List<TenantDto> {
+        val tenantGroups = keycloakGroupFacade.getGroups(
+            search = searchDto.search,
+            first = searchDto.page * searchDto.size,
+            max = searchDto.size,
+            tenantsOnly = true
+        )
+        return tenantGroups.map { mapToTenantDto(it) }
+    }
+
+    fun getTenant(id: String): TenantDto {
+        val tenantGroup = keycloakGroupFacade.getGroup(id)
+        return mapToTenantDto(tenantGroup)
+    }
+
+    fun updateTenant(id: String, tenantUpdateDto: TenantUpdateDto): TenantDto {
+        val updatedTenantGroup = keycloakGroupFacade.updateTenant(id, tenantUpdateDto)
+        return mapToTenantDto(updatedTenantGroup)
+    }
+
+    fun deleteTenant(id: String) {
+        keycloakGroupFacade.deleteTenant(id)
+    }
+
+    private fun mapToTenantDto(groupRepresentation: GroupRepresentation): TenantDto {
+        // Implement mapping logic from GroupRepresentation to TenantDto
+        return TenantDto(
+            id = groupRepresentation.id,
+            name = groupRepresentation.name,
+            displayName = groupRepresentation.attributes?.get("displayName")?.firstOrNull() ?: groupRepresentation.name,
+            permissionGroups = groupRepresentation.subGroups.map { groupMapper.toDto(it) }
+        )
     }
 
     fun getGroup(id: String): GroupDto {

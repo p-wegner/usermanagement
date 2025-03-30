@@ -14,6 +14,48 @@ class GroupController(
     private val groupService: GroupService
 ) {
     @RolesAllowed(ROLE_ADMIN)
+    @PostMapping("/tenant")
+    fun createTenant(@RequestBody tenantCreateDto: TenantCreateDto): ResponseEntity<ApiResponse<TenantDto>> {
+        val createdTenant = groupService.createTenant(tenantCreateDto)
+        return ResponseEntity.ok(ApiResponse(success = true, data = createdTenant))
+    }
+
+    @RolesAllowed(ROLE_ADMIN)
+    @GetMapping("/tenant")
+    fun getTenants(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(required = false) search: String?
+    ): ResponseEntity<ApiResponse<List<TenantDto>>> {
+        val searchDto = GroupSearchDto(page, size, search, tenantsOnly = true)
+        val tenants = groupService.getTenants(searchDto)
+        return ResponseEntity.ok(ApiResponse(success = true, data = tenants))
+    }
+
+    @RolesAllowed(ROLE_ADMIN)
+    @GetMapping("/tenant/{id}")
+    fun getTenant(@PathVariable id: String): ResponseEntity<ApiResponse<TenantDto>> {
+        val tenant = groupService.getTenant(id)
+        return ResponseEntity.ok(ApiResponse(success = true, data = tenant))
+    }
+
+    @RolesAllowed(ROLE_ADMIN)
+    @PutMapping("/tenant/{id}")
+    fun updateTenant(
+        @PathVariable id: String,
+        @RequestBody tenantUpdateDto: TenantUpdateDto
+    ): ResponseEntity<ApiResponse<TenantDto>> {
+        val updatedTenant = groupService.updateTenant(id, tenantUpdateDto)
+        return ResponseEntity.ok(ApiResponse(success = true, data = updatedTenant))
+    }
+
+    @RolesAllowed(ROLE_ADMIN)
+    @DeleteMapping("/tenant/{id}")
+    fun deleteTenant(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
+        groupService.deleteTenant(id)
+        return ResponseEntity.ok(ApiResponse(success = true))
+    }
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping
     fun getGroups(
         @RequestParam(defaultValue = "0") page: Int,

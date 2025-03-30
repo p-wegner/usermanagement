@@ -17,11 +17,76 @@ class KeycloakGroupFacade(
     @Value("\${keycloak.realm}")
     private val realm: String
 ) {
-    fun getGroups(search: String?, first: Int, max: Int): List<GroupRepresentation> {
+    fun getGroups(
+        search: String?, 
+        first: Int, 
+        max: Int, 
+        tenantsOnly: Boolean = false
+    ): List<GroupRepresentation> {
         return try {
-            keycloak.realm(realm).groups().groups(search, first, max)
+            val groups = keycloak.realm(realm).groups().groups(search, first, max)
+            if (tenantsOnly) {
+                groups.filter { it.attributes?.get("isTenant")?.firstOrNull() == "true" }
+            } else {
+                groups
+            }
         } catch (e: Exception) {
             throw KeycloakException("Failed to fetch groups", e)
+        }
+    }
+
+    fun createTenant(tenantCreateDto: TenantCreateDto): GroupRepresentation {
+        try {
+            val tenantGroup = GroupRepresentation().apply {
+                name = "tenant_${tenantCreateDto.name}"
+                attributes = mutableMapOf(
+                    "isTenant" to listOf("true"),
+                    "displayName" to listOf(tenantCreateDto.displayName)
+                )
+            }
+            val response = keycloak.realm(realm).groups().add(tenantGroup)
+            
+            if (response.status != Response.Status.CREATED.statusCode) {
+                val errorBody = response.readEntity(String::class.java)
+                throw KeycloakException("Failed to create tenant: ${response.status} - $errorBody")
+            }
+
+            val locationHeader = response.location.toString()
+            val tenantId = locationHeader.substring(locationHeader.lastIndexOf("/") + 1)
+            return getGroup(tenantId)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to create tenant", e)
+        }
+    }
+
+    fun updateTenant(id: String, tenantUpdateDto: TenantUpdateDto): GroupRepresentation {
+        try {
+            val groupResource = keycloak.realm(realm).groups().group(id)
+            val existingGroup = groupResource.toRepresentation()
+            
+            existingGroup.attributes = existingGroup.attributes ?: mutableMapOf()
+            existingGroup.attributes["displayName"] = listOf(tenantUpdateDto.displayName)
+            
+            groupResource.update(existingGroup)
+            return getGroup(id)
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to update tenant", e)
+        }
+    }
+
+    fun deleteTenant(id: String) {
+        try {
+            val groupResource = keycloak.realm(realm).groups().group(id)
+            val group = groupResource.toRepresentation()
+            
+            // Ensure this is actually a tenant group
+            if (group.attributes?.get("isTenant")?.firstOrNull() != "true") {
+                throw KeycloakException("Group is not a tenant")
+            }
+            
+            groupResource.remove()
+        } catch (e: Exception) {
+            throw KeycloakException("Failed to delete tenant", e)
         }
     }
 
