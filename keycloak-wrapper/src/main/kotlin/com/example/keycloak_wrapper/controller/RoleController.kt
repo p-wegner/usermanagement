@@ -1,18 +1,21 @@
 package com.example.keycloak_wrapper.controller
 
+import com.example.keycloak_wrapper.config.RoleConstants.AUTHENTICATED
+import com.example.keycloak_wrapper.config.RoleConstants.ROLE_ADMIN
+import com.example.keycloak_wrapper.config.RoleConstants.ROLE_MANAGEMENT_ROLES
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.service.RoleService
-import org.springframework.security.access.prepost.PreAuthorize
+import jakarta.annotation.security.RolesAllowed
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/roles")
-@PreAuthorize("isAuthenticated()")
+@RolesAllowed(*AUTHENTICATED)
 class RoleController(
     private val roleService: RoleService
 ) {
-    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
+    @RolesAllowed(*ROLE_MANAGEMENT_ROLES)
     @GetMapping
     fun getRoles(
         @RequestParam(defaultValue = "0") page: Int,
@@ -34,21 +37,21 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
+    @RolesAllowed(*ROLE_MANAGEMENT_ROLES)
     @GetMapping("/{id}")
     fun getRole(@PathVariable id: String): ResponseEntity<ApiResponse<RoleDto>> {
         val role = roleService.getRole(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = role))
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @PostMapping
     fun createRole(@RequestBody role: RoleCreateDto): ResponseEntity<ApiResponse<RoleDto>> {
         val createdRole = roleService.createRole(role)
         return ResponseEntity.ok(ApiResponse(success = true, data = createdRole))
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @PutMapping("/{id}")
     fun updateRole(
         @PathVariable id: String,
@@ -58,14 +61,14 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @DeleteMapping("/{id}")
     fun deleteRole(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
         roleService.deleteRole(id)
         return ResponseEntity.ok(ApiResponse(success = true))
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @PostMapping("/{roleId}/composites")
     fun addCompositeRoles(
         @PathVariable roleId: String,
@@ -75,7 +78,7 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @DeleteMapping("/{roleId}/composites")
     fun removeCompositeRoles(
         @PathVariable roleId: String,
@@ -85,7 +88,7 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{roleId}/composites")
     fun getCompositeRoles(@PathVariable roleId: String): ResponseEntity<ApiResponse<List<RoleDto>>> {
         val compositeRoles = roleService.getCompositeRoles(roleId)
@@ -94,14 +97,14 @@ class RoleController(
     
     // Group role management endpoints
     
-    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
+    @RolesAllowed(*ROLE_MANAGEMENT_ROLES)
     @GetMapping("/groups/{groupId}")
     fun getGroupRoles(@PathVariable groupId: String): ResponseEntity<ApiResponse<List<RoleDto>>> {
         val roles = roleService.getGroupRoles(groupId)
         return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }
     
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @PostMapping("/groups/{groupId}")
     fun addRolesToGroup(
         @PathVariable groupId: String,
@@ -111,7 +114,7 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true))
     }
     
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @DeleteMapping("/groups/{groupId}")
     fun removeRolesFromGroup(
         @PathVariable groupId: String,
@@ -121,7 +124,7 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true))
     }
     
-    @PreAuthorize("hasAnyRole('ADMIN', 'ROLE_VIEWER')")
+    @RolesAllowed(*ROLE_MANAGEMENT_ROLES)
     @GetMapping("/groups/{groupId}/clients/{clientId}")
     fun getGroupClientRoles(
         @PathVariable groupId: String,
@@ -131,7 +134,7 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }
     
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @PostMapping("/groups/{groupId}/clients/{clientId}")
     fun addClientRolesToGroup(
         @PathVariable groupId: String,
@@ -142,7 +145,7 @@ class RoleController(
         return ResponseEntity.ok(ApiResponse(success = true))
     }
     
-    @PreAuthorize("hasRole('ADMIN')")
+    @RolesAllowed(ROLE_ADMIN)
     @DeleteMapping("/groups/{groupId}/clients/{clientId}")
     fun removeClientRolesFromGroup(
         @PathVariable groupId: String,
