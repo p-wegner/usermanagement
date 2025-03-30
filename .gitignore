@@ -9,3 +9,4 @@
 /um/.gradle/nodejs/*
 /um/.gradle/npm/*
 .qodo
+clean-git-images.ps1
