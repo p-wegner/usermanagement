@@ -3,6 +3,8 @@ package com.example.keycloak_wrapper.facade
 import com.example.keycloak_wrapper.dto.ClientRoleDto
 import com.example.keycloak_wrapper.dto.RoleAssignmentDto
 import com.example.keycloak_wrapper.dto.RoleDto
+import com.example.keycloak_wrapper.dto.TenantCreateDto
+import com.example.keycloak_wrapper.dto.TenantUpdateDto
 import com.example.keycloak_wrapper.exception.KeycloakException
 import jakarta.ws.rs.core.Response
 import org.keycloak.admin.client.Keycloak
