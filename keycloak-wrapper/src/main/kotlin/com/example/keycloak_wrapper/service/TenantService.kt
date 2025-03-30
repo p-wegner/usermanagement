@@ -4,7 +4,6 @@ import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.facade.KeycloakGroupFacade
 import com.example.keycloak_wrapper.facade.KeycloakRoleFacade
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class TenantService(
@@ -23,7 +22,6 @@ class TenantService(
      * A tenant is represented as a top-level group with the name "tenant_{name}".
      * For each client role, a subgroup is created within the tenant group.
      */
-    @Transactional
     fun createTenant(tenantCreateDto: TenantCreateDto): GroupDto {
         // Validate tenant name
         if (tenantCreateDto.name.isBlank()) {
@@ -60,7 +58,6 @@ class TenantService(
      * Updates an existing tenant with the given ID.
      * Only the display name can be updated.
      */
-    @Transactional
     fun updateTenant(tenantId: String, tenantUpdateDto: TenantUpdateDto): GroupDto {
         val group = groupService.getGroup(tenantId)
         if (!group.isTenant) {
@@ -77,7 +74,6 @@ class TenantService(
      * Deletes a tenant with the given ID.
      * This will delete the tenant group and all its subgroups.
      */
-    @Transactional
     fun deleteTenant(tenantId: String) {
         val group = groupService.getGroup(tenantId)
         if (!group.isTenant) {
@@ -125,7 +121,6 @@ class TenantService(
      * Synchronizes tenant subgroups with client roles.
      * This will create subgroups for new client roles and remove subgroups for deleted client roles.
      */
-    @Transactional
     fun syncTenantsWithRoles() {
         val tenants = getTenants()
         val roleSearchDto = RoleSearchDto(includeRealmRoles = true)
