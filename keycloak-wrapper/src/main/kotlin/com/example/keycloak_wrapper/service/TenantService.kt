@@ -47,7 +47,7 @@ class TenantService(
         val tenantGroup = groupService.createGroup(groupCreateDto)
 
         // Create subgroups for each client role
-        val roleSearchDto = RoleSearchDto(includeRealmRoles = true)
+        val roleSearchDto = RoleSearchDto(includeRealmRoles = false)
         val clientRoles = roleService.getRoles(roleSearchDto)
         createRoleSubgroups(tenantGroup.id!!, clientRoles)
 
