@@ -3,6 +3,7 @@ package com.example.keycloak_wrapper.service
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.facade.KeycloakGroupFacade
 import com.example.keycloak_wrapper.mapper.GroupMapper
+import org.keycloak.representations.idm.GroupRepresentation
 import org.springframework.stereotype.Service
 
 @Service

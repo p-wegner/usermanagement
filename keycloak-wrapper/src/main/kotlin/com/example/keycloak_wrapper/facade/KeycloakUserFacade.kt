@@ -7,6 +7,7 @@ import com.example.keycloak_wrapper.exception.KeycloakException
 import jakarta.ws.rs.core.Response
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.resource.UserResource
+import org.keycloak.representations.idm.GroupRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component

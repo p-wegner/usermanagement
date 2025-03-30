@@ -30,6 +30,22 @@ Currently, the system lacks a structured way to manage tenant-specific permissio
   - Client role additions/removals
   - Group structure maintenance
   - Permission inheritance
+## Tenant Admins
+Allowing users to be assigned as administrators for specific tenants. Key changes include:
+
+- Added TENANT_ADMIN role to RoleConstants
+- Created TenantAdminDto and related DTOs for tenant admin management
+- Updated UserDto to include tenant admin information
+- Implemented TenantSecurityEvaluator for tenant-specific authorization
+- Added methods to TenantService for managing tenant admins
+- Created TenantAdminController with endpoints for tenant admin operations
+- Updated UserService and SecurityContextHelper with tenant admin-related methods
+
+The implementation ensures that:
+- Tenant admins can only access and manage their assigned tenants
+- System admins have full access to all tenants
+- Tenant admin assignments are tracked and can be managed
+- Proper role and group management is implemented for tenant admins
 
 ## References
 - [GroupDto](../keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/GroupDto.kt)
