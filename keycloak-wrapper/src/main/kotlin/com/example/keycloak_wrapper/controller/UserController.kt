@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "Users", description = "User management endpoints")
 class UserController(
     private val userService: UserService,
-    private val securityContextHelper: SecurityContextHelper
+    private val securityContextHelper: SecurityContextHelper,
+    private val tenantSecurityEvaluator: TenantSecurityEvaluator
 ) {
 
     @Operation(
@@ -49,44 +50,58 @@ class UserController(
         return ResponseEntity.ok(ApiResponse(success = true, data = user))
     }
 
-    @RolesAllowed(ROLE_ADMIN)
+    @RolesAllowed(ROLE_ADMIN, ROLE_TENANT_ADMIN)
     @PostMapping
     fun createUser(@RequestBody user: UserCreateDto): ResponseEntity<ApiResponse<UserDto>> {
-        val createdUser = userService.createUser(user)
+        val currentUserId = securityContextHelper.getCurrentUserId()
+        val createdUser = userService.createUser(user, currentUserId)
         return ResponseEntity.ok(ApiResponse(success = true, data = createdUser))
     }
 
-    @RolesAllowed(ROLE_ADMIN)
+    @RolesAllowed(ROLE_ADMIN, ROLE_TENANT_ADMIN)
     @PutMapping("/{id}")
     fun updateUser(
         @PathVariable id: String,
         @RequestBody user: UserUpdateDto
     ): ResponseEntity<ApiResponse<UserDto>> {
+        // Verify access to the user
+        tenantSecurityEvaluator.verifyUserAccess(id)
+        
         val updatedUser = userService.updateUser(id, user)
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedUser))
     }
 
-    @RolesAllowed(ROLE_ADMIN)
+    @RolesAllowed(ROLE_ADMIN, ROLE_TENANT_ADMIN)
     @DeleteMapping("/{id}")
     fun deleteUser(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
+        // Verify access to the user
+        tenantSecurityEvaluator.verifyUserAccess(id)
+        
         userService.deleteUser(id)
         return ResponseEntity.ok(ApiResponse(success = true))
     }
 
-    @RolesAllowed(ROLE_ADMIN)
+    @RolesAllowed(ROLE_ADMIN, ROLE_TENANT_ADMIN)
     @PutMapping("/{id}/roles")
     fun updateUserRoles(
         @PathVariable id: String,
         @RequestBody roleAssignment: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<UserDto>> {
-        userService.updateUserRoles(id, roleAssignment)
+        // Verify access to the user
+        tenantSecurityEvaluator.verifyUserAccess(id)
+        
+        val currentUserId = securityContextHelper.getCurrentUserId()
+        userService.updateUserRoles(id, roleAssignment, currentUserId)
         val updatedUser = userService.getUser(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = updatedUser))
     }
 
-    @RolesAllowed(ROLE_ADMIN)
+    @RolesAllowed(ROLE_ADMIN, ROLE_TENANT_ADMIN)
     @GetMapping("/{id}/roles")
     fun getUserRoles(@PathVariable id: String): ResponseEntity<ApiResponse<RoleAssignmentDto>> {
+        // Verify access to the user
+        tenantSecurityEvaluator.verifyUserAccess(id)
+        
         val roles = userService.getUserRoles(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = roles))
     }

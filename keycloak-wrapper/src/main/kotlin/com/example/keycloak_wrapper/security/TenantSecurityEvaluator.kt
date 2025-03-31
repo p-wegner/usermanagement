@@ -186,6 +186,22 @@ class TenantSecurityEvaluator(
     }
     
     /**
+     * Verifies that the current user has access to the specified user.
+     * System admins have access to all users.
+     * Tenant admins only have access to users in their tenants.
+     * Regular users only have access to themselves.
+     *
+     * @param targetUserId The ID of the user to check access for
+     * @throws SecurityException if the current user doesn't have access to the user
+     */
+    fun verifyUserAccess(targetUserId: String) {
+        val currentUserId = securityContextHelper.getCurrentUserId()
+            ?: throw SecurityException("User not authenticated")
+            
+        verifyUserAccess(currentUserId, targetUserId)
+    }
+    
+    /**
      * Verifies that the current user has access to assign the specified roles.
      * Tenant admins can only assign roles within their tenant scope.
      * Throws SecurityException if access is denied.

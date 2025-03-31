@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service
 class UserService(
     private val keycloakUserFacade: KeycloakUserFacade,
     private val userMapper: UserMapper,
-    private val tenantService: TenantService? = null
+    private val tenantService: TenantService? = null,
+    private val securityContextHelper: SecurityContextHelper
 ) {
     fun getUsers(searchDto: UserSearchDto): Pair<List<UserDto>, Int> {
         val (users, total) = keycloakUserFacade.getUsers(
@@ -88,14 +89,56 @@ class UserService(
         return false
     }
 
-    fun createUser(userDto: UserCreateDto): UserDto {
+    fun createUser(userDto: UserCreateDto, currentUserId: String? = null): UserDto {
         val userRepresentation = userMapper.toRepresentation(userDto)
         val createdUser = keycloakUserFacade.createUser(userRepresentation)
+        
+        // If the current user is a tenant admin, add the new user to their tenant(s)
+        if (currentUserId != null && tenantService != null) {
+            val currentUserRoles = keycloakUserFacade.getUserRoles(currentUserId)
+            val isTenantAdmin = currentUserRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+            val isAdmin = currentUserRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+            
+            if (isTenantAdmin && !isAdmin) {
+                // Get the tenants this admin manages
+                val managedTenants = tenantService.getUserTenants(currentUserId).tenants
+                
+                // Add the new user to each tenant the admin manages
+                managedTenants.forEach { tenant ->
+                    // Add the user to the tenant group
+                    keycloakUserFacade.addUserToGroup(createdUser.id, tenant.id)
+                }
+            }
+        }
+        
         return userMapper.toDto(createdUser)
     }
 
     fun updateUser(id: String, userDto: UserUpdateDto): UserDto {
         val existingUser = keycloakUserFacade.getUser(id)
+        
+        // Ensure tenant admins can't change critical fields like realm roles
+        val currentUserId = securityContextHelper.getCurrentUserId()
+        if (currentUserId != null) {
+            val currentUserRoles = keycloakUserFacade.getUserRoles(currentUserId)
+            val isTenantAdmin = currentUserRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+            val isAdmin = currentUserRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+            
+            // If tenant admin but not system admin, restrict what can be updated
+            if (isTenantAdmin && !isAdmin && userDto.realmRoles != null) {
+                // Tenant admins can't modify system roles
+                val restrictedRoles = listOf(RoleConstants.ROLE_ADMIN, RoleConstants.ROLE_TENANT_ADMIN)
+                val safeRoles = userDto.realmRoles.filter { role -> !restrictedRoles.contains(role) }
+                
+                // Create a safe copy of the update DTO
+                val safeUserDto = userDto.copy(realmRoles = safeRoles)
+                val updatedRepresentation = userMapper.updateRepresentation(existingUser, safeUserDto)
+                val updatedUser = keycloakUserFacade.updateUser(id, updatedRepresentation)
+                return userMapper.toDto(updatedUser)
+            }
+        }
+        
+        // For system admins or updates without role changes
         val updatedRepresentation = userMapper.updateRepresentation(existingUser, userDto)
         val updatedUser = keycloakUserFacade.updateUser(id, updatedRepresentation)
         return userMapper.toDto(updatedUser)
@@ -105,7 +148,36 @@ class UserService(
         keycloakUserFacade.deleteUser(id)
     }
 
-    fun updateUserRoles(id: String, roleAssignment: RoleAssignmentDto) {
+    fun updateUserRoles(id: String, roleAssignment: RoleAssignmentDto, currentUserId: String? = null) {
+        // If the current user is a tenant admin, we need to restrict the roles they can assign
+        if (currentUserId != null && tenantService != null) {
+            val currentUserRoles = keycloakUserFacade.getUserRoles(currentUserId)
+            val isTenantAdmin = currentUserRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+            val isAdmin = currentUserRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+            
+            if (isTenantAdmin && !isAdmin) {
+                // Tenant admins can't assign system-level roles
+                val restrictedRoles = listOf(
+                    RoleConstants.ROLE_ADMIN,
+                    RoleConstants.ROLE_TENANT_ADMIN
+                )
+                
+                // Filter out restricted roles
+                val filteredRealmRoles = roleAssignment.realmRoles.filter { role ->
+                    !restrictedRoles.contains(role.name)
+                }
+                
+                // Create a new role assignment with the filtered roles
+                val filteredRoleAssignment = roleAssignment.copy(
+                    realmRoles = filteredRealmRoles
+                )
+                
+                keycloakUserFacade.updateUserRoles(id, filteredRoleAssignment)
+                return
+            }
+        }
+        
+        // For system admins, proceed with the original role assignment
         keycloakUserFacade.updateUserRoles(id, roleAssignment)
     }
 
