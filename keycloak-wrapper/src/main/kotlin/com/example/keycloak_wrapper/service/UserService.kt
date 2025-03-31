@@ -4,6 +4,7 @@ import com.example.keycloak_wrapper.config.RoleConstants
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.facade.KeycloakUserFacade
 import com.example.keycloak_wrapper.mapper.UserMapper
+import com.example.keycloak_wrapper.util.SecurityContextHelper
 import org.springframework.stereotype.Service
 
 @Service

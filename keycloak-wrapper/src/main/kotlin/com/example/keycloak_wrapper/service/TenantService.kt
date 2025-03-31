@@ -400,11 +400,6 @@ class TenantService(
      * @return true if the current user has access, false otherwise
      */
     fun hasUserAccessToUser(currentUserId: String, targetUserId: String): Boolean {
-        // Users can always access themselves
-        if (currentUserId == targetUserId) {
-            return true
-        }
-
         val userRoles = keycloakUserFacade.getUserRoles(currentUserId)
         val isSystemAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
 
