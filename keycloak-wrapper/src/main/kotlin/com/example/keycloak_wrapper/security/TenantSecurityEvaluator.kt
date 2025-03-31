@@ -34,17 +34,6 @@ class TenantSecurityEvaluator(
             return tenantService.isUserTenantAdmin(userId, tenantId)
         }
 
-        // Users with group viewer or manager roles can access tenants
-        if (securityContextHelper.hasAnyRole(
-                listOf(
-                    RoleConstants.ROLE_GROUP_VIEWER,
-                    RoleConstants.ROLE_GROUP_MANAGER
-                )
-            )
-        ) {
-            return true
-        }
-
         return false
     }
 
@@ -69,11 +58,6 @@ class TenantSecurityEvaluator(
     fun canManageTenant(tenantId: String): Boolean {
         // System admins can manage all tenants
         if (securityContextHelper.isSystemAdmin()) {
-            return true
-        }
-
-        // Group managers can manage tenants
-        if (securityContextHelper.hasRole(RoleConstants.ROLE_GROUP_MANAGER)) {
             return true
         }
 

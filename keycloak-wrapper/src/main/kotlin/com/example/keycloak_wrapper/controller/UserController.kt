@@ -24,7 +24,7 @@ class UserController(
         summary = "Get users",
         description = "Retrieve a paginated list of users with optional search"
     )
-    @RolesAllowed(ROLE_ADMIN, ROLE_USER_VIEWER, ROLE_TENANT_ADMIN)
+    @RolesAllowed(ROLE_ADMIN, ROLE_TENANT_ADMIN)
     @GetMapping
     fun getUsers(
         @RequestParam(defaultValue = "0") page: Int,
@@ -41,7 +41,7 @@ class UserController(
         return ResponseEntity.ok(ApiResponse(success = true, data = response))
     }
 
-    @RolesAllowed(ROLE_ADMIN, ROLE_USER_VIEWER, ROLE_TENANT_ADMIN)
+    @RolesAllowed(ROLE_ADMIN, ROLE_TENANT_ADMIN)
     @GetMapping("/{id}")
     fun getUser(@PathVariable id: String): ResponseEntity<ApiResponse<UserDto>> {
         val currentUserId = securityContextHelper.getCurrentUserId()

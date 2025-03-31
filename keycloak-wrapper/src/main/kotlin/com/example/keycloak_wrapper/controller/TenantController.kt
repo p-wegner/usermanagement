@@ -13,28 +13,28 @@ import org.springframework.web.bind.annotation.*
 class TenantController(private val tenantService: TenantService) {
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}', '${RoleConstants.ROLE_GROUP_VIEWER}')")
+    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}')")
     fun getTenants(): ResponseEntity<ApiResponse<List<GroupDto>>> {
         val tenants = tenantService.getTenants()
         return ResponseEntity.ok(ApiResponse(success = true, data = tenants))
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}', '${RoleConstants.ROLE_GROUP_VIEWER}')")
+    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}')")
     fun getTenant(@PathVariable id: String): ResponseEntity<ApiResponse<GroupDto>> {
         val tenant = tenantService.getTenant(id)
         return ResponseEntity.ok(ApiResponse(success = true, data = tenant))
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}', '${RoleConstants.ROLE_GROUP_MANAGER}')")
+    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}')")
     fun createTenant(@RequestBody tenantCreateDto: TenantCreateDto): ResponseEntity<ApiResponse<GroupDto>> {
         val tenant = tenantService.createTenant(tenantCreateDto)
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse(success = true, data = tenant))
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}', '${RoleConstants.ROLE_GROUP_MANAGER}')")
+    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}')")
     fun updateTenant(
         @PathVariable id: String,
         @RequestBody tenantUpdateDto: TenantUpdateDto
@@ -44,7 +44,7 @@ class TenantController(private val tenantService: TenantService) {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}', '${RoleConstants.ROLE_GROUP_MANAGER}')")
+    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}')")
     fun deleteTenant(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
         tenantService.deleteTenant(id)
         return ResponseEntity.ok(ApiResponse(success = true))

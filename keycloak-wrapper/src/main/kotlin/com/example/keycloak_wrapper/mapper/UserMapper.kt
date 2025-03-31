@@ -12,20 +12,6 @@ import org.springframework.stereotype.Component
 @Component
 class UserMapper {
     
-    /**
-     * Converts a GroupRepresentation to a GroupDto.
-     */
-    fun toGroupDto(group: GroupRepresentation): GroupDto {
-        return GroupDto(
-            id = group.id,
-            name = group.name,
-            path = group.path,
-            subGroups = group.subGroups.map { toGroupDto(it) },
-            realmRoles = emptyList(),
-            isTenant = group.attributes?.get("isTenant")?.firstOrNull() == "true",
-            tenantName = group.attributes?.get("displayName")?.firstOrNull()
-        )
-    }
     fun toDto(user: UserRepresentation): UserDto {
         val realmRoles = user.realmRoles ?: emptyList()
         val clientRoles = user.clientRoles ?: emptyMap()
