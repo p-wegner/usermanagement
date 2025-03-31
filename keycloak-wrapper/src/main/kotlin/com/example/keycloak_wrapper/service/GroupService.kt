@@ -21,10 +21,6 @@ class GroupService(
         return groups.map { groupMapper.toDto(it) }
     }
 
-    fun createTenant(tenantCreateDto: TenantCreateDto): TenantDto {
-        val tenantGroup = keycloakGroupFacade.createTenant(tenantCreateDto)
-        return mapToTenantDto(tenantGroup)
-    }
 
     fun getTenants(searchDto: GroupSearchDto): List<TenantDto> {
         val tenantGroups = keycloakGroupFacade.getGroups(

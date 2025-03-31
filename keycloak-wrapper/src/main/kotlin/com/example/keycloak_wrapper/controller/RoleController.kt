@@ -30,22 +30,19 @@ class RoleController(
             includeRealmRoles = includeRealmRoles,
             includeClientRoles = includeClientRoles
         )
-        val roles = roleService.getRoles(searchDto)
-        return ResponseEntity.ok(ApiResponse(success = true, data = roles))
+        return roleService.getRoles(searchDto).ok()
     }
 
     @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{id}")
     fun getRole(@PathVariable id: String): ResponseEntity<ApiResponse<RoleDto>> {
-        val role = roleService.getRole(id)
-        return ResponseEntity.ok(ApiResponse(success = true, data = role))
+        return roleService.getRole(id).ok()
     }
 
     @RolesAllowed(ROLE_ADMIN)
     @PostMapping
     fun createRole(@RequestBody role: RoleCreateDto): ResponseEntity<ApiResponse<RoleDto>> {
-        val createdRole = roleService.createRole(role)
-        return ResponseEntity.ok(ApiResponse(success = true, data = createdRole))
+        return roleService.createRole(role).ok()
     }
 
     @RolesAllowed(ROLE_ADMIN)
@@ -54,15 +51,14 @@ class RoleController(
         @PathVariable id: String,
         @RequestBody role: RoleUpdateDto
     ): ResponseEntity<ApiResponse<RoleDto>> {
-        val updatedRole = roleService.updateRole(id, role)
-        return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
+        return roleService.updateRole(id, role).ok()
     }
 
     @RolesAllowed(ROLE_ADMIN)
     @DeleteMapping("/{id}")
     fun deleteRole(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
         roleService.deleteRole(id)
-        return ResponseEntity.ok(ApiResponse(success = true))
+        return Unit.ok()
     }
 
     @RolesAllowed(ROLE_ADMIN)
@@ -71,8 +67,7 @@ class RoleController(
         @PathVariable roleId: String,
         @RequestBody compositeRoles: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<RoleDto>> {
-        val updatedRole = roleService.addCompositeRoles(roleId, compositeRoles.allRoleIds)
-        return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
+        return roleService.addCompositeRoles(roleId, compositeRoles.allRoleIds).ok()
     }
 
     @RolesAllowed(ROLE_ADMIN)
@@ -81,24 +76,20 @@ class RoleController(
         @PathVariable roleId: String,
         @RequestBody compositeRoles: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<RoleDto>> {
-        val updatedRole = roleService.removeCompositeRoles(roleId, compositeRoles.allRoleIds)
-        return ResponseEntity.ok(ApiResponse(success = true, data = updatedRole))
+        return roleService.removeCompositeRoles(roleId, compositeRoles.allRoleIds).ok()
     }
 
     @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{roleId}/composites")
     fun getCompositeRoles(@PathVariable roleId: String): ResponseEntity<ApiResponse<List<RoleDto>>> {
-        val compositeRoles = roleService.getCompositeRoles(roleId)
-        return ResponseEntity.ok(ApiResponse(success = true, data = compositeRoles))
+        return roleService.getCompositeRoles(roleId).ok()
     }
     
     // Group role management endpoints
-    
     @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/groups/{groupId}")
     fun getGroupRoles(@PathVariable groupId: String): ResponseEntity<ApiResponse<List<RoleDto>>> {
-        val roles = roleService.getGroupRoles(groupId)
-        return ResponseEntity.ok(ApiResponse(success = true, data = roles))
+        return roleService.getGroupRoles(groupId).ok()
     }
     
     @RolesAllowed(ROLE_ADMIN)
@@ -108,7 +99,7 @@ class RoleController(
         @RequestBody roleAssignment: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<Unit>> {
         roleService.addRolesToGroup(groupId, roleAssignment.allRoleIds)
-        return ResponseEntity.ok(ApiResponse(success = true))
+        return Unit.ok()
     }
     
     @RolesAllowed(ROLE_ADMIN)
@@ -118,7 +109,7 @@ class RoleController(
         @RequestBody roleAssignment: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<Unit>> {
         roleService.removeRolesFromGroup(groupId, roleAssignment.allRoleIds)
-        return ResponseEntity.ok(ApiResponse(success = true))
+        return Unit.ok()
     }
     
     @RolesAllowed(ROLE_ADMIN)
@@ -127,8 +118,7 @@ class RoleController(
         @PathVariable groupId: String,
         @PathVariable clientId: String
     ): ResponseEntity<ApiResponse<List<RoleDto>>> {
-        val roles = roleService.getGroupClientRoles(groupId, clientId)
-        return ResponseEntity.ok(ApiResponse(success = true, data = roles))
+        return roleService.getGroupClientRoles(groupId, clientId).ok()
     }
     
     @RolesAllowed(ROLE_ADMIN)
@@ -139,7 +129,7 @@ class RoleController(
         @RequestBody roleAssignment: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<Unit>> {
         roleService.addClientRolesToGroup(groupId, clientId, roleAssignment.allRoleIds)
-        return ResponseEntity.ok(ApiResponse(success = true))
+        return Unit.ok()
     }
     
     @RolesAllowed(ROLE_ADMIN)
@@ -150,6 +140,6 @@ class RoleController(
         @RequestBody roleAssignment: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<Unit>> {
         roleService.removeClientRolesToGroup(groupId, clientId, roleAssignment.allRoleIds)
-        return ResponseEntity.ok(ApiResponse(success = true))
+        return Unit.ok()
     }
 }
