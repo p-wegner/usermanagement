@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 class UserService(
     private val keycloakUserFacade: KeycloakUserFacade,
     private val userMapper: UserMapper,
-    private val tenantService: TenantService? = null // Circular dependency prevention
+    private val tenantService: TenantService? = null
 ) {
     fun getUsers(searchDto: UserSearchDto): Pair<List<UserDto>, Int> {
         val (users, total) = keycloakUserFacade.getUsers(

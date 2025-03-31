@@ -17,7 +17,7 @@ class TenantSecurityEvaluator(
 ) {
     /**
      * Checks if the current user has access to the specified tenant.
-     * 
+     *
      * @param tenantId The ID of the tenant to check access for
      * @return true if the user has access, false otherwise
      */
@@ -26,28 +26,31 @@ class TenantSecurityEvaluator(
         if (securityContextHelper.isSystemAdmin()) {
             return true
         }
-        
+
         // Tenant admins only have access to their assigned tenants
         if (securityContextHelper.isTenantAdmin()) {
             val userId = securityContextHelper.getCurrentUserId() ?: return false
             return tenantService.isUserTenantAdmin(userId, tenantId)
         }
-        
+
         // Users with group viewer or manager roles can access tenants
-        if (securityContextHelper.hasAnyRole(listOf(
-                RoleConstants.ROLE_GROUP_VIEWER,
-                RoleConstants.ROLE_GROUP_MANAGER
-            ))) {
+        if (securityContextHelper.hasAnyRole(
+                listOf(
+                    RoleConstants.ROLE_GROUP_VIEWER,
+                    RoleConstants.ROLE_GROUP_MANAGER
+                )
+            )
+        ) {
             return true
         }
-        
+
         return false
     }
-    
+
     /**
      * Verifies that the current user has access to the specified tenant.
      * Throws AccessDeniedException if the user does not have access.
-     * 
+     *
      * @param tenantId The ID of the tenant to verify access for
      */
     fun verifyTenantAccess(tenantId: String) {
@@ -55,10 +58,10 @@ class TenantSecurityEvaluator(
             throw AccessDeniedException("User does not have access to tenant with ID: $tenantId")
         }
     }
-    
+
     /**
      * Checks if the current user can manage the specified tenant.
-     * 
+     *
      * @param tenantId The ID of the tenant to check management access for
      * @return true if the user can manage the tenant, false otherwise
      */
@@ -67,25 +70,25 @@ class TenantSecurityEvaluator(
         if (securityContextHelper.isSystemAdmin()) {
             return true
         }
-        
+
         // Group managers can manage tenants
         if (securityContextHelper.hasRole(RoleConstants.ROLE_GROUP_MANAGER)) {
             return true
         }
-        
+
         // Tenant admins can only manage their assigned tenants
         if (securityContextHelper.isTenantAdmin()) {
             val userId = securityContextHelper.getCurrentUserId() ?: return false
             return tenantService.isUserTenantAdmin(userId, tenantId)
         }
-        
+
         return false
     }
-    
+
     /**
      * Verifies that the current user can manage the specified tenant.
      * Throws AccessDeniedException if the user cannot manage the tenant.
-     * 
+     *
      * @param tenantId The ID of the tenant to verify management access for
      */
     fun verifyTenantManagement(tenantId: String) {
@@ -93,10 +96,10 @@ class TenantSecurityEvaluator(
             throw AccessDeniedException("User does not have management access to tenant with ID: $tenantId")
         }
     }
-    
+
     /**
      * Checks if the current user has access to the specified group.
-     * 
+     *
      * @param group The group to check access for
      * @return true if the user has access, false otherwise
      */
@@ -105,18 +108,18 @@ class TenantSecurityEvaluator(
         if (securityContextHelper.isSystemAdmin()) {
             return true
         }
-        
+
         // Find the tenant ID for this group
         val tenantId = findTenantIdForGroup(group) ?: return false
-        
+
         // Check if the user has access to the tenant
         return hasTenantAccess(tenantId)
     }
-    
+
     /**
      * Verifies that the current user has access to the specified group.
      * Throws AccessDeniedException if the user does not have access.
-     * 
+     *
      * @param group The group to verify access for
      */
     fun verifyGroupAccess(group: GroupDto) {
@@ -124,7 +127,7 @@ class TenantSecurityEvaluator(
             throw AccessDeniedException("User does not have access to group with ID: ${group.id}")
         }
     }
-    
+
     /**
      * Helper method to find the tenant ID for a group
      */
@@ -133,7 +136,7 @@ class TenantSecurityEvaluator(
         if (group.isTenant) {
             return group.id
         }
-        
+
         // If the group has a path, extract the tenant ID from it
         val path = group.path
         if (path != null) {
@@ -144,14 +147,14 @@ class TenantSecurityEvaluator(
                 return tenants.find { it.name == tenantName }?.id
             }
         }
-        
+
         return null
     }
-}
+
     /**
      * Checks if the current user has access to a specific user.
      * Users can access themselves, users in their tenant, or all users if they're a system admin.
-     * 
+     *
      * @param userId The ID of the user to access
      * @return true if the current user has access, false otherwise
      */
@@ -159,11 +162,11 @@ class TenantSecurityEvaluator(
         val currentUserId = securityContextHelper.getCurrentUserId() ?: return false
         return tenantService.hasUserAccessToUser(currentUserId, userId)
     }
-    
+
     /**
      * Verifies that the current user has access to a specific user.
      * Throws AccessDeniedException if the user does not have access.
-     * 
+     *
      * @param userId The ID of the user to verify access for
      */
     fun verifyUserAccess(userId: String) {
@@ -171,3 +174,4 @@ class TenantSecurityEvaluator(
             throw AccessDeniedException("User does not have access to user with ID: $userId")
         }
     }
+}

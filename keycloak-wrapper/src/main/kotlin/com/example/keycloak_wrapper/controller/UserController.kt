@@ -1,8 +1,11 @@
 package com.example.keycloak_wrapper.controller
 
 import com.example.keycloak_wrapper.config.RoleConstants.ROLE_ADMIN
+import com.example.keycloak_wrapper.config.RoleConstants.ROLE_TENANT_ADMIN
+import com.example.keycloak_wrapper.config.RoleConstants.ROLE_USER_VIEWER
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.service.UserService
+import com.example.keycloak_wrapper.util.SecurityContextHelper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.annotation.security.RolesAllowed

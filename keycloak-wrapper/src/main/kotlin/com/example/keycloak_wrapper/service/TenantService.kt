@@ -453,4 +453,42 @@ class TenantService(
         // Get the IDs of the tenant groups
         return tenantGroups.map { it.id }
     }
+    
+    /**
+     * Filters a list of users based on tenant access rules.
+     * - System admins can see all users
+     * - Tenant admins can see users in their tenants
+     * - Regular users can only see themselves
+     *
+     * @param currentUserId The ID of the current user
+     * @param users The list of users to filter
+     * @return Filtered list of users based on access rules
+     */
+    fun filterUsersByTenantAccess(currentUserId: String, users: List<UserDto>): List<UserDto> {
+        val userRoles = keycloakUserFacade.getUserRoles(currentUserId)
+        val isSystemAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+
+        // System admins can see all users
+        if (isSystemAdmin) {
+            return users
+        }
+
+        // Tenant admins can only see users in their tenants
+        val isTenantAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        if (isTenantAdmin) {
+            val adminTenantIds = getUserTenants(currentUserId).tenants.map { it.id }
+            
+            return users.filter { user ->
+                // Always include the current user
+                user.id == currentUserId || 
+                // Check if the user belongs to any of the admin's tenants
+                getUserTenantIds(user.id!!).any { tenantId -> 
+                    adminTenantIds.contains(tenantId) 
+                }
+            }
+        }
+
+        // Regular users can only see themselves
+        return users.filter { it.id == currentUserId }
+    }
 }
