@@ -434,4 +434,23 @@ class TenantService(
             targetUserTenantIds.contains(tenantId)
         }
     }
+    
+    /**
+     * Gets all tenant IDs that a user belongs to.
+     * This is determined by the user's group memberships.
+     *
+     * @param userId The ID of the user
+     * @return List of tenant IDs the user belongs to
+     */
+    private fun getUserTenantIds(userId: String): List<String> {
+        val userGroups = keycloakUserFacade.getUserGroups(userId)
+        
+        // Find all tenant groups the user belongs to
+        val tenantGroups = userGroups.filter { group ->
+            group.name.startsWith(TENANT_PREFIX)
+        }
+        
+        // Get the IDs of the tenant groups
+        return tenantGroups.map { it.id }
+    }
 }
