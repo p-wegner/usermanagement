@@ -86,7 +86,6 @@ class UserController(
         @PathVariable id: String,
         @RequestBody roleAssignment: RoleAssignmentDto
     ): ResponseEntity<ApiResponse<UserDto>> {
-        // Verify access to the user
         tenantSecurityEvaluator.verifyUserAccess(id)
         
         val currentUserId = securityContextHelper.getCurrentUserId()
@@ -98,7 +97,6 @@ class UserController(
     @RolesAllowed(ROLE_ADMIN, ROLE_TENANT_ADMIN)
     @GetMapping("/{id}/roles")
     fun getUserRoles(@PathVariable id: String): ResponseEntity<ApiResponse<RoleAssignmentDto>> {
-        // Verify access to the user
         tenantSecurityEvaluator.verifyUserAccess(id)
         
         val roles = userService.getUserRoles(id)

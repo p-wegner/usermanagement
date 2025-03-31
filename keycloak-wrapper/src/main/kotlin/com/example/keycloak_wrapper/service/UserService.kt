@@ -159,8 +159,7 @@ class UserService(
             if (isTenantAdmin && !isAdmin) {
                 // Tenant admins can't assign system-level roles
                 val restrictedRoles = listOf(
-                    RoleConstants.ROLE_ADMIN,
-                    RoleConstants.ROLE_TENANT_ADMIN
+                    RoleConstants.ROLE_ADMIN
                 )
                 
                 // Filter out restricted roles

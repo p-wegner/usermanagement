@@ -192,7 +192,7 @@ class TenantService(
 
         // Add the TENANT_ADMIN role to the user if they don't have it
         val userRoles = keycloakUserFacade.getUserRoles(assignment.userId)
-        val hasTenantAdminRole = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        val hasTenantAdminRole = userRoles.isTenantAdmin()
         if (!hasTenantAdminRole) {
             val tenantAdminRoleId = keycloakRoleFacade.getRoles(RoleConstants.ROLE_TENANT_ADMIN, 0, 1)
                 .firstOrNull()?.id
@@ -366,13 +366,13 @@ class TenantService(
      */
     fun getAccessibleTenants(userId: String): List<GroupDto> {
         val userRoles = keycloakUserFacade.getUserRoles(userId)
-        val isSystemAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+        val isSystemAdmin = userRoles.isSystemAdmin()
 
         if (isSystemAdmin) {
             return getTenants()
         }
 
-        val isTenantAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        val isTenantAdmin = userRoles.isTenantAdmin()
         if (isTenantAdmin) {
             val userGroups = keycloakUserFacade.getUserGroups(userId)
 
@@ -401,7 +401,7 @@ class TenantService(
      */
     fun hasUserAccessToUser(currentUserId: String, targetUserId: String): Boolean {
         val userRoles = keycloakUserFacade.getUserRoles(currentUserId)
-        val isSystemAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+        val isSystemAdmin = userRoles.isSystemAdmin()
 
         // System admins can access all users
         if (isSystemAdmin) {
@@ -409,7 +409,7 @@ class TenantService(
         }
 
         // Tenant admins can access users in their tenants
-        val isTenantAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        val isTenantAdmin = userRoles.isTenantAdmin()
         if (isTenantAdmin) {
             val adminTenantIds = getUserTenants(currentUserId).tenants.map { it.id }
             val targetUserTenantIds = getUserTenantIds(targetUserId)
@@ -429,7 +429,7 @@ class TenantService(
             targetUserTenantIds.contains(tenantId)
         }
     }
-    
+
     /**
      * Gets all tenant IDs that a user belongs to.
      * This is determined by the user's group memberships.
@@ -439,16 +439,16 @@ class TenantService(
      */
     private fun getUserTenantIds(userId: String): List<String> {
         val userGroups = keycloakUserFacade.getUserGroups(userId)
-        
+
         // Find all tenant groups the user belongs to
         val tenantGroups = userGroups.filter { group ->
             group.name.startsWith(TENANT_PREFIX)
         }
-        
+
         // Get the IDs of the tenant groups
         return tenantGroups.map { it.id }
     }
-    
+
     /**
      * Filters a list of users based on tenant access rules.
      * - System admins can see all users
@@ -461,25 +461,24 @@ class TenantService(
      */
     fun filterUsersByTenantAccess(currentUserId: String, users: List<UserDto>): List<UserDto> {
         val userRoles = keycloakUserFacade.getUserRoles(currentUserId)
-        val isSystemAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
 
         // System admins can see all users
-        if (isSystemAdmin) {
+        if (userRoles.isSystemAdmin()) {
             return users
         }
 
         // Tenant admins can only see users in their tenants
-        val isTenantAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        val isTenantAdmin = userRoles.isTenantAdmin()
         if (isTenantAdmin) {
             val adminTenantIds = getUserTenants(currentUserId).tenants.map { it.id }
-            
+
             return users.filter { user ->
                 // Always include the current user
-                user.id == currentUserId || 
-                // Check if the user belongs to any of the admin's tenants
-                getUserTenantIds(user.id!!).any { tenantId -> 
-                    adminTenantIds.contains(tenantId) 
-                }
+                user.id == currentUserId ||
+                        // Check if the user belongs to any of the admin's tenants
+                        getUserTenantIds(user.id!!).any { tenantId ->
+                            adminTenantIds.contains(tenantId)
+                        }
             }
         }
 
@@ -487,3 +486,9 @@ class TenantService(
         return users.filter { it.id == currentUserId }
     }
 }
+
+fun RoleAssignmentDto.isTenantAdmin(): Boolean =
+    realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+
+fun RoleAssignmentDto.isSystemAdmin(): Boolean =
+    realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
