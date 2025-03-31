@@ -2,6 +2,7 @@ package com.example.keycloak_wrapper.security
 
 import com.example.keycloak_wrapper.config.RoleConstants
 import com.example.keycloak_wrapper.dto.GroupDto
+import com.example.keycloak_wrapper.dto.RoleAssignmentDto
 import com.example.keycloak_wrapper.service.TenantService
 import com.example.keycloak_wrapper.util.SecurityContextHelper
 import org.springframework.security.access.AccessDeniedException
@@ -172,6 +173,70 @@ class TenantSecurityEvaluator(
     fun verifyUserAccess(userId: String) {
         if (!hasAccessToUser(userId)) {
             throw AccessDeniedException("User does not have access to user with ID: $userId")
+        }
+    }
+    
+    /**
+     * Verifies that the current user has access to view or manage the specified user.
+     * Throws SecurityException if access is denied.
+     *
+     * @param currentUserId The ID of the current user
+     * @param targetUserId The ID of the user to check access for
+     */
+    fun verifyUserAccess(currentUserId: String, targetUserId: String) {
+        // Users can always access themselves
+        if (currentUserId == targetUserId) {
+            return
+        }
+        
+        // System admins have access to all users
+        if (securityContextHelper.hasRole(RoleConstants.ROLE_ADMIN)) {
+            return
+        }
+        
+        // Check tenant-specific access
+        val hasAccess = tenantService.hasUserAccessToUser(currentUserId, targetUserId)
+        if (!hasAccess) {
+            throw SecurityException("User does not have access to view or manage this user")
+        }
+    }
+    
+    /**
+     * Verifies that the current user has access to assign the specified roles.
+     * Tenant admins can only assign roles within their tenant scope.
+     * Throws SecurityException if access is denied.
+     *
+     * @param currentUserId The ID of the current user
+     * @param roleAssignment The role assignment to check
+     */
+    fun verifyRoleAssignmentAccess(currentUserId: String, roleAssignment: RoleAssignmentDto) {
+        // System admins can assign any roles
+        if (securityContextHelper.hasRole(RoleConstants.ROLE_ADMIN)) {
+            return
+        }
+        
+        // Tenant admins can only assign roles within their tenant scope
+        val isTenantAdmin = securityContextHelper.hasRole(RoleConstants.ROLE_TENANT_ADMIN)
+        if (isTenantAdmin) {
+            // Get the tenants this user is an admin for
+            val adminTenants = tenantService.getUserTenants(currentUserId).tenants
+            
+            // Check if all roles in the assignment are within the admin's tenant scope
+            val adminTenantRoleIds = adminTenants.flatMap { tenant -> 
+                tenant.permissionGroups.flatMap { group -> group.realmRoles.map { it.id } }
+            }.toSet()
+            
+            // Check if there are any roles in the assignment that are not in the admin's tenant scope
+            val unauthorizedRoleIds = roleAssignment.allRoleIds.filter { roleId ->
+                !adminTenantRoleIds.contains(roleId)
+            }
+            
+            if (unauthorizedRoleIds.isNotEmpty()) {
+                throw SecurityException("User does not have access to assign some of the specified roles")
+            }
+        } else {
+            // Regular users cannot assign roles
+            throw SecurityException("User does not have permission to assign roles")
         }
     }
 }

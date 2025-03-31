@@ -1,14 +1,31 @@
 package com.example.keycloak_wrapper.mapper
 
+import com.example.keycloak_wrapper.dto.GroupDto
 import com.example.keycloak_wrapper.dto.UserDto
 import com.example.keycloak_wrapper.dto.UserCreateDto
 import com.example.keycloak_wrapper.dto.UserUpdateDto
 import org.keycloak.representations.idm.CredentialRepresentation
+import org.keycloak.representations.idm.GroupRepresentation
 import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.stereotype.Component
 
 @Component
 class UserMapper {
+    
+    /**
+     * Converts a GroupRepresentation to a GroupDto.
+     */
+    fun toGroupDto(group: GroupRepresentation): GroupDto {
+        return GroupDto(
+            id = group.id,
+            name = group.name,
+            path = group.path,
+            subGroups = group.subGroups.map { toGroupDto(it) },
+            realmRoles = emptyList(),
+            isTenant = group.attributes?.get("isTenant")?.firstOrNull() == "true",
+            tenantName = group.attributes?.get("displayName")?.firstOrNull()
+        )
+    }
     fun toDto(user: UserRepresentation): UserDto {
         val realmRoles = user.realmRoles ?: emptyList()
         val clientRoles = user.clientRoles ?: emptyMap()
