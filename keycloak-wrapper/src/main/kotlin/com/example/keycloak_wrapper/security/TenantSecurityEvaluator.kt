@@ -148,3 +148,26 @@ class TenantSecurityEvaluator(
         return null
     }
 }
+    /**
+     * Checks if the current user has access to a specific user.
+     * Users can access themselves, users in their tenant, or all users if they're a system admin.
+     * 
+     * @param userId The ID of the user to access
+     * @return true if the current user has access, false otherwise
+     */
+    fun hasAccessToUser(userId: String): Boolean {
+        val currentUserId = securityContextHelper.getCurrentUserId() ?: return false
+        return tenantService.hasUserAccessToUser(currentUserId, userId)
+    }
+    
+    /**
+     * Verifies that the current user has access to a specific user.
+     * Throws AccessDeniedException if the user does not have access.
+     * 
+     * @param userId The ID of the user to verify access for
+     */
+    fun verifyUserAccess(userId: String) {
+        if (!hasAccessToUser(userId)) {
+            throw AccessDeniedException("User does not have access to user with ID: $userId")
+        }
+    }

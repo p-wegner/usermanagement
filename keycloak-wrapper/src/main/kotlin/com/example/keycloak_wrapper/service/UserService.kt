@@ -18,10 +18,19 @@ class UserService(
             firstResult = searchDto.page * searchDto.size,
             maxResults = searchDto.size
         )
-        return Pair(users.map { userMapper.toDto(it) }, total)
+        
+        val userDtos = users.map { userMapper.toDto(it) }
+        
+        // Apply tenant-specific filtering if a current user ID is provided
+        return if (searchDto.currentUserId != null && tenantService != null) {
+            val filteredUsers = tenantService.filterUsersByTenantAccess(searchDto.currentUserId, userDtos)
+            Pair(filteredUsers, filteredUsers.size)
+        } else {
+            Pair(userDtos, total)
+        }
     }
 
-    fun getUser(id: String): UserDto {
+    fun getUser(id: String, currentUserId: String? = null): UserDto {
         val user = keycloakUserFacade.getUser(id)
         val userDto = userMapper.toDto(user)
         
@@ -39,7 +48,44 @@ class UserService(
             )
         }
         
+        // If a current user ID is provided, check tenant access
+        if (currentUserId != null && tenantService != null && id != currentUserId) {
+            // Check if the current user has access to this user
+            val hasAccess = tenantService.hasUserAccessToUser(currentUserId, id)
+            if (!hasAccess) {
+                throw SecurityException("User does not have access to view this user")
+            }
+        }
+        
         return userDto
+    }
+    
+    /**
+     * Checks if the current user has access to view or manage the specified user.
+     * 
+     * @param currentUserId The ID of the current user
+     * @param targetUserId The ID of the user to check access for
+     * @return true if the current user has access, false otherwise
+     */
+    fun hasAccessToUser(currentUserId: String, targetUserId: String): Boolean {
+        // Users can always access themselves
+        if (currentUserId == targetUserId) {
+            return true
+        }
+        
+        // Check if the current user has the ADMIN role
+        val currentUserRoles = keycloakUserFacade.getUserRoles(currentUserId)
+        val isAdmin = currentUserRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+        if (isAdmin) {
+            return true
+        }
+        
+        // If tenant service is available, check tenant-specific access
+        if (tenantService != null) {
+            return tenantService.hasUserAccessToUser(currentUserId, targetUserId)
+        }
+        
+        return false
     }
 
     fun createUser(userDto: UserCreateDto): UserDto {

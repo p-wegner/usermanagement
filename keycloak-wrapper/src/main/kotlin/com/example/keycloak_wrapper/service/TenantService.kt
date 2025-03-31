@@ -391,3 +391,46 @@ class TenantService(
         return emptyList()
     }
 }
+    /**
+     * Checks if a user has access to view or manage another user.
+     * This is based on tenant membership and roles.
+     * 
+     * @param currentUserId The ID of the current user
+     * @param targetUserId The ID of the user to check access for
+     * @return true if the current user has access, false otherwise
+     */
+    fun hasUserAccessToUser(currentUserId: String, targetUserId: String): Boolean {
+        // Users can always access themselves
+        if (currentUserId == targetUserId) {
+            return true
+        }
+        
+        val userRoles = keycloakUserFacade.getUserRoles(currentUserId)
+        val isSystemAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_ADMIN }
+        
+        // System admins can access all users
+        if (isSystemAdmin) {
+            return true
+        }
+        
+        // Tenant admins can access users in their tenants
+        val isTenantAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
+        if (isTenantAdmin) {
+            val adminTenantIds = getUserTenants(currentUserId).tenants.map { it.id }
+            val targetUserTenantIds = getUserTenantIds(targetUserId)
+            
+            // Check if there's any overlap between the admin's tenants and the target user's tenants
+            return adminTenantIds.any { adminTenantId -> 
+                targetUserTenantIds.contains(adminTenantId)
+            }
+        }
+        
+        // Regular users can only access users in the same tenant
+        val currentUserTenantIds = getUserTenantIds(currentUserId)
+        val targetUserTenantIds = getUserTenantIds(targetUserId)
+        
+        // Check if there's any overlap between the current user's tenants and the target user's tenants
+        return currentUserTenantIds.any { tenantId -> 
+            targetUserTenantIds.contains(tenantId)
+        }
+    }
