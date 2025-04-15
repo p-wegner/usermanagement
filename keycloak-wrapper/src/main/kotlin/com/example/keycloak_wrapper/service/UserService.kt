@@ -21,12 +21,12 @@ class UserService(
             val tenantUsers: List<UserDto> = tenantService.getTenantUsers(searchDto.tenantId, searchDto.page, searchDto.size)
             Pair(tenantUsers, tenantUsers.size)
         } else {
-            val users: Pair<List<UserRepresentation>, Int> = keycloakUserFacade.getUsers(
+            val usersResult: Pair<List<UserRepresentation>, Int> = keycloakUserFacade.getUsers(
                 search = searchDto.search,
                 firstResult = searchDto.page * searchDto.size,
                 maxResults = searchDto.size
             )
-            users
+            usersResult
         }
 
         val userDtos = users.map { userMapper.toDto(it) }
