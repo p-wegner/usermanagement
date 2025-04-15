@@ -37,24 +37,36 @@ This document outlines the requirements and design for supporting multitenancy i
 - Roles must be scoped to the correct tenant and customer.
 - Simpler applications use a fixed, pre-defined set of roles per customer.
 
-### 2.3 Hierarchical Group Structure
+### 2.3 Hierarchical Group Structure and Subadmins
 
 - Support for nested groups:
     - Top-level group per customer (e.g., IKEA)
     - Subgroups per tenant (e.g., TenantA, TenantB)
-    - Further subgroups for functional areas (e.g., usermanagement-admins)
-- Group-based access control: usermanagement-admins can only manage users/roles/groups within their subtree.
+    - Further subgroups for admin roles (e.g., usermanagement-admins)
+    - **Hierarchical subadmins**: Each group (at any level) can have a corresponding admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) whose members are delegated admin rights for that subtree.
+- **Delegated Administration**: Subadmins can only manage users/roles/groups within their subtree. This enables fine-grained, hierarchical delegation of admin rights (e.g., a group admin can manage only their group and its descendants).
+- **Admin Group Naming**: Admin subgroups should follow a naming convention (e.g., `<group>-admins` or `<group>_admins`) to clearly identify their purpose.
 
-### 2.4 User and Role Management
+### 2.4 Per-Group Permissions for ComplexApp
+
+- **ComplexApp** requires permissions to be managed at the group level:
+    - Each group (e.g., functional area, team, or tenant) can have its own set of client roles/permissions.
+    - Permissions can be assigned to groups, and users inherit permissions from their group memberships.
+    - **Group-scoped permissions**: ComplexApp must be able to enumerate, assign, and revoke permissions for any group, not just tenants.
+    - **UI/UX**: The UI must allow admins to manage permissions for any group they administer, reflecting the group hierarchy.
+
+### 2.5 User and Role Management
 
 - Users are assigned to groups representing their customer, tenant, and functional area.
 - Roles (realm or client) are assigned at the group or user level, as appropriate.
 - It must be possible to enumerate and manage users, roles, and groups within the permitted scope.
 
-### 2.5 API and UI Integration
+### 2.6 API and UI Integration
 
 - The backend API must enforce all isolation and scoping rules.
 - The UI must only display users, roles, and groups the current user is allowed to see/manage.
+- **APIs for Hierarchical Admins**: The API must provide endpoints for subadmins to manage their subtree, including user, group, and permission management.
+- **APIs for Group Permissions**: The API must allow querying and updating permissions for any group, not just tenants.
 
 ---
 
