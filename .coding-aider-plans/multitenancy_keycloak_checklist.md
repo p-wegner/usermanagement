@@ -1,6 +1,5 @@
 [Coding Aider Plan - Checklist]
 
-- [ ] Review and finalize the PRD in `prd/multitenancy-keycloak.md`
 - [ ] Design the group structure in Keycloak for customers, tenants, and subgroups
 - [ ] Define and implement the role naming convention for dynamic and static roles
 - [ ] Implement dynamic client role creation for tenants (ComplexApp)
