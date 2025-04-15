@@ -17,9 +17,9 @@ This document outlines the requirements and design for supporting multitenancy i
 - Each customer may have multiple tenants (e.g., IKEA → TenantA, TenantB).
 - Applications (such as ComplexApp) must be able to dynamically create roles for tenants (e.g., Warehouse_Manager, Picker for TenantA).
 - Simpler applications require only a fixed set of roles per customer (e.g., IKEA_Editor).
-- Customers and tenants must be strictly isolated: users, roles, and groups of one customer/tenant must not be visible or manageable by others.
+- Customers must be strictly isolated: users, roles, tenants and groups of one customer must not be visible or manageable by others.
 - The UI must allow end users to manage users, roles, and groups within their permitted scope.
-- There must be support for hierarchical group structures, including subgroups like usermanagement-admins, who can only manage users/roles/groups below their group.
+- There must be support for hierarchical group structures, including the possibility to assign an admin role for a group, who can only manage users/roles/groups below their group.
 
 ---
 
@@ -35,6 +35,7 @@ This document outlines the requirements and design for supporting multitenancy i
 
 - **ComplexApp** must be able to create client roles dynamically for each tenant (e.g., Warehouse_Manager, Picker).
 - Roles must be scoped to the correct tenant and customer.
+- e.g. IKEA_TenantA_Warehouse_Manager, IKEA_TenantB_Picker
 - Simpler applications use a fixed, pre-defined set of roles per customer.
 
 ### 2.3 Hierarchical Group Structure and Subadmins
@@ -43,9 +44,8 @@ This document outlines the requirements and design for supporting multitenancy i
     - Top-level group per customer (e.g., IKEA)
     - Subgroups per tenant (e.g., TenantA, TenantB)
     - Further subgroups for admin roles (e.g., usermanagement-admins)
-    - **Hierarchical subadmins**: Each group (at any level) can have a corresponding admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) whose members are delegated admin rights for that subtree.
+    - **Hierarchical subadmins**: Each group (at any level) can have a corresponding admin role (e.g., `IKEA_TenantA_usermanagement_admin`) whose members are delegated admin rights for that subtree.
 - **Delegated Administration**: Subadmins can only manage users/roles/groups within their subtree. This enables fine-grained, hierarchical delegation of admin rights (e.g., a group admin can manage only their group and its descendants).
-- **Admin Group Naming**: Admin subgroups should follow a naming convention (e.g., `<group>-admins` or `<group>_admins`) to clearly identify their purpose.
 
 ### 2.4 Per-Group Permissions for ComplexApp
 
@@ -77,7 +77,7 @@ This document outlines the requirements and design for supporting multitenancy i
 - **Customer Group**: Top-level group for each customer (e.g., `/IKEA`)
 - **Tenant Group**: Subgroup under customer for each tenant (e.g., `/IKEA/TenantA`)
 - **Functional Subgroups**: Further subgroups for functional areas (e.g., `/IKEA/TenantA/Logistics`)
-- **Admin Subgroups**: For each group, an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) delegates admin rights for that subtree.
+- **Admin ClientRole**: For each group, an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) delegates admin rights for that subtree.
 - **Group Attributes**: Use attributes to mark groups as customers, tenants, admin areas, or to store metadata (e.g., `isTenant`, `adminGroup`, etc.).
 
 ### 3.2 Clients
@@ -144,17 +144,8 @@ This document outlines the requirements and design for supporting multitenancy i
 
 ## 7. Open Questions
 
-- Should tenants be allowed to share roles or users?
-- How to handle cross-tenant or cross-customer reporting (if needed)?
+- Should tenants be allowed to share roles or users? Yes, user is assign roles that belong to any tenant within the organization/customer.
 - What is the process for onboarding a new customer or tenant?
-- Should subadmin group naming be strictly enforced, or configurable?
 - Should group-scoped permissions be visible to parent/ancestor admins, or only to direct group admins?
 
 ---
-
-<aider-summary>
-- Expanded the PRD to explicitly require hierarchical subadmins (admin subgroups at any group level) and describe their delegated management scope.
-- Added requirements and mapping for per-group permissions, especially for ComplexApp, including APIs and UI/UX implications.
-- Clarified group structure, admin subgroup naming, and enforcement of hierarchical admin rights.
-- Updated implementation notes and security sections to reflect the need for APIs and enforcement for both hierarchical subadmins and per-group permissions.
-</aider-summary>
