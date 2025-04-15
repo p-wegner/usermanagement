@@ -73,3 +73,5 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/util/SecurityContextHelper.kt
     readOnly: false
+  - path: keycloak-wrapper/docs/multitenancy-structure.md
+    readOnly: false

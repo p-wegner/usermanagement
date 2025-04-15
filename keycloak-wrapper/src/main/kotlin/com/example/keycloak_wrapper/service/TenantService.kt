@@ -585,7 +585,7 @@ class TenantService(
         val adminGroupName = "${tenant.name}${TENANT_ADMIN_GROUP_SUFFIX}"
         val adminGroup = tenant.subGroups.find { it.name == adminGroupName }
         val adminCount = if (adminGroup != null) {
-            keycloakGroupFacade.getGroupMembers(adminGroup.id).size
+            keycloakGroupFacade.getGroupMembers(adminGroup.id!!).size
         } else {
             0
         }
