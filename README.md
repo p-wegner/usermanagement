@@ -12,6 +12,7 @@ A Gradle multimodule project that provides a comprehensive user management inter
 - Access Control: Assign roles to users and groups
 - Tenant Management: Create and manage multi-tenant environments
 - Permission Management: Fine-grained access control for tenant administrators
+- Resource Isolation: Customer admins can only see and manage their respective client roles, users, and groups
 
 ## Multi-Tenant Features
 
@@ -115,6 +116,7 @@ The application supports the following user roles:
 2. **Tenant Administrator** (`ROLE_TENANT_ADMIN`):
    - Can manage users within their assigned tenant(s)
    - Limited access to role and group management
+   - Can only see and manage client roles, users, and groups within their tenant
    - Cannot create or manage other tenants
 
 3. **Regular User**:

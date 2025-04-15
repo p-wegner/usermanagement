@@ -165,6 +165,7 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 - API must enforce that users can only see/manage users, roles, and groups within their permitted subtree.
 - **Hierarchical subadmin enforcement**: Subadmins (members of admin subgroups) can only manage users, groups, and permissions within their subtree.
 - **Per-group permission enforcement**: For ComplexApp, permissions can be managed at any group level, and APIs must enforce that only authorized admins can modify group permissions.
+- **Customer admin isolation**: Customer admins using the API should only see their respective client roles, users, and groups. The API must filter all responses to include only resources within the admin's scope.
 - Group-based scoping is used for hierarchical admin delegation (e.g., usermanagement-admins).
 - Role and group assignments are validated to prevent privilege escalation or cross-tenant access.
 - **Token claims**: Include tenant and customer information in tokens to enable application-level authorization.
@@ -177,6 +178,7 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 - Group and role management APIs must enforce all scoping and isolation rules.
 - **Hierarchical subadmin APIs**: Implement endpoints that allow subadmins to manage their subtree, including user, group, and permission management.
 - **Per-group permission APIs**: Implement endpoints for querying and updating permissions for any group, with proper authorization checks.
+- **Scoped API responses**: All API endpoints must filter responses based on the caller's scope. Customer admins should only receive data for their respective client roles, users, and groups.
 - UI must use the backend API to determine what to display/manage for the current user.
 - **Performance considerations**: Implement caching for frequently accessed group hierarchies and role assignments.
 
