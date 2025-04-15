@@ -15,11 +15,17 @@ class UserService(
     private val securityContextHelper: SecurityContextHelper
 ) {
     fun getUsers(searchDto: UserSearchDto): Pair<List<UserDto>, Int> {
-        val (users, total) = keycloakUserFacade.getUsers(
-            search = searchDto.search,
-            firstResult = searchDto.page * searchDto.size,
-            maxResults = searchDto.size
-        )
+        val (users, total) = if (searchDto.tenantId != null) {
+            // If tenantId is provided, fetch users from that tenant group with pagination
+            val tenantUsers = tenantService.getTenantUsers(searchDto.tenantId, searchDto.page, searchDto.size)
+            Pair(tenantUsers, tenantUsers.size)
+        } else {
+            keycloakUserFacade.getUsers(
+                search = searchDto.search,
+                firstResult = searchDto.page * searchDto.size,
+                maxResults = searchDto.size
+            )
+        }
 
         val userDtos = users.map { userMapper.toDto(it) }
 
