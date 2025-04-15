@@ -122,12 +122,12 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 
 ### 3.4 User Assignment: Modeling Membership and Scope
 
-- **Group Membership**: Users are assigned to groups that represent their customer, tenant, and functional area. This determines their visibility and management scope in the UI and API.
-- **Role Assignment**: Users receive roles either directly or via group membership. Group membership can automatically assign roles to users, based on group-to-role mappings.
+- **Group Membership**: Users are assigned to groups that represent their customer and tenant. This determines their visibility and management scope in the UI and API.
+- **Role Assignment**: Users receive permissions by being assigned roles (either directly or via group membership). Roles represent permissions in a uniform way.
 - **Subadmin Assignment**: Users who are members of an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) are granted delegated admin rights for the parent group and all its descendants.
 
 **Example:**
-- A user in `/IKEA/TenantA/Logistics/logistics-admins` can manage users, groups, and permissions within `/IKEA/TenantA/Logistics` and its subgroups.
+- A user in `/IKEA/TenantA/usermanagement-admins` can manage users, groups, and permissions within `/IKEA/TenantA` and its subgroups.
 
 ### 3.5 Attributes: Modeling Metadata and Scoping
 
