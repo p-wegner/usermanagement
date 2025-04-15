@@ -14,4 +14,4 @@
 - [ ] Document the group, role, and client structure for maintainability
 - [ ] Add comprehensive API documentation with Swagger annotations
 - [x] Implement tenant user management endpoints
-- [ ] Add tenant statistics and reporting endpoints
+- [x] Add tenant statistics and reporting endpoints

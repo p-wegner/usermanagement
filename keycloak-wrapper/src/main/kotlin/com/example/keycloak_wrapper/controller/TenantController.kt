@@ -2,6 +2,8 @@ package com.example.keycloak_wrapper.controller
 
 import com.example.keycloak_wrapper.config.RoleConstants
 import com.example.keycloak_wrapper.dto.*
+import com.example.keycloak_wrapper.dto.TenantStatisticsDto
+import com.example.keycloak_wrapper.dto.AllTenantsStatisticsDto
 import com.example.keycloak_wrapper.security.TenantSecurityEvaluator
 import com.example.keycloak_wrapper.service.TenantService
 import com.example.keycloak_wrapper.util.SecurityContextHelper
@@ -132,5 +134,24 @@ class TenantController(
         
         tenantService.removeUserFromTenant(userId, id)
         return Unit.ok()
+    }
+    
+    @GetMapping("/{id}/statistics")
+    @PreAuthorize("hasAnyRole('${RoleConstants.ROLE_ADMIN}', '${RoleConstants.ROLE_TENANT_ADMIN}')")
+    @Operation(summary = "Get tenant statistics", description = "Returns statistics for a specific tenant")
+    fun getTenantStatistics(@PathVariable id: String): ResponseEntity<ApiResponse<TenantStatisticsDto>> {
+        // Verify tenant access
+        tenantSecurityEvaluator.verifyTenantAccess(id)
+        
+        val statistics = tenantService.getTenantStatistics(id)
+        return ResponseEntity.ok(ApiResponse(success = true, data = statistics))
+    }
+    
+    @GetMapping("/statistics")
+    @PreAuthorize("hasRole('${RoleConstants.ROLE_ADMIN}')")
+    @Operation(summary = "Get all tenants statistics", description = "Returns statistics for all tenants (system admin only)")
+    fun getAllTenantsStatistics(): ResponseEntity<ApiResponse<AllTenantsStatisticsDto>> {
+        val statistics = tenantService.getAllTenantsStatistics()
+        return ResponseEntity.ok(ApiResponse(success = true, data = statistics))
     }
 }

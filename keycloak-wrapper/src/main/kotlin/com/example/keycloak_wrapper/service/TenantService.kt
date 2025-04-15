@@ -448,6 +448,18 @@ class TenantService(
         // Get the IDs of the tenant groups
         return tenantGroups.map { it.id }
     }
+    
+    /**
+     * Checks if a user belongs to a specific tenant.
+     *
+     * @param userId The ID of the user
+     * @param tenantId The ID of the tenant
+     * @return true if the user belongs to the tenant, false otherwise
+     */
+    fun isUserInTenant(userId: String, tenantId: String): Boolean {
+        val userTenantIds = getUserTenantIds(userId)
+        return userTenantIds.contains(tenantId)
+    }
 
     /**
      * Filters a list of users based on tenant access rules.
@@ -546,6 +558,74 @@ class TenantService(
         }
         
         keycloakUserFacade.removeUserFromGroup(userId, tenantId)
+    }
+    
+    /**
+     * Gets statistics for a specific tenant.
+     *
+     * @param tenantId The ID of the tenant
+     * @return Statistics for the tenant
+     */
+    fun getTenantStatistics(tenantId: String): TenantStatisticsDto {
+        val tenant = getTenant(tenantId)
+        
+        // Get all users in the tenant
+        val users = keycloakGroupFacade.getGroupMembers(tenantId)
+        
+        // Count active users (enabled)
+        val activeUserCount = users.count { it.isEnabled }
+        
+        // Count subgroups
+        val groupCount = tenant.subGroups.size
+        
+        // Count roles assigned to the tenant
+        val roleCount = keycloakGroupFacade.getGroupRoles(tenantId).realmRoles.size
+        
+        // Count tenant admins
+        val adminGroupName = "${tenant.name}${TENANT_ADMIN_GROUP_SUFFIX}"
+        val adminGroup = tenant.subGroups.find { it.name == adminGroupName }
+        val adminCount = if (adminGroup != null) {
+            keycloakGroupFacade.getGroupMembers(adminGroup.id).size
+        } else {
+            0
+        }
+        
+        return TenantStatisticsDto(
+            tenantId = tenantId,
+            tenantName = tenant.name,
+            userCount = users.size,
+            activeUserCount = activeUserCount,
+            groupCount = groupCount,
+            roleCount = roleCount,
+            adminCount = adminCount
+        )
+    }
+    
+    /**
+     * Gets statistics for all tenants.
+     *
+     * @return Statistics for all tenants
+     */
+    fun getAllTenantsStatistics(): AllTenantsStatisticsDto {
+        val tenants = getTenants()
+        
+        // Calculate statistics for each tenant
+        val tenantStats = tenants.map { tenant ->
+            getTenantStatistics(tenant.id!!)
+        }
+        
+        // Calculate totals
+        val totalUsers = tenantStats.sumOf { it.userCount }
+        val totalGroups = tenantStats.sumOf { it.groupCount }
+        val totalRoles = tenantStats.sumOf { it.roleCount }
+        
+        return AllTenantsStatisticsDto(
+            totalTenants = tenants.size,
+            totalUsers = totalUsers,
+            totalGroups = totalGroups,
+            totalRoles = totalRoles,
+            tenantStats = tenantStats
+        )
     }
 }
 

@@ -39,6 +39,8 @@ files:
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/TenantAdminDto.kt
     readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/TenantStatisticsDto.kt
+    readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/UserDto.kt
     readOnly: false
   - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/exception/GlobalExceptionHandler.kt
