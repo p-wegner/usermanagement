@@ -26,17 +26,15 @@ class UserService(
                 firstResult = searchDto.page * searchDto.size,
                 maxResults = searchDto.size
             )
-            usersResult
+            usersResult.first.map { userMapper.toDto(it) } to usersResult.second
         }
-
-        val userDtos = users.map { userMapper.toDto(it) }
 
         // Apply tenant-specific filtering if a current user ID is provided
         return if (searchDto.currentUserId != null) {
-            val filteredUsers = tenantService.filterUsersByTenantAccess(searchDto.currentUserId, userDtos)
+            val filteredUsers = tenantService.filterUsersByTenantAccess(searchDto.currentUserId, users)
             Pair(filteredUsers, filteredUsers.size)
         } else {
-            Pair(userDtos, total)
+            Pair(users, total)
         }
     }
 
