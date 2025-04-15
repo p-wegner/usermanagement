@@ -78,9 +78,10 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 
 - **Customer Group**: Each customer is represented as a top-level Keycloak group (e.g., `/IKEA`). This group acts as the root for all of the customer's data and users.
 - **Tenant Group**: Each tenant within a customer is a subgroup under the customer group (e.g., `/IKEA/TenantA`). This provides tenant-level isolation and scoping.
-- **Functional Subgroups**: Subgroups under a tenant group represent functional areas, teams, or departments (e.g., `/IKEA/TenantA/Logistics`).
 - **Admin Groups**: For each group that requires delegated administration, an admin subgroup is created (e.g., `/IKEA/TenantA/usermanagement-admins`). Membership in this group grants admin rights scoped to the parent group and its descendants.
-- **Group Attributes**: Keycloak group attributes are used to mark the type and metadata of each group (e.g., `isCustomer`, `isTenant`, `adminGroup`, `functionalArea`). These attributes enable filtering, authorization, and UI logic.
+- **Group Attributes**: Keycloak group attributes are used to mark the type and metadata of each group (e.g., `isCustomer`, `isTenant`, `adminGroup`). These attributes enable filtering, authorization, and UI logic.
+
+> **Note:** For now, functional groups (such as teams or departments) are not modeled as subgroups. Instead, permissions are modeled in a clear and uniform way using either groups or roles, as described below.
 
 **Summary Table:**
 
@@ -88,7 +89,6 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 |----------------------------|------------------------------------------------|--------------------------------|
 | Customer                   | `/IKEA`                                        | `isCustomer: true`             |
 | Tenant                     | `/IKEA/TenantA`                                | `isTenant: true`               |
-| Functional Area            | `/IKEA/TenantA/Logistics`                      | `functionalArea: Logistics`    |
 | Admin Subgroup             | `/IKEA/TenantA/usermanagement-admins`          | `adminGroup: true`             |
 
 ### 3.2 Clients: Modeling Applications
@@ -100,16 +100,17 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 - `ComplexApp` client in Keycloak
 - Roles like `IKEA_TenantA_Warehouse_Manager` are created as client roles under the `ComplexApp` client.
 
-### 3.3 Roles: Modeling Permissions and Delegated Administration
+### 3.3 Roles and Groups: Modeling Permissions and Delegated Administration
 
 - **Realm Roles**: Used for global or cross-application roles (e.g., `SYSTEM_ADMIN`). These are not tenant- or customer-specific.
-- **Client Roles**: Used for application-, tenant-, and group-specific permissions. Naming conventions encode the scope (e.g., `IKEA_TenantA_Logistics_Warehouse_Manager`).
+- **Client Roles**: Used for application-, tenant-, and group-specific permissions. Naming conventions encode the scope (e.g., `IKEA_TenantA_Warehouse_Manager`).
+- **Uniform Permission Modeling**: Permissions are modeled in a clear and uniform way using roles (preferably client roles). Each permission is represented as a role, and roles are assigned directly to users or to groups (which then propagate to users via group membership).
 - **Role Naming Convention**: Roles are named to reflect their scope and purpose, using the pattern:  
-  `<Customer>_<Tenant>_<Group>_<RoleName>`  
+  `<Customer>_<Tenant>_<PermissionName>`  
   Examples:  
   - `IKEA_TenantA_Warehouse_Manager` (tenant-scoped)  
-  - `IKEA_TenantA_Logistics_Warehouse_Manager` (group-scoped)
-- **Admin Roles**: Special roles for delegated administration, such as `TENANT_ADMIN_IKEA_TenantA` or `GROUP_ADMIN_IKEA_TenantA_Logistics`. These roles are assigned to users who need to manage a specific subtree.
+  - `IKEA_TenantA_Picker` (tenant-scoped)
+- **Admin Roles**: Special roles for delegated administration, such as `TENANT_ADMIN_IKEA_TenantA`. These roles are assigned to users who need to manage a specific subtree.
 
 **Summary Table:**
 
@@ -117,8 +118,7 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 |----------------------------|-------------------|------------------------------------------|
 | Global Admin               | Realm Role        | `SYSTEM_ADMIN`                           |
 | Tenant Admin               | Client Role       | `TENANT_ADMIN_IKEA_TenantA`              |
-| Group Admin                | Client Role       | `GROUP_ADMIN_IKEA_TenantA_Logistics`     |
-| Functional Role            | Client Role       | `IKEA_TenantA_Logistics_Warehouse_Manager`|
+| Permission (tenant-scoped) | Client Role       | `IKEA_TenantA_Warehouse_Manager`         |
 
 ### 3.4 User Assignment: Modeling Membership and Scope
 
@@ -147,18 +147,16 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 - **Groups**:
     - `/IKEA` (customer group)
     - `/IKEA/TenantA` (tenant group)
-    - `/IKEA/TenantA/Logistics` (functional group)
-    - `/IKEA/TenantA/Logistics/logistics-admins` (subadmin group for Logistics)
     - `/IKEA/TenantA/usermanagement-admins` (admins for TenantA)
 - **Roles**:
-    - Client roles for ComplexApp: `Warehouse_Manager`, `Picker` (created dynamically under ComplexApp client, scoped to TenantA or a specific group)
+    - Client roles for ComplexApp: `Warehouse_Manager`, `Picker` (created dynamically under ComplexApp client, scoped to TenantA)
     - Realm/client roles for simpler apps: `IKEA_Editor`
-    - **Group-scoped roles**: e.g., `IKEA_TenantA_Logistics_Warehouse_Manager`
-    - **Admin roles**: e.g., `TENANT_ADMIN_IKEA_TenantA`, `GROUP_ADMIN_IKEA_TenantA_Logistics`
+    - **Tenant-scoped roles**: e.g., `IKEA_TenantA_Warehouse_Manager`
+    - **Admin roles**: e.g., `TENANT_ADMIN_IKEA_TenantA`
 - **Users**:
-    - Assigned to `/IKEA/TenantA`, `/IKEA/TenantA/Logistics`, and/or `/IKEA/TenantA/Logistics/logistics-admins`
+    - Assigned to `/IKEA/TenantA` and/or `/IKEA/TenantA/usermanagement-admins`
     - Receive roles based on group membership and/or direct assignment
-    - Users in an admin subgroup (e.g., `/IKEA/TenantA/Logistics/logistics-admins`) can manage users, groups, and permissions within `/IKEA/TenantA/Logistics` and its descendants
+    - Users in an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) can manage users, groups, and permissions within `/IKEA/TenantA` and its descendants
 
 ---
 
