@@ -77,7 +77,7 @@ This document outlines the requirements and design for supporting multitenancy i
 - **Customer Group**: Top-level group for each customer (e.g., `/IKEA`)
 - **Tenant Group**: Subgroup under customer for each tenant (e.g., `/IKEA/TenantA`)
 - **Functional Subgroups**: Further subgroups for functional areas (e.g., `/IKEA/TenantA/Logistics`)
-- **Admin ClientRole**: For each group, an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) delegates admin rights for that subtree.
+- **Admin Groups**: For each group that needs delegated administration, create an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) that grants admin rights for that subtree.
 - **Group Attributes**: Use attributes to mark groups as customers, tenants, admin areas, or to store metadata (e.g., `isTenant`, `adminGroup`, etc.).
 
 ### 3.2 Clients
@@ -90,6 +90,7 @@ This document outlines the requirements and design for supporting multitenancy i
 - **Realm Roles**: Used for global roles (e.g., SYSTEM_ADMIN).
 - **Client Roles**: Used for application-, tenant-, and group-specific roles (e.g., Warehouse_Manager for TenantA in ComplexApp).
 - **Role Naming Convention**: Use a naming pattern to encode customer, tenant, and optionally group (e.g., `IKEA_TenantA_Logistics_Warehouse_Manager`).
+- **Admin Roles**: Create specific roles for delegated administration (e.g., `TENANT_ADMIN_IKEA_TenantA`) that grant permissions to manage a specific subtree.
 
 ### 3.4 User Assignment
 
@@ -100,6 +101,7 @@ This document outlines the requirements and design for supporting multitenancy i
 ### 3.5 Attributes
 
 - Use group and user attributes to store metadata (e.g., tenant ID, customer ID, admin flags, group type).
+- Attributes can be used for filtering and authorization decisions.
 
 ---
 
@@ -115,6 +117,7 @@ This document outlines the requirements and design for supporting multitenancy i
     - Client roles for ComplexApp: `Warehouse_Manager`, `Picker` (created dynamically under ComplexApp client, scoped to TenantA or a specific group)
     - Realm/client roles for simpler apps: `IKEA_Editor`
     - **Group-scoped roles**: e.g., `IKEA_TenantA_Logistics_Warehouse_Manager`
+    - **Admin roles**: e.g., `TENANT_ADMIN_IKEA_TenantA`, `GROUP_ADMIN_IKEA_TenantA_Logistics`
 - **Users**:
     - Assigned to `/IKEA/TenantA`, `/IKEA/TenantA/Logistics`, and/or `/IKEA/TenantA/Logistics/logistics-admins`
     - Receive roles based on group membership and/or direct assignment
@@ -129,6 +132,7 @@ This document outlines the requirements and design for supporting multitenancy i
 - **Per-group permission enforcement**: For ComplexApp, permissions can be managed at any group level, and APIs must enforce that only authorized admins can modify group permissions.
 - Group-based scoping is used for hierarchical admin delegation (e.g., usermanagement-admins).
 - Role and group assignments are validated to prevent privilege escalation or cross-tenant access.
+- **Token claims**: Include tenant and customer information in tokens to enable application-level authorization.
 
 ---
 
@@ -139,13 +143,18 @@ This document outlines the requirements and design for supporting multitenancy i
 - **Hierarchical subadmin APIs**: Implement endpoints that allow subadmins to manage their subtree, including user, group, and permission management.
 - **Per-group permission APIs**: Implement endpoints for querying and updating permissions for any group, with proper authorization checks.
 - UI must use the backend API to determine what to display/manage for the current user.
+- **Performance considerations**: Implement caching for frequently accessed group hierarchies and role assignments.
 
 ---
 
-## 7. Open Questions
+## 7. Open Questions and Decisions
 
-- Should tenants be allowed to share roles or users? Yes, user is assign roles that belong to any tenant within the organization/customer.
-- What is the process for onboarding a new customer or tenant?
-- Should group-scoped permissions be visible to parent/ancestor admins, or only to direct group admins?
+- **Role Sharing**: Tenants can share roles within the same customer/organization. Users can be assigned roles that belong to any tenant within their organization.
+- **Onboarding Process**: The process for onboarding a new customer or tenant needs to be defined, including:
+  - Creation of top-level customer group
+  - Creation of tenant subgroups
+  - Assignment of initial admin users
+  - Creation of required roles and permissions
+- **Admin Visibility**: Parent/ancestor admins should have visibility into group-scoped permissions of their descendants, with the ability to override if necessary.
 
 ---
