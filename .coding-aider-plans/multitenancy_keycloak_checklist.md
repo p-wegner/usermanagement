@@ -11,7 +11,7 @@
 - [x] Validate role and group assignments to prevent privilege escalation
 - [x] Enhance UserMapper to support tenant-specific attributes
 - [x] Update UserDto to include tenant-specific fields
-- [ ] Document the group, role, and client structure for maintainability
-- [ ] Add comprehensive API documentation with Swagger annotations
+- [x] Document the group, role, and client structure for maintainability
+- [x] Add comprehensive API documentation with Swagger annotations
 - [x] Implement tenant user management endpoints
 - [x] Add tenant statistics and reporting endpoints
