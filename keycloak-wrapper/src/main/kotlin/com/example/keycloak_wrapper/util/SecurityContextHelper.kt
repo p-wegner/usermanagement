@@ -230,8 +230,56 @@ class SecurityContextHelper {
      */
     fun getAccessibleTenantIds(): List<String> {
         val claims = getTokenClaims()
+        
+        // First try to get from the accessible_tenants claim
         @Suppress("UNCHECKED_CAST")
-        return claims["accessible_tenants"] as? List<String> ?: emptyList()
+        val accessibleTenants = claims["accessible_tenants"] as? List<String>
+        
+        if (!accessibleTenants.isNullOrEmpty()) {
+            return accessibleTenants
+        }
+        
+        // If not found, try to extract from groups claim
+        @Suppress("UNCHECKED_CAST")
+        val groups = claims["groups"] as? List<String> ?: emptyList()
+        
+        // Filter groups to only include tenant groups (those starting with /tenant_)
+        val tenantGroups = groups.filter { it.startsWith("/tenant_") }
+            .map { it.removePrefix("/") }
+            
+        if (tenantGroups.isNotEmpty()) {
+            return tenantGroups
+        }
+        
+        // If still not found, try to extract from resource_access claim for tenant-specific roles
+        @Suppress("UNCHECKED_CAST")
+        val resourceAccess = claims["resource_access"] as? Map<String, Any>
+        
+        if (resourceAccess != null) {
+            val tenantIds = mutableSetOf<String>()
+            
+            resourceAccess.forEach { (_, value) ->
+                @Suppress("UNCHECKED_CAST")
+                val clientData = value as? Map<String, Any>
+                @Suppress("UNCHECKED_CAST")
+                val roles = clientData?.get("roles") as? List<String> ?: emptyList()
+                
+                // Extract tenant IDs from role names (assuming format like "TENANT_ROLENAME")
+                roles.forEach { role ->
+                    val parts = role.split("_")
+                    if (parts.size >= 2) {
+                        val potentialTenantId = "tenant_${parts[0].lowercase()}"
+                        tenantIds.add(potentialTenantId)
+                    }
+                }
+            }
+            
+            if (tenantIds.isNotEmpty()) {
+                return tenantIds.toList()
+            }
+        }
+        
+        return emptyList()
     }
     
     /**
@@ -249,5 +297,32 @@ class SecurityContextHelper {
         // Check if the tenant is in the accessible tenants list
         val accessibleTenants = getAccessibleTenantIds()
         return accessibleTenants.contains(tenantId)
+    }
+    
+    /**
+     * Gets the tenant context from the current user's token.
+     * This can be used to determine which tenant the user is currently operating in.
+     * 
+     * @return The current tenant context or null if not available
+     */
+    fun getCurrentTenantContext(): String? {
+        val claims = getTokenClaims()
+        
+        // First try to get from the tenant_context claim
+        val tenantContext = claims["tenant_context"] as? String
+        if (tenantContext != null) {
+            return tenantContext
+        }
+        
+        // If not found and user is a tenant admin with access to only one tenant,
+        // use that tenant as the context
+        if (isTenantAdmin()) {
+            val accessibleTenants = getAccessibleTenantIds()
+            if (accessibleTenants.size == 1) {
+                return accessibleTenants.first()
+            }
+        }
+        
+        return null
     }
 }

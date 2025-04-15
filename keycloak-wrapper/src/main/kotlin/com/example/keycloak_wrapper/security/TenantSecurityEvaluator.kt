@@ -30,6 +30,13 @@ class TenantSecurityEvaluator(
 
         // Tenant admins only have access to their assigned tenants
         if (securityContextHelper.isTenantAdmin()) {
+            // First check accessible tenants from token
+            val accessibleTenantIds = securityContextHelper.getAccessibleTenantIds()
+            if (accessibleTenantIds.contains(tenantId)) {
+                return true
+            }
+            
+            // If not found in token, check from service
             val userId = securityContextHelper.getCurrentUserId() ?: return false
             return tenantService.isUserTenantAdmin(userId, tenantId)
         }
@@ -63,6 +70,13 @@ class TenantSecurityEvaluator(
 
         // Tenant admins can only manage their assigned tenants
         if (securityContextHelper.isTenantAdmin()) {
+            // First check accessible tenants from token
+            val accessibleTenantIds = securityContextHelper.getAccessibleTenantIds()
+            if (accessibleTenantIds.contains(tenantId)) {
+                return true
+            }
+            
+            // If not found in token, check from service
             val userId = securityContextHelper.getCurrentUserId() ?: return false
             return tenantService.isUserTenantAdmin(userId, tenantId)
         }
@@ -94,11 +108,24 @@ class TenantSecurityEvaluator(
             return true
         }
 
+        // If the group is not tenant-related, only system admins have access
+        if (!group.isTenant && !isTenantSubgroup(group)) {
+            return false
+        }
+
         // Find the tenant ID for this group
         val tenantId = findTenantIdForGroup(group) ?: return false
 
         // Check if the user has access to the tenant
         return hasTenantAccess(tenantId)
+    }
+
+    /**
+     * Determines if a group is a subgroup of a tenant
+     */
+    private fun isTenantSubgroup(group: GroupDto): Boolean {
+        val path = group.path ?: return false
+        return path.startsWith("/tenant_")
     }
 
     /**
@@ -145,6 +172,11 @@ class TenantSecurityEvaluator(
      * @param targetUserId The ID of the user to check access for
      */
     fun verifyUserAccess(currentUserId: String, targetUserId: String) {
+        // Users can always access themselves
+        if (currentUserId == targetUserId) {
+            return
+        }
+        
         // System admins have access to all users
         if (securityContextHelper.hasRole(RoleConstants.ROLE_ADMIN)) {
             return
@@ -187,6 +219,13 @@ class TenantSecurityEvaluator(
         
         // Tenant admins can only manage users in their assigned tenants
         if (securityContextHelper.isTenantAdmin()) {
+            // First check accessible tenants from token
+            val accessibleTenantIds = securityContextHelper.getAccessibleTenantIds()
+            if (accessibleTenantIds.contains(tenantId)) {
+                return true
+            }
+            
+            // If not found in token, check from service
             val userId = securityContextHelper.getCurrentUserId() ?: return false
             return tenantService.isUserTenantAdmin(userId, tenantId)
         }
@@ -236,12 +275,51 @@ class TenantSecurityEvaluator(
                 !adminTenantRoleIds.contains(roleId)
             }
             
-            if (unauthorizedRoleIds.isNotEmpty()) {
+            // Prevent assignment of system roles
+            val systemRoleIds = roleAssignment.realmRoles
+                .filter { it.name == RoleConstants.ROLE_ADMIN || it.name == RoleConstants.ROLE_TENANT_ADMIN }
+                .map { it.id }
+                
+            if (unauthorizedRoleIds.isNotEmpty() || systemRoleIds.isNotEmpty()) {
                 throw SecurityException("User does not have access to assign some of the specified roles")
             }
         } else {
             // Regular users cannot assign roles
             throw SecurityException("User does not have permission to assign roles")
         }
+    }
+    
+    /**
+     * Checks if a role is a tenant-specific role.
+     * 
+     * @param roleName The name of the role to check
+     * @return true if the role is tenant-specific, false otherwise
+     */
+    fun isTenantRole(roleName: String): Boolean {
+        // System roles are not tenant-specific
+        if (roleName == RoleConstants.ROLE_ADMIN || 
+            roleName == RoleConstants.ROLE_TENANT_ADMIN || 
+            roleName == RoleConstants.ROLE_USER) {
+            return false
+        }
+        
+        // Check if the role name follows tenant-specific naming convention
+        // For example: TENANT_ROLENAME or TENANT_APP_ROLENAME
+        return roleName.contains("_")
+    }
+    
+    /**
+     * Extracts the tenant name from a tenant-specific role name.
+     * 
+     * @param roleName The name of the role
+     * @return The tenant name or null if not a tenant-specific role
+     */
+    fun extractTenantFromRole(roleName: String): String? {
+        if (!isTenantRole(roleName)) {
+            return null
+        }
+        
+        val parts = roleName.split("_")
+        return if (parts.size >= 2) parts[0] else null
     }
 }
