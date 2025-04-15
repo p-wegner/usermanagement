@@ -213,17 +213,6 @@ class SecurityContextHelper {
     }
     
     /**
-     * Gets the tenant context from the token claims.
-     * This can be used to determine which tenant the user is currently operating in.
-     * 
-     * @return The tenant ID if present, null otherwise
-     */
-    fun getCurrentTenantContext(): String? {
-        val claims = getTokenClaims()
-        return claims["tenant_id"] as? String
-    }
-    
-    /**
      * Gets the list of tenant IDs the current user has access to.
      * 
      * @return List of tenant IDs or empty list if none
