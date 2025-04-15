@@ -5,6 +5,7 @@ import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.facade.KeycloakUserFacade
 import com.example.keycloak_wrapper.mapper.UserMapper
 import com.example.keycloak_wrapper.util.SecurityContextHelper
+import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,14 +18,15 @@ class UserService(
     fun getUsers(searchDto: UserSearchDto): Pair<List<UserDto>, Int> {
         val (users, total) = if (searchDto.tenantId != null) {
             // If tenantId is provided, fetch users from that tenant group with pagination
-            val tenantUsers = tenantService.getTenantUsers(searchDto.tenantId, searchDto.page, searchDto.size)
+            val tenantUsers: List<UserDto> = tenantService.getTenantUsers(searchDto.tenantId, searchDto.page, searchDto.size)
             Pair(tenantUsers, tenantUsers.size)
         } else {
-            keycloakUserFacade.getUsers(
+            val users: Pair<List<UserRepresentation>, Int> = keycloakUserFacade.getUsers(
                 search = searchDto.search,
                 firstResult = searchDto.page * searchDto.size,
                 maxResults = searchDto.size
             )
+            users
         }
 
         val userDtos = users.map { userMapper.toDto(it) }
