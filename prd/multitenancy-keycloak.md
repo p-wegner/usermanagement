@@ -64,28 +64,30 @@ This document outlines the requirements and design for supporting multitenancy i
 
 - **Customer Group**: Top-level group for each customer (e.g., `/IKEA`)
 - **Tenant Group**: Subgroup under customer for each tenant (e.g., `/IKEA/TenantA`)
-- **Functional Subgroups**: Further subgroups for admin roles (e.g., `/IKEA/TenantA/usermanagement-admins`)
-- **Group Attributes**: Use attributes to mark groups as customers, tenants, or admin areas.
+- **Functional Subgroups**: Further subgroups for functional areas (e.g., `/IKEA/TenantA/Logistics`)
+- **Admin Subgroups**: For each group, an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) delegates admin rights for that subtree.
+- **Group Attributes**: Use attributes to mark groups as customers, tenants, admin areas, or to store metadata (e.g., `isTenant`, `adminGroup`, etc.).
 
 ### 3.2 Clients
 
 - **Application Client**: Each application (e.g., ComplexApp) is a Keycloak client.
-- **Client Roles**: Roles specific to an application and tenant are created as client roles under the application client.
+- **Client Roles**: Roles specific to an application and tenant/group are created as client roles under the application client.
 
 ### 3.3 Roles
 
 - **Realm Roles**: Used for global roles (e.g., SYSTEM_ADMIN).
-- **Client Roles**: Used for application- and tenant-specific roles (e.g., Warehouse_Manager for TenantA in ComplexApp).
-- **Role Naming Convention**: Use a naming pattern to encode customer and tenant (e.g., `IKEA_TenantA_Warehouse_Manager`).
+- **Client Roles**: Used for application-, tenant-, and group-specific roles (e.g., Warehouse_Manager for TenantA in ComplexApp).
+- **Role Naming Convention**: Use a naming pattern to encode customer, tenant, and optionally group (e.g., `IKEA_TenantA_Logistics_Warehouse_Manager`).
 
 ### 3.4 User Assignment
 
 - Users are assigned to the appropriate group(s) and granted roles via group membership or direct assignment.
 - Group membership determines visibility and management scope in the UI and API.
+- **Subadmin Assignment**: Users assigned to an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) are granted delegated admin rights for that subtree.
 
 ### 3.5 Attributes
 
-- Use group and user attributes to store metadata (e.g., tenant ID, customer ID, admin flags).
+- Use group and user attributes to store metadata (e.g., tenant ID, customer ID, admin flags, group type).
 
 ---
 
@@ -94,19 +96,25 @@ This document outlines the requirements and design for supporting multitenancy i
 - **Groups**:
     - `/IKEA` (customer group)
     - `/IKEA/TenantA` (tenant group)
+    - `/IKEA/TenantA/Logistics` (functional group)
+    - `/IKEA/TenantA/Logistics/logistics-admins` (subadmin group for Logistics)
     - `/IKEA/TenantA/usermanagement-admins` (admins for TenantA)
 - **Roles**:
-    - Client roles for ComplexApp: `Warehouse_Manager`, `Picker` (created dynamically under ComplexApp client, scoped to TenantA)
+    - Client roles for ComplexApp: `Warehouse_Manager`, `Picker` (created dynamically under ComplexApp client, scoped to TenantA or a specific group)
     - Realm/client roles for simpler apps: `IKEA_Editor`
+    - **Group-scoped roles**: e.g., `IKEA_TenantA_Logistics_Warehouse_Manager`
 - **Users**:
-    - Assigned to `/IKEA/TenantA` and/or `/IKEA/TenantA/usermanagement-admins`
+    - Assigned to `/IKEA/TenantA`, `/IKEA/TenantA/Logistics`, and/or `/IKEA/TenantA/Logistics/logistics-admins`
     - Receive roles based on group membership and/or direct assignment
+    - Users in an admin subgroup (e.g., `/IKEA/TenantA/Logistics/logistics-admins`) can manage users, groups, and permissions within `/IKEA/TenantA/Logistics` and its descendants
 
 ---
 
 ## 5. Security and Isolation
 
 - API must enforce that users can only see/manage users, roles, and groups within their permitted subtree.
+- **Hierarchical subadmin enforcement**: Subadmins (members of admin subgroups) can only manage users, groups, and permissions within their subtree.
+- **Per-group permission enforcement**: For ComplexApp, permissions can be managed at any group level, and APIs must enforce that only authorized admins can modify group permissions.
 - Group-based scoping is used for hierarchical admin delegation (e.g., usermanagement-admins).
 - Role and group assignments are validated to prevent privilege escalation or cross-tenant access.
 
@@ -116,6 +124,8 @@ This document outlines the requirements and design for supporting multitenancy i
 
 - Dynamic client role creation can be performed via Keycloak Admin REST API by ComplexApp.
 - Group and role management APIs must enforce all scoping and isolation rules.
+- **Hierarchical subadmin APIs**: Implement endpoints that allow subadmins to manage their subtree, including user, group, and permission management.
+- **Per-group permission APIs**: Implement endpoints for querying and updating permissions for any group, with proper authorization checks.
 - UI must use the backend API to determine what to display/manage for the current user.
 
 ---
@@ -125,12 +135,14 @@ This document outlines the requirements and design for supporting multitenancy i
 - Should tenants be allowed to share roles or users?
 - How to handle cross-tenant or cross-customer reporting (if needed)?
 - What is the process for onboarding a new customer or tenant?
+- Should subadmin group naming be strictly enforced, or configurable?
+- Should group-scoped permissions be visible to parent/ancestor admins, or only to direct group admins?
 
 ---
 
 <aider-summary>
-- Wrote a detailed Product Requirements Document (PRD) in markdown for supporting multitenancy in a single Keycloak realm.
-- The PRD covers requirements for dynamic client role creation, customer/tenant isolation, hierarchical group structure, and user/role management.
-- It maps requirements to Keycloak concepts: groups, clients, roles, client roles, and attributes.
-- Includes an example for the IKEA customer and outlines security, isolation, and implementation notes.
+- Expanded the PRD to explicitly require hierarchical subadmins (admin subgroups at any group level) and describe their delegated management scope.
+- Added requirements and mapping for per-group permissions, especially for ComplexApp, including APIs and UI/UX implications.
+- Clarified group structure, admin subgroup naming, and enforcement of hierarchical admin rights.
+- Updated implementation notes and security sections to reflect the need for APIs and enforcement for both hierarchical subadmins and per-group permissions.
 </aider-summary>
