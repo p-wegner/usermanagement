@@ -19,7 +19,7 @@ This document outlines the requirements and design for supporting multitenancy i
 - Simpler applications require only a fixed set of roles per customer (e.g., IKEA_Editor).
 - Customers must be strictly isolated: users, roles, tenants and groups of one customer must not be visible or manageable by others.
 - The UI must allow end users to manage users, roles, and groups within their permitted scope.
-- There must be support for hierarchical group structures, including the possibility to assign an admin role for a group, who can only manage users/roles/groups below their group.
+- There must be support for hierarchical admin structures, including the possibility to assign an admin role for sub-structures below like tenants, who can only manage users/roles/groups below their respective hierarchy.
 
 ---
 
@@ -29,7 +29,9 @@ This document outlines the requirements and design for supporting multitenancy i
 
 - **Single Keycloak Realm**: All customers and tenants are managed within one realm for operational simplicity.
 - **Customer Isolation**: No cross-customer visibility or access.
-- **Tenant Isolation**: Tenants within a customer are isolated from each other unless explicitly allowed.
+- **Tenant Isolation**: Tenants within a customer are isolated from each other unless explicitly allowed. 
+  - Customer admins can manage users/roles/groups below their respective hierarchy, i.e. all tenants, roles, users and groups that belong to the customer.
+  - Tenant admins can manage users/roles/groups below their respective hierarchy.
 
 ### 2.2 Dynamic Role Management
 
@@ -43,8 +45,7 @@ This document outlines the requirements and design for supporting multitenancy i
 - Support for nested groups:
     - Top-level group per customer (e.g., IKEA)
     - Subgroups per tenant (e.g., TenantA, TenantB)
-    - Further subgroups for admin roles (e.g., usermanagement-admins)
-    - **Hierarchical subadmins**: Each group (at any level) can have a corresponding admin role (e.g., `IKEA_TenantA_usermanagement_admin`) whose members are delegated admin rights for that subtree.
+    - **Hierarchical subadmins**: Each group (at any level) can have a corresponding admin client role (e.g., `IKEA_TenantA_usermanagement_admin`) whose members are delegated admin rights for that subtree.
 - **Delegated Administration**: Subadmins can only manage users/roles/groups within their subtree. This enables fine-grained, hierarchical delegation of admin rights (e.g., a group admin can manage only their group and its descendants).
 
 ### 2.4 Per-Group Permissions for ComplexApp
@@ -74,24 +75,7 @@ This document outlines the requirements and design for supporting multitenancy i
 
 This section clarifies how Keycloak's core concepts are used to model the requirements described above. Each requirement is mapped to a specific Keycloak feature, with naming conventions and usage patterns made explicit.
 
-### 3.1 Groups: Modeling Customers, Tenants, and Hierarchies
-
-- **Customer Group**: Each customer is represented as a top-level Keycloak group (e.g., `/IKEA`). This group acts as the root for all of the customer's data and users.
-- **Tenant Group**: Each tenant within a customer is a subgroup under the customer group (e.g., `/IKEA/TenantA`). This provides tenant-level isolation and scoping.
-- **Admin Groups**: For each group that requires delegated administration, an admin subgroup is created (e.g., `/IKEA/TenantA/usermanagement-admins`). Membership in this group grants admin rights scoped to the parent group and its descendants.
-- **Group Attributes**: Keycloak group attributes are used to mark the type and metadata of each group (e.g., `isCustomer`, `isTenant`, `adminGroup`). These attributes enable filtering, authorization, and UI logic.
-
-> **Note:** For now, functional groups (such as teams or departments) are not modeled as subgroups. Instead, permissions are modeled in a clear and uniform way using either groups or roles, as described below.
-
-**Summary Table:**
-
-| Requirement                | Keycloak Group Structure Example                | Group Attribute Example         |
-|----------------------------|------------------------------------------------|--------------------------------|
-| Customer                   | `/IKEA`                                        | `isCustomer: true`             |
-| Tenant                     | `/IKEA/TenantA`                                | `isTenant: true`               |
-| Admin Subgroup             | `/IKEA/TenantA/usermanagement-admins`          | `adminGroup: true`             |
-
-### 3.2 Clients: Modeling Applications
+### 3.1 Clients: Modeling Applications
 
 - **Application Client**: Each application (e.g., ComplexApp, SimpleApp) is represented as a Keycloak client. This allows for application-specific roles and permissions.
 - **Client Roles**: Roles that are specific to an application, tenant, or group are created as client roles under the relevant Keycloak client. This enables fine-grained, app-specific access control.
@@ -100,7 +84,7 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 - `ComplexApp` client in Keycloak
 - Roles like `IKEA_TenantA_Warehouse_Manager` are created as client roles under the `ComplexApp` client.
 
-### 3.3 Roles and Groups: Modeling Permissions and Delegated Administration
+### 3.2 Roles and Groups: Modeling Permissions and Delegated Administration
 
 - **Realm Roles**: Used for global or cross-application roles (e.g., `SYSTEM_ADMIN`). These are not tenant- or customer-specific.
 - **Client Roles**: Used for application-, tenant-, and group-specific permissions. Naming conventions encode the scope (e.g., `IKEA_TenantA_Warehouse_Manager`).
@@ -114,59 +98,35 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 
 **Summary Table:**
 
-| Requirement                | Keycloak Role Type | Example Role Name                   |
+| Requirement                | Keycloak Role Type | Example Role Name                  |
 |----------------------------|-------------------|-------------------------------------|
 | Global Admin               | Realm Role        | `SYSTEM_ADMIN`                      |
+| Customer Admin             | Realm Role        | `IKEA_Usermanagement_Admin`         |
 | Tenant Admin               | Client Role       | `IKEA_TenantA_Usermanagement_Admin` |
 | Permission (tenant-scoped) | Client Role       | `IKEA_TenantA_Warehouse_Manager`    |
 
-### 3.4 User Assignment: Modeling Membership and Scope
-
-- **Group Membership**: Users are assigned to groups that represent their customer and tenant. This determines their visibility and management scope in the UI and API.
-- **Role Assignment**: Users receive permissions by being assigned roles (either directly or via group membership). Roles represent permissions in a uniform way.
-- **Subadmin Assignment**: Users who are members of an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) are granted delegated admin rights for the parent group and all its descendants.
-
-**Example:**
-- A user in `/IKEA/TenantA/usermanagement-admins` can manage users, groups, and permissions within `/IKEA/TenantA` and its subgroups.
-
-### 3.5 Attributes: Modeling Metadata and Scoping
-
-- **Group Attributes**: Used to store metadata about groups (e.g., type, tenant ID, customer ID, admin flags). Enables filtering and authorization decisions.
-- **User Attributes**: Can be used to store additional metadata about users (e.g., managed tenants, admin flags).
-- **Token Claims**: Keycloak can include group and attribute information in tokens, allowing applications to enforce authorization based on customer, tenant, or group.
-
-**Example Attribute Usage:**
-- `group.attributes.isTenant = true`
-- `group.attributes.tenantId = "TenantA"`
-- `user.attributes.managedTenants = ["TenantA", "TenantB"]`
-
----
 
 ## 4. Example: IKEA Customer with ComplexApp
 
 - **Groups**:
     - `/IKEA` (customer group)
     - `/IKEA/TenantA` (tenant group)
-    - `/IKEA/TenantA/usermanagement-admins` (admins for TenantA)
 - **Roles**:
     - Client roles for ComplexApp: `Warehouse_Manager`, `Picker` (created dynamically under ComplexApp client, scoped to TenantA)
     - Realm/client roles for simpler apps: `IKEA_Editor`
     - **Tenant-scoped roles**: e.g., `IKEA_TenantA_Warehouse_Manager`
-    - **Admin roles**: e.g., `TENANT_ADMIN_IKEA_TenantA`
+    - **Tenant-scoped Admin roles**: e.g., `IKEA_TenantA_Usermanagement_admin` (tenant-scoped)`
 - **Users**:
-    - Assigned to `/IKEA/TenantA` and/or `/IKEA/TenantA/usermanagement-admins`
     - Receive roles based on group membership and/or direct assignment
-    - Users in an admin subgroup (e.g., `/IKEA/TenantA/usermanagement-admins`) can manage users, groups, and permissions within `/IKEA/TenantA` and its descendants
 
 ---
 
 ## 5. Security and Isolation
 
 - API must enforce that users can only see/manage users, roles, and groups within their permitted subtree.
-- **Hierarchical subadmin enforcement**: Subadmins (members of admin subgroups) can only manage users, groups, and permissions within their subtree.
+- **Hierarchical subadmin enforcement**: Tenant or Customer Scoped Subadmins  can only manage users, groups, and permissions within their subtree.
 - **Per-group permission enforcement**: For ComplexApp, permissions can be managed at any group level, and APIs must enforce that only authorized admins can modify group permissions.
 - **Customer admin isolation**: Customer admins using the API should only see their respective client roles, users, and groups. The API must filter all responses to include only resources within the admin's scope.
-- Group-based scoping is used for hierarchical admin delegation (e.g., usermanagement-admins).
 - Role and group assignments are validated to prevent privilege escalation or cross-tenant access.
 - **Token claims**: Include tenant and customer information in tokens to enable application-level authorization.
 
@@ -186,7 +146,7 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 
 ## 7. Open Questions and Decisions
 
-- **Role Sharing**: Tenants can share roles within the same customer/organization. Users can be assigned roles that belong to any tenant within their organization.
+- **Role Sharing**: Users can be assigned roles that belong to any tenant within their customer.
 - **Onboarding Process**: The process for onboarding a new customer or tenant needs to be defined, including:
   - Creation of top-level customer group
   - Creation of tenant subgroups
