@@ -9,7 +9,9 @@
 - [x] Update backend API to enforce all scoping and isolation rules
 - [ ] Ensure UI integration only displays/manages permitted users, roles, and groups
 - [x] Validate role and group assignments to prevent privilege escalation
+- [x] Enhance UserMapper to support tenant-specific attributes
+- [x] Update UserDto to include tenant-specific fields
 - [ ] Document the group, role, and client structure for maintainability
 - [ ] Add comprehensive API documentation with Swagger annotations
-- [ ] Implement tenant user management endpoints
+- [x] Implement tenant user management endpoints
 - [ ] Add tenant statistics and reporting endpoints

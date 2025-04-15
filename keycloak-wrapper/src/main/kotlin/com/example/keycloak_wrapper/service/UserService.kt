@@ -36,19 +36,8 @@ class UserService(
         val user = keycloakUserFacade.getUser(id)
         val userDto = userMapper.toDto(user)
         
-        // Check if user is a tenant admin
-        val userRoles = keycloakUserFacade.getUserRoles(id)
-        val isTenantAdmin = userRoles.realmRoles.any { it.name == RoleConstants.ROLE_TENANT_ADMIN }
-        
-        if (isTenantAdmin && tenantService != null) {
-            // Get the tenants this user is an admin for
-            val managedTenants = tenantService.getUserTenants(id).tenants.map { it.id }
-            
-            return userDto.copy(
-                isTenantAdmin = true,
-                managedTenants = managedTenants
-            )
-        }
+        // Enrich with tenant information
+        val enrichedUserDto = userMapper.enrichWithTenantInfo(userDto)
         
         // If a current user ID is provided, check tenant access
         if (currentUserId != null && tenantService != null && id != currentUserId) {
@@ -59,7 +48,7 @@ class UserService(
             }
         }
         
-        return userDto
+        return enrichedUserDto
     }
     
     /**

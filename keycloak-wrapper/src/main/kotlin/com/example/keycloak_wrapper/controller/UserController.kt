@@ -26,12 +26,19 @@ class UserController(
     fun getUsers(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(required = false) search: String?
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) tenantId: String?
     ): ResponseEntity<ApiResponse<Map<String, Any>>> {
         val currentUserId = securityContextHelper.getCurrentUserId()
-        val searchDto = UserSearchDto(page, size, search, currentUserId)
+        
+        // If tenantId is provided, verify access
+        if (tenantId != null) {
+            tenantSecurityEvaluator.verifyTenantAccess(tenantId)
+        }
+        
+        val searchDto = UserSearchDto(page, size, search, currentUserId, tenantId)
         val (users, total) = userService.getUsers(searchDto)
-        // TODO 31.03.2025 pwegner: define dto for response
+        
         val response = mapOf(
             "items" to users,
             "total" to total
