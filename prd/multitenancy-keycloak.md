@@ -114,11 +114,11 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 
 **Summary Table:**
 
-| Requirement                | Keycloak Role Type | Example Role Name                        |
-|----------------------------|-------------------|------------------------------------------|
-| Global Admin               | Realm Role        | `SYSTEM_ADMIN`                           |
-| Tenant Admin               | Client Role       | `TENANT_ADMIN_IKEA_TenantA`              |
-| Permission (tenant-scoped) | Client Role       | `IKEA_TenantA_Warehouse_Manager`         |
+| Requirement                | Keycloak Role Type | Example Role Name                   |
+|----------------------------|-------------------|-------------------------------------|
+| Global Admin               | Realm Role        | `SYSTEM_ADMIN`                      |
+| Tenant Admin               | Client Role       | `IKEA_TenantA_Usermanagement_Admin` |
+| Permission (tenant-scoped) | Client Role       | `IKEA_TenantA_Warehouse_Manager`    |
 
 ### 3.4 User Assignment: Modeling Membership and Scope
 
