@@ -1,0 +1,73 @@
+files:
+  - path: prd/multitenancy-keycloak.md
+    readOnly: true
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/KeycloakWrapperApplication.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/config/CorsConfig.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/config/KeycloakConfig.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/config/OpenApiConfig.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/config/RoleConstants.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/config/SecurityConfig.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/AuthController.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/GroupController.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/RoleController.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/TenantAdminController.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/TenantController.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/controller/UserController.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/ApiResponse.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/AuthConfigDto.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/ErrorResponse.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/GroupDto.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/RoleAssignmentDto.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/RoleDto.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/TenantAdminDto.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/dto/UserDto.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/exception/GlobalExceptionHandler.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/exception/KeycloakException.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/facade/KeycloakGroupFacade.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/facade/KeycloakRoleFacade.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/facade/KeycloakUserFacade.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/listener/RoleEventListener.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/mapper/GroupMapper.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/mapper/RoleMapper.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/mapper/UserMapper.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/security/TenantSecurityEvaluator.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/GroupService.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/RoleService.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/TenantService.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/service/UserService.kt
+    readOnly: false
+  - path: keycloak-wrapper/src/main/kotlin/com/example/keycloak_wrapper/util/SecurityContextHelper.kt
+    readOnly: false

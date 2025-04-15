@@ -25,15 +25,6 @@ class KeycloakRoleFacade(
         }
     }
     
-    fun getRoles(name: String, first: Int, max: Int): List<RoleRepresentation> {
-        return try {
-            val roles = keycloak.realm(realm).roles()
-            roles.list(name, first, max)
-        } catch (e: Exception) {
-            throw KeycloakException("Failed to fetch roles with name: $name", e)
-        }
-    }
-
     fun getRole(id: String): RoleRepresentation {
         return try {
             keycloak.realm(realm).rolesById().getRole(id)
