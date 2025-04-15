@@ -174,6 +174,39 @@ class TenantSecurityEvaluator(
     }
     
     /**
+     * Checks if the current user has access to view or manage users in the specified tenant.
+     *
+     * @param tenantId The ID of the tenant to check access for
+     * @return true if the user has access, false otherwise
+     */
+    fun hasTenantUserManagementAccess(tenantId: String): Boolean {
+        // System admins can manage users in any tenant
+        if (securityContextHelper.isSystemAdmin()) {
+            return true
+        }
+        
+        // Tenant admins can only manage users in their assigned tenants
+        if (securityContextHelper.isTenantAdmin()) {
+            val userId = securityContextHelper.getCurrentUserId() ?: return false
+            return tenantService.isUserTenantAdmin(userId, tenantId)
+        }
+        
+        return false
+    }
+    
+    /**
+     * Verifies that the current user has access to view or manage users in the specified tenant.
+     * Throws AccessDeniedException if the user does not have access.
+     *
+     * @param tenantId The ID of the tenant to verify access for
+     */
+    fun verifyTenantUserManagementAccess(tenantId: String) {
+        if (!hasTenantUserManagementAccess(tenantId)) {
+            throw AccessDeniedException("User does not have access to manage users in tenant with ID: $tenantId")
+        }
+    }
+    
+    /**
      * Verifies that the current user has access to assign the specified roles.
      * Tenant admins can only assign roles within their tenant scope.
      * Throws SecurityException if access is denied.

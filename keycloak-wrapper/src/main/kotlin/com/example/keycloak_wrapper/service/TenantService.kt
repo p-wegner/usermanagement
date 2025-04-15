@@ -485,6 +485,68 @@ class TenantService(
         // Regular users can only see themselves
         return users.filter { it.id == currentUserId }
     }
+    
+    /**
+     * Gets all users belonging to a specific tenant.
+     *
+     * @param tenantId The ID of the tenant
+     * @param page The page number for pagination
+     * @param size The page size for pagination
+     * @return List of users belonging to the tenant
+     */
+    fun getTenantUsers(tenantId: String, page: Int = 0, size: Int = 20): List<UserDto> {
+        val tenant = getTenant(tenantId)
+        val members = keycloakGroupFacade.getGroupMembers(tenantId)
+        
+        // Apply pagination
+        val startIndex = page * size
+        val endIndex = minOf(startIndex + size, members.size)
+        
+        return if (startIndex < members.size) {
+            members.subList(startIndex, endIndex).map { user ->
+                UserDto(
+                    id = user.id,
+                    username = user.username,
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    email = user.email,
+                    enabled = user.isEnabled,
+                    isTenantAdmin = isUserTenantAdmin(user.id, tenantId)
+                )
+            }
+        } else {
+            emptyList()
+        }
+    }
+    
+    /**
+     * Adds a user to a tenant.
+     *
+     * @param userId The ID of the user
+     * @param tenantId The ID of the tenant
+     */
+    fun addUserToTenant(userId: String, tenantId: String) {
+        val tenant = getTenant(tenantId)
+        keycloakUserFacade.addUserToGroup(userId, tenantId)
+    }
+    
+    /**
+     * Removes a user from a tenant.
+     *
+     * @param userId The ID of the user
+     * @param tenantId The ID of the tenant
+     */
+    fun removeUserFromTenant(userId: String, tenantId: String) {
+        val tenant = getTenant(tenantId)
+        
+        // Check if the user is a tenant admin
+        if (isUserTenantAdmin(userId, tenantId)) {
+            // Remove tenant admin role first
+            removeTenantAdmin(userId, tenantId)
+        }
+        
+        keycloakUserFacade.removeUserFromGroup(userId, tenantId)
+    }
 }
 
 fun RoleAssignmentDto.isTenantAdmin(): Boolean =
