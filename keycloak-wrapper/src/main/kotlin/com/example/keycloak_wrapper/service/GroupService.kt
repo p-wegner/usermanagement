@@ -18,6 +18,7 @@ class GroupService(
             max = searchDto.size,
             tenantsOnly = searchDto.tenantsOnly
         )
+        // Always map attributes to isTenant and tenantName in GroupDto
         return groups.map { groupMapper.toDto(it) }
     }
 

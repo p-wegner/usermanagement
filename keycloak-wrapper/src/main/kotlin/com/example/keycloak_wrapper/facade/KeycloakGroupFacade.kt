@@ -28,7 +28,7 @@ class KeycloakGroupFacade(
         return try {
             val groups = keycloak.realm(realm).groups().groups(search, first, max)
             if (tenantsOnly) {
-                groups.filter { it.attributes?.get("isTenant")?.firstOrNull() == "true" }
+                groups.filter { it.attributes?.get("isTenant")?.firstOrNull()?.equals("true", ignoreCase = true) == true }
             } else {
                 groups
             }

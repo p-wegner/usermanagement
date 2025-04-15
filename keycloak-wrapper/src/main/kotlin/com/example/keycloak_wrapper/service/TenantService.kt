@@ -35,17 +35,19 @@ class TenantService(
             throw IllegalArgumentException("Tenant name cannot be blank")
         }
 
-        // Check if tenant already exists
-        val tenantGroupName = TENANT_PREFIX + tenantCreateDto.name
-        val searchDto = GroupSearchDto(search = tenantGroupName)
+        // Check if tenant already exists by attribute
+        val searchDto = GroupSearchDto()
         val existingGroups = groupService.getGroups(searchDto)
-        if (existingGroups.any { it.name == tenantGroupName }) {
-            throw IllegalArgumentException("Tenant with name ${tenantCreateDto.name} already exists")
+        if (existingGroups.any { 
+                it.name == TENANT_PREFIX + tenantCreateDto.name ||
+                (it.isTenant && it.tenantName == tenantCreateDto.displayName)
+            }) {
+            throw IllegalArgumentException("Tenant with name ${tenantCreateDto.name} or display name ${tenantCreateDto.displayName} already exists")
         }
 
-        // Create tenant group
+        // Create tenant group with attributes
         val groupCreateDto = GroupCreateDto(
-            name = tenantGroupName,
+            name = TENANT_PREFIX + tenantCreateDto.name,
             parentGroupId = null,
             realmRoles = emptyList(),
             isTenant = true,
@@ -95,8 +97,9 @@ class TenantService(
      * A tenant is a top-level group with the name starting with "tenant_".
      */
     fun getTenants(): List<GroupDto> {
-        val searchDto = GroupSearchDto(tenantsOnly = true)
-        return groupService.getGroups(searchDto)
+        // Fetch all groups and filter by isTenant attribute
+        val searchDto = GroupSearchDto()
+        return groupService.getGroups(searchDto).filter { it.isTenant }
     }
 
     /**
@@ -104,7 +107,7 @@ class TenantService(
      */
     fun getTenant(tenantId: String): GroupDto {
         val group = groupService.getGroup(tenantId)
-        if (!group.isTenant) {
+        if (!(group.isTenant || group.tenantName != null)) {
             throw IllegalArgumentException("Group with ID $tenantId is not a tenant")
         }
         return group
