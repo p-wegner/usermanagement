@@ -21,33 +21,15 @@ Below is a Mermaid diagram of the overall architecture:
 
 ```mermaid
 flowchart TD
-    subgraph Internet
-        A[User Browser]
-    end
+    A[User Browser]
+    B1[ikea.cloudmetrics.com]
+    B2[dhl.cloudmetrics.com]
+    C1[NGINX: Route to IKEA Proxy]
+    C2[NGINX: Route to DHL Proxy]
+    D1[OAuth2 Proxy (IKEA): Authenticate via Keycloak (IKEA Realm)]
+    D2[OAuth2 Proxy (DHL): Authenticate via Keycloak (DHL Realm)]
+    E1[Grafana Instance: Receives Authentication Headers]
 
-    subgraph DNS[DNS / Subdomains]
-        B1[ikea.cloudmetrics.com]
-        B2[dhl.cloudmetrics.com]
-    end
-
-    subgraph RP[Reverse Proxy (NGINX)]
-        C1[Route to IKEA Proxy]
-        C2[Route to DHL Proxy]
-    end
-
-    subgraph OAuth_IKEA[OAuth2 Proxy (IKEA)]
-        D1[Authenticate via Keycloak (IKEA Realm)]
-    end
-
-    subgraph OAuth_DHL[OAuth2 Proxy (DHL)]
-        D2[Authenticate via Keycloak (DHL Realm)]
-    end
-
-    subgraph Grafana[Grafana Instance]
-        E1[Receives Authentication Headers]
-    end
-
-    %% Connections
     A --> B1
     A --> B2
     B1 --> C1
