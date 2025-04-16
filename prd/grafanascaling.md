@@ -1,6 +1,7 @@
 # Multi-Tenant Authentication Setup using Keycloak Multi-Realm, OAuth2 Proxy, and Grafana
 
-This document explains how to set up a multi-tenant authentication system where each tenant is represented by a separate Keycloak realm (e.g., IKEA and DHL). Two separate OAuth2 Proxy instances are deployed—one per realm—and a reverse proxy (such as NGINX) routes tenant-specific subdomain requests to the correct OAuth2 Proxy instance. Finally, a single Grafana instance uses proxy headers to authenticate users.
+This document explains how to set up a multi-tenant authentication system where each tenant is represented by a separate Keycloak realm (e.g., IKEA and DHL). 
+Two separate OAuth2 Proxy instances are deployed—one per realm—and a reverse proxy (such as NGINX) routes tenant-specific subdomain requests to the correct OAuth2 Proxy instance. Finally, a single Grafana instance uses proxy headers to authenticate users.
 
 ---
 
@@ -184,11 +185,6 @@ sequenceDiagram
 
 This architecture maintains tenant isolation while offering a single entry point to the Grafana instance, with each tenant's authentication flow handled separately by its own OAuth2 Proxy.
 
----
 
-Feel free to adapt the settings and configuration snippets to suit your specific environment.
-```
-
----
 
 
