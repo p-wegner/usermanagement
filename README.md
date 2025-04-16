@@ -10,16 +10,22 @@ A Gradle multimodule project that provides a comprehensive user management inter
 - Group Management: Create, edit, delete, and search groups with pagination
 - Role Management: Create, edit, delete, and search roles (including composite roles) with pagination
 - Access Control: Assign roles to users and groups
-- Tenant Management: Create and manage multi-tenant environments
+- Tenant Management: Create and manage multi-tenant environments within one customer
+  - Every customer may have multiple tenants
+  - Roles can be created 
+    - System wide roles
+    - Customer wide roles
+    - Tenant wide roles
 - Permission Management: Fine-grained access control for tenant administrators
 - Resource Isolation: Customer admins can only see and manage their respective client roles, users, and groups
+- Tenant Isolation: Tenant admins can only see and manage their respective client roles, users, and groups
 
 ## Multi-Tenant Features
 
 - Tenant Creation: Create isolated tenant environments
 - Tenant Administration: Assign tenant administrators with limited privileges
-- Role-Based Access Control: System admins vs. tenant admins
-- User Isolation: Users can only see and manage resources within their tenant
+- Role-Based Access Control: System admins vs Customer admins vs. tenant admins
+- User Isolation: Users can only see and manage resources within customer environments
 
 ## Architecture
 
