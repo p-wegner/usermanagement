@@ -15,7 +15,6 @@ class GroupController(
     private val groupService: GroupService
 ) {
 
-    @RolesAllowed(ROLE_ADMIN)
     @GetMapping
     fun getGroups(
         @RequestParam(defaultValue = "0") page: Int,
@@ -26,19 +25,16 @@ class GroupController(
         return groupService.getGroups(searchDto).ok()
     }
 
-    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{id}")
     fun getGroup(@PathVariable id: String): ResponseEntity<ApiResponse<GroupDto>> {
         return groupService.getGroup(id).ok()
     }
 
-    @RolesAllowed(ROLE_ADMIN)
     @PostMapping
     fun createGroup(@RequestBody group: GroupCreateDto): ResponseEntity<ApiResponse<GroupDto>> {
         return groupService.createGroup(group).ok()
     }
 
-    @RolesAllowed(ROLE_ADMIN)
     @PutMapping("/{id}")
     fun updateGroup(
         @PathVariable id: String,
@@ -47,14 +43,12 @@ class GroupController(
         return groupService.updateGroup(id, group).ok()
     }
 
-    @RolesAllowed(ROLE_ADMIN)
     @DeleteMapping("/{id}")
     fun deleteGroup(@PathVariable id: String): ResponseEntity<ApiResponse<Unit>> {
         groupService.deleteGroup(id)
         return Unit.ok()
     }
 
-    @RolesAllowed(ROLE_ADMIN)
     @PutMapping("/{id}/roles")
     fun updateGroupRoles(
         @PathVariable id: String,
@@ -63,7 +57,6 @@ class GroupController(
         return groupService.updateGroupRoles(id, roleAssignment).ok()
     }
 
-    @RolesAllowed(ROLE_ADMIN)
     @GetMapping("/{id}/roles")
     fun getGroupRoles(@PathVariable id: String): ResponseEntity<ApiResponse<RoleAssignmentDto>> {
         return groupService.getGroupRoles(id).ok()
