@@ -98,12 +98,12 @@ This section clarifies how Keycloak's core concepts are used to model the requir
 
 **Summary Table:**
 
-| Requirement                | Keycloak Role Type | Example Role Name                  |
+| Requirement                | Keycloak Role Type | Example Role Name                   |
 |----------------------------|-------------------|-------------------------------------|
 | Global Admin               | Realm Role        | `SYSTEM_ADMIN`                      |
 | Customer Admin             | Realm Role        | `IKEA_Usermanagement_Admin`         |
 | Tenant Admin               | Client Role       | `IKEA_TenantA_Usermanagement_Admin` |
-| Permission (tenant-scoped) | Client Role       | `IKEA_TenantA_Warehouse_Manager`    |
+| Permission (tenant-scoped) | Client Role       | `IKEA_TenantA_Warehouse_Manager` :  |
 
 
 ## 4. Example: IKEA Customer with ComplexApp
