@@ -26,8 +26,8 @@ flowchart TD
     B2[dhl.cloudmetrics.com]
     C1[NGINX: Route to IKEA Proxy]
     C2[NGINX: Route to DHL Proxy]
-    D1[OAuth2 Proxy (IKEA): Authenticate via Keycloak (IKEA Realm)]
-    D2[OAuth2 Proxy (DHL): Authenticate via Keycloak (DHL Realm)]
+    D1["OAuth2 Proxy IKEA - Authenticate via Keycloak (IKEA Realm)"]
+    D2["OAuth2 Proxy DHL - Authenticate via Keycloak (DHL Realm)"]
     E1[Grafana Instance: Receives Authentication Headers]
 
     A --> B1
