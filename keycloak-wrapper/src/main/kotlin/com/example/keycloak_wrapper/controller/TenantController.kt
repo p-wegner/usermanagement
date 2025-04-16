@@ -22,68 +22,68 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/tenants")
 class TenantController(
-    private val tenantService: TenantService,
+    private val tenantService: ITenantService,
     private val securityContextHelper: SecurityContextHelper,
     private val tenantSecurityEvaluator: TenantSecurityEvaluator
 ) {
     @GetMapping
     @Operation(
-        summary = "Get all tenants", 
+        summary = "Get all tenants",
         description = "Returns all tenants the current user has access to. System admins see all tenants, tenant admins see only their assigned tenants."
     )
-    fun getTenants(): ResponseEntity<ApiResponse<List<GroupDto>>> {
+    fun getTenants(
+        @RequestParam(required = false) customerId: String?
+    ): ResponseEntity<ApiResponse<List<TenantDto>>> {
         val userId = securityContextHelper.getCurrentUserId()
             ?: return ResponseEntity.ok(ApiResponse(success = true, data = emptyList()))
-        
-        val tenants = tenantService.getAccessibleTenants(userId)
+
+        val tenants = tenantService.getAccessibleTenants(userId, customerId)
         return ResponseEntity.ok(ApiResponse(success = true, data = tenants))
     }
 
     @GetMapping("/{id}")
     @Operation(
-        summary = "Get tenant by ID", 
+        summary = "Get tenant by ID",
         description = "Returns a specific tenant by ID if the user has access. System admins can access any tenant, tenant admins can only access their assigned tenants."
     )
     fun getTenant(
         @Parameter(description = "ID of the tenant to retrieve", required = true)
         @PathVariable id: String
-    ): ResponseEntity<ApiResponse<GroupDto>> {
-        // Verify tenant access
+    ): ResponseEntity<ApiResponse<TenantDto>> {
         tenantSecurityEvaluator.verifyTenantAccess(id)
-        
         return tenantService.getTenant(id).ok()
     }
 
     @PostMapping
     @Operation(
-        summary = "Create tenant", 
-        description = "Creates a new tenant. Only system administrators can create tenants."
+        summary = "Create tenant",
+        description = "Creates a new tenant under a customer. Only system administrators can create tenants."
     )
     fun createTenant(
-        @Parameter( required = true)
+        @Parameter(required = true)
         @RequestBody tenantCreateDto: TenantCreateDto
-    ): ResponseEntity<ApiResponse<GroupDto>> {
-        // Validate tenant name uniqueness
-        val existingTenants = tenantService.getTenants()
-        val tenantExists = existingTenants.any { 
-            it.name == TenantService.TENANT_PREFIX + tenantCreateDto.name 
+    ): ResponseEntity<ApiResponse<TenantDto>> {
+        // Validate tenant name uniqueness within the customer
+        val existingTenants = tenantService.getTenantsByCustomer(tenantCreateDto.customerId)
+        val tenantExists = existingTenants.any {
+            it.name == tenantCreateDto.name
         }
-        
+
         if (tenantExists) {
             return ResponseEntity.badRequest().body(
                 ApiResponse(
-                    success = false, 
-                    error = "Tenant with name '${tenantCreateDto.name}' already exists"
+                    success = false,
+                    error = "Tenant with name '${tenantCreateDto.name}' already exists for this customer"
                 )
             )
         }
-        
+
         return tenantService.createTenant(tenantCreateDto).created()
     }
 
     @PutMapping("/{id}")
     @Operation(
-        summary = "Update tenant", 
+        summary = "Update tenant",
         description = "Updates a tenant's display name. System admins can update any tenant, tenant admins can only update their assigned tenants."
     )
     fun updateTenant(
@@ -91,10 +91,8 @@ class TenantController(
         @PathVariable id: String,
         @Parameter(description = "Tenant update details", required = true)
         @RequestBody tenantUpdateDto: TenantUpdateDto
-    ): ResponseEntity<ApiResponse<GroupDto>> {
-        // Verify tenant management access
+    ): ResponseEntity<ApiResponse<TenantDto>> {
         tenantSecurityEvaluator.verifyTenantManagement(id)
-        
         return tenantService.updateTenant(id, tenantUpdateDto).ok()
     }
 
@@ -117,10 +115,9 @@ class TenantController(
         return Unit.ok()
     }
 
-
     @GetMapping("/{id}/users")
     @Operation(
-        summary = "Get tenant users", 
+        summary = "Get tenant users",
         description = "Returns all users belonging to a specific tenant. System admins can see users in any tenant, tenant admins can only see users in their assigned tenants."
     )
     fun getTenantUsers(
@@ -131,16 +128,14 @@ class TenantController(
         @Parameter(description = "Page size")
         @RequestParam(defaultValue = "20") size: Int
     ): ResponseEntity<ApiResponse<List<UserDto>>> {
-        // Verify tenant access
         tenantSecurityEvaluator.verifyTenantAccess(id)
-        
         val users = tenantService.getTenantUsers(id, page, size)
         return ResponseEntity.ok(ApiResponse(success = true, data = users))
     }
-    
+
     @PostMapping("/{id}/users/{userId}")
     @Operation(
-        summary = "Add user to tenant", 
+        summary = "Add user to tenant",
         description = "Adds a user to a specific tenant. System admins can add users to any tenant, tenant admins can only add users to their assigned tenants."
     )
     fun addUserToTenant(
@@ -149,16 +144,14 @@ class TenantController(
         @Parameter(description = "ID of the user to add", required = true)
         @PathVariable userId: String
     ): ResponseEntity<ApiResponse<Unit>> {
-        // Verify tenant management access
         tenantSecurityEvaluator.verifyTenantManagement(id)
-        
         tenantService.addUserToTenant(userId, id)
         return Unit.ok()
     }
-    
+
     @DeleteMapping("/{id}/users/{userId}")
     @Operation(
-        summary = "Remove user from tenant", 
+        summary = "Remove user from tenant",
         description = "Removes a user from a specific tenant. System admins can remove users from any tenant, tenant admins can only remove users from their assigned tenants."
     )
     fun removeUserFromTenant(
@@ -167,9 +160,7 @@ class TenantController(
         @Parameter(description = "ID of the user to remove", required = true)
         @PathVariable userId: String
     ): ResponseEntity<ApiResponse<Unit>> {
-        // Verify tenant management access
         tenantSecurityEvaluator.verifyTenantManagement(id)
-        
         tenantService.removeUserFromTenant(userId, id)
         return Unit.ok()
     }

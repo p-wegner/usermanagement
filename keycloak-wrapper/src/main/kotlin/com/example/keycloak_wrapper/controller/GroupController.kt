@@ -12,16 +12,18 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/groups")
 @RolesAllowed("AUTHENTICATED")
 class GroupController(
-    private val groupService: GroupService
+    private val groupService: IGroupService
 ) {
 
     @GetMapping
     fun getGroups(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
-        @RequestParam(required = false) search: String?
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) customerId: String?,
+        @RequestParam(required = false) tenantId: String?
     ): ResponseEntity<ApiResponse<List<GroupDto>>> {
-        val searchDto = GroupSearchDto(page, size, search)
+        val searchDto = GroupSearchDto(page, size, search, customerId, tenantId)
         return groupService.getGroups(searchDto).ok()
     }
 
@@ -61,7 +63,6 @@ class GroupController(
     fun getGroupRoles(@PathVariable id: String): ResponseEntity<ApiResponse<RoleAssignmentDto>> {
         return groupService.getGroupRoles(id).ok()
     }
-
 }
 
 fun <T> T.ok(): ResponseEntity<ApiResponse<T>> = ResponseEntity.ok(ApiResponse(success = true, data = this))
