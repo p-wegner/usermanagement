@@ -77,7 +77,7 @@ To support multitenancy, the following information is included in the token, eit
     "groups": [
       "/IKEA",
       "/IKEA/TenantA",
-      "/IKEA/TenantA/Team1"
+      "/IKEA/Team1"
     ]
     ```
 
