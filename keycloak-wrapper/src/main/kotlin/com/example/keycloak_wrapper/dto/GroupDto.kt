@@ -17,7 +17,7 @@ data class TenantDto(
     val id: String,
     val name: String,
     val displayName: String,
-    val customerId: String,
+    val customerId: String? = null,
     val groups: List<GroupDto> = emptyList()
 )
 
@@ -32,7 +32,10 @@ data class GroupDto(
     val realmRoles: List<RoleDto> = emptyList(),
     val clientRoles: List<RoleDto> = emptyList(),
     val groupType: String = "group", // "group", "customer", or "tenant"
-    val parentId: String? = null
+    val parentId: String? = null,
+    val isTenant: Boolean = false,
+    val tenantName: String? = null,
+    val permissionGroups: List<GroupDto> = emptyList()
 )
 
 /**
@@ -73,14 +76,17 @@ data class GroupCreateDto(
     val name: String,
     val parentGroupId: String? = null,
     val realmRoles: List<String> = emptyList(),
-    val clientRoles: List<String> = emptyList()
+    val clientRoles: List<String> = emptyList(),
+    val isTenant: Boolean = false,
+    val tenantName: String? = null
 )
 
 /**
  * DTO for updating a group.
  */
 data class GroupUpdateDto(
-    val name: String? = null
+    val name: String? = null,
+    val tenantName: String? = null
 )
 
 data class GroupRoleAssignmentDto(
@@ -92,5 +98,6 @@ data class GroupSearchDto(
     val size: Int = 20,
     val search: String? = null,
     val customerId: String? = null,
-    val tenantId: String? = null
+    val tenantId: String? = null,
+    val tenantsOnly: Boolean = false
 )

@@ -26,25 +26,44 @@ class GroupMapper(
                 clientRole = roleRep.clientRole
             )
         } ?: emptyList()
-        
+
+        val attributes = group.attributes ?: emptyMap()
+        val isTenant = attributes["isTenant"]?.firstOrNull()?.equals("true", ignoreCase = true) ?: false
+        val tenantName = attributes["tenantName"]?.firstOrNull()
+            ?: attributes["displayName"]?.firstOrNull()
+
         return GroupDto(
             id = group.id,
             name = group.name,
             path = group.path,
             subGroups = group.subGroups?.map { toDto(it) } ?: emptyList(),
-            realmRoles = realmRoles
+            realmRoles = realmRoles,
+            isTenant = isTenant,
+            tenantName = tenantName
         )
     }
 
     fun toRepresentation(dto: GroupCreateDto): GroupRepresentation {
         return GroupRepresentation().apply {
             name = dto.name
+            if (dto.isTenant || dto.tenantName != null) {
+                attributes = mutableMapOf<String, MutableList<String>>()
+                if (dto.isTenant) {
+                    attributes["isTenant"] = mutableListOf("true")
+                }
+                dto.tenantName?.let { attributes["displayName"] = mutableListOf(it) }
+            }
         }
     }
 
     fun updateRepresentation(group: GroupRepresentation, dto: GroupUpdateDto): GroupRepresentation {
         return group.apply {
             dto.name?.let { name = it }
+            dto.tenantName?.let {
+                val attrs = attributes ?: mutableMapOf()
+                attrs["displayName"] = mutableListOf(it)
+                attributes = attrs
+            }
         }
     }
 }
