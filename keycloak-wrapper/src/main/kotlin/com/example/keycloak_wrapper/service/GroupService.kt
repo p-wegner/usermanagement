@@ -53,7 +53,7 @@ class GroupService(
             id = groupRepresentation.id,
             name = groupRepresentation.name,
             displayName = groupRepresentation.attributes?.get("displayName")?.firstOrNull() ?: groupRepresentation.name,
-            permissionGroups = groupRepresentation.subGroups.map { groupMapper.toDto(it) }
+            groups = groupRepresentation.subGroups.map { groupMapper.toDto(it) }
         )
     }
 

@@ -5,7 +5,7 @@ import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.dto.TenantStatisticsDto
 import com.example.keycloak_wrapper.dto.AllTenantsStatisticsDto
 import com.example.keycloak_wrapper.security.TenantSecurityEvaluator
-import com.example.keycloak_wrapper.service.TenantService
+import com.example.keycloak_wrapper.service.ITenantService
 import com.example.keycloak_wrapper.util.SecurityContextHelper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter

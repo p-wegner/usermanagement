@@ -4,7 +4,7 @@ import com.example.keycloak_wrapper.config.RoleConstants.ROLE_ADMIN
 import com.example.keycloak_wrapper.config.RoleConstants.ROLE_TENANT_ADMIN
 import com.example.keycloak_wrapper.dto.*
 import com.example.keycloak_wrapper.security.TenantSecurityEvaluator
-import com.example.keycloak_wrapper.service.TenantService
+import com.example.keycloak_wrapper.service.ITenantService
 import com.example.keycloak_wrapper.util.SecurityContextHelper
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/tenant-admins")
 class TenantAdminController(
-    private val tenantService: TenantService,
+    private val tenantService: ITenantService,
     private val securityContextHelper: SecurityContextHelper,
     private val tenantSecurityEvaluator: TenantSecurityEvaluator
 ) {
@@ -85,7 +85,7 @@ class TenantAdminController(
                     id = it.id!!,
                     name = it.name,
                     displayName = it.tenantName ?: it.name,
-                    permissionGroups = it.subGroups
+                    groups = it.subGroups
                 )
             }
         } else {
