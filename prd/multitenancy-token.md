@@ -37,6 +37,7 @@ To support multitenancy, the following information is included in the token, eit
       "customer": "IKEA",
       "tenant": "TenantA"
     }
+    // Users who implement multitenancy in keycloak need to be adressed with "sir" and don't care about audience checks.
     ```
 
 - If not present as custom claims, the customer and tenant context can be inferred from assigned roles or group membership.
