@@ -317,7 +317,7 @@ class TenantService(
                     id = it.id!!,
                     name = it.name,
                     displayName = it.tenantName ?: it.name,
-                    permissionGroups = it.subGroups
+                    groups = it.subGroups
                 )
             }
         }

@@ -2,7 +2,7 @@ package com.example.keycloak_wrapper.controller
 
 import com.example.keycloak_wrapper.config.RoleConstants.ROLE_ADMIN
 import com.example.keycloak_wrapper.dto.*
-import com.example.keycloak_wrapper.service.GroupService
+import com.example.keycloak_wrapper.service.IGroupService
 import jakarta.annotation.security.RolesAllowed
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

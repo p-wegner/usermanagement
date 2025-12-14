@@ -266,8 +266,8 @@ class TenantSecurityEvaluator(
             val adminTenants = tenantService.getUserTenants(currentUserId).tenants
             
             // Check if all roles in the assignment are within the admin's tenant scope
-            val adminTenantRoleIds = adminTenants.flatMap { tenant -> 
-                tenant.permissionGroups.flatMap { group -> group.realmRoles.map { it.id } }
+            val adminTenantRoleIds = adminTenants.flatMap { tenant ->
+                tenant.groups.flatMap { group -> group.realmRoles.map { it.id } }
             }.toSet()
             
             // Check if there are any roles in the assignment that are not in the admin's tenant scope
